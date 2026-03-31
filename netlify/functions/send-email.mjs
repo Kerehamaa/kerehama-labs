@@ -1,5 +1,4 @@
-import { createTransport } from 'nodemailer';
-
+// Generic email sender via Resend
 export default async (req) => {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
@@ -16,23 +15,30 @@ export default async (req) => {
       return new Response(JSON.stringify({ error: 'Missing fields' }), { status: 400 });
     }
 
-    const transporter = createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
+    const RESEND_KEY = process.env.RESEND_API_KEY;
+    if (!RESEND_KEY) {
+      return new Response(JSON.stringify({ error: 'Email not configured' }), { status: 500 });
+    }
+
+    const emailRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${RESEND_KEY}`,
       },
+      body: JSON.stringify({
+        from: 'Kerehama Labs <chat@kerehama.nz>',
+        to: [to],
+        subject,
+        ...(html ? { html } : { text: body }),
+      }),
     });
 
-    await transporter.sendMail({
-      from: `"Kerehama Labs" <${process.env.GMAIL_USER}>`,
-      replyTo: '"Kerehama Labs" <chat@kerehama.nz>',
-      to,
-      subject,
-      ...(html ? { html } : { text: body }),
-    });
+    if (!emailRes.ok) {
+      const err = await emailRes.text();
+      console.error('Resend error:', err);
+      return new Response(JSON.stringify({ error: 'Failed to send' }), { status: 500 });
+    }
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,

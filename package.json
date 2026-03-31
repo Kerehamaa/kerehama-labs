@@ -1,7 +1,0 @@
-{
-  "name": "kerehama-labs",
-  "private": true,
-  "dependencies": {
-    "nodemailer": "^6.9.0"
-  }
-}
