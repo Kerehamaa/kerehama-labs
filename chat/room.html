@@ -18,8 +18,7 @@
     html, body { height: 100%; }
     body {
       font-family: 'Space Grotesk', system-ui, sans-serif;
-      background: var(--bg); color: var(--fg);
-      display: flex; flex-direction: column;
+      background: var(--bg); color: var(--fg); display: flex; flex-direction: column;
     }
     body::before {
       content: ''; position: fixed; inset: -20% auto auto -25%;
@@ -27,139 +26,89 @@
       background: radial-gradient(circle at 30% 30%, rgba(6,182,212,0.25), transparent 70%);
       filter: blur(120px); opacity: 0.3; pointer-events: none; z-index: 0;
     }
-
     .chat-header {
       position: relative; z-index: 2;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid var(--card-border);
-      background: var(--bg-soft);
+      padding: 1rem 1.5rem; border-bottom: 1px solid var(--card-border); background: var(--bg-soft);
     }
     .chat-header h2 { font-size: 1.1rem; font-weight: 600; }
     .chat-header h2 span { color: var(--accent); }
     .chat-header .back { color: var(--muted); text-decoration: none; font-size: 0.9rem; }
     .chat-header .back:hover { color: var(--accent); }
-    .chat-header .status {
-      font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 0.4rem;
-    }
-    .chat-header .status .dot {
-      width: 7px; height: 7px; border-radius: 50%; background: #4ade80;
-    }
-
+    .chat-header .status { font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 0.4rem; }
+    .chat-header .status .dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; }
     .messages {
       flex: 1; overflow-y: auto; padding: 1.5rem;
-      display: flex; flex-direction: column; gap: 0.75rem;
-      position: relative; z-index: 1;
+      display: flex; flex-direction: column; gap: 0.75rem; position: relative; z-index: 1;
     }
     .messages::-webkit-scrollbar { width: 6px; }
-    .messages::-webkit-scrollbar-track { background: transparent; }
     .messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-
     .msg {
-      max-width: 80%; padding: 0.85rem 1.15rem;
-      border-radius: 1rem; font-size: 0.95rem; line-height: 1.5;
+      max-width: 80%; padding: 0.85rem 1.15rem; border-radius: 1rem;
+      font-size: 0.95rem; line-height: 1.5; word-wrap: break-word;
       animation: msg-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-      word-wrap: break-word;
     }
-    .msg.client {
-      align-self: flex-end;
-      background: var(--accent); color: #050505;
-      border-bottom-right-radius: 0.25rem;
-    }
-    .msg.admin, .msg.bot {
-      align-self: flex-start;
-      background: var(--bg-soft); border: 1px solid var(--card-border);
-      border-bottom-left-radius: 0.25rem;
-    }
+    .msg.client { align-self: flex-end; background: var(--accent); color: #050505; border-bottom-right-radius: 0.25rem; }
+    .msg.admin, .msg.bot { align-self: flex-start; background: var(--bg-soft); border: 1px solid var(--card-border); border-bottom-left-radius: 0.25rem; }
     .msg.sending { opacity: 0.6; }
     .msg .meta { font-size: 0.7rem; opacity: 0.6; margin-top: 0.35rem; }
     .msg.client .meta { color: #050505; }
 
-    /* Option buttons in chat */
-    .options {
-      display: flex; flex-wrap: wrap; gap: 0.5rem;
-      align-self: flex-start; padding: 0.25rem 0;
-      animation: msg-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    /* Cards from admin */
+    .card-msg {
+      align-self: flex-start; max-width: 85%; border-radius: 1rem;
+      background: var(--bg-soft); border: 1px solid var(--card-border);
+      overflow: hidden; animation: msg-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
+    .card-msg .card-body { padding: 1.15rem; }
+    .card-msg .card-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.35rem; }
+    .card-msg .card-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+    .card-msg .card-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0 1.15rem 1.15rem; }
+    .card-btn {
+      padding: 0.6rem 1.25rem; border-radius: 999px; text-decoration: none;
+      font-family: inherit; font-size: 0.85rem; font-weight: 600; transition: all 0.2s;
+    }
+    .card-btn.primary { background: var(--accent); color: #050505; }
+    .card-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(6,182,212,0.25); }
+    .card-btn.secondary { background: transparent; border: 1px solid var(--card-border); color: var(--fg); }
+    .card-btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .card-msg .card-meta { padding: 0 1.15rem 0.75rem; font-size: 0.7rem; color: var(--muted); opacity: 0.6; }
+
+    .options { display: flex; flex-wrap: wrap; gap: 0.5rem; align-self: flex-start; padding: 0.25rem 0; animation: msg-in 0.35s ease; }
     .opt-btn {
-      padding: 0.65rem 1.25rem;
-      border: 1px solid var(--accent); border-radius: 999px;
-      background: transparent; color: var(--fg);
-      font-family: inherit; font-size: 0.9rem; font-weight: 500;
+      padding: 0.65rem 1.25rem; border: 1px solid var(--accent); border-radius: 999px;
+      background: transparent; color: var(--fg); font-family: inherit; font-size: 0.9rem; font-weight: 500;
       cursor: pointer; transition: all 0.2s;
     }
-    .opt-btn:hover {
-      background: var(--accent); color: #050505;
-      transform: translateY(-1px); box-shadow: 0 4px 16px rgba(6,182,212,0.2);
-    }
-    .opt-btn.selected {
-      background: var(--accent); color: #050505;
-      pointer-events: none;
-    }
+    .opt-btn:hover { background: var(--accent); color: #050505; transform: translateY(-1px); }
+    .opt-btn.selected { background: var(--accent); color: #050505; pointer-events: none; }
     .opt-btn:disabled { opacity: 0.3; pointer-events: none; }
 
-    /* Text input for flow questions */
-    .flow-input-area {
+    .flow-input-area, .chat-input {
       display: none; gap: 0.75rem; padding: 1rem 1.5rem;
-      border-top: 1px solid var(--card-border); background: var(--bg-soft);
-      position: relative; z-index: 2;
+      border-top: 1px solid var(--card-border); background: var(--bg-soft); position: relative; z-index: 2;
     }
-    .flow-input-area.visible { display: flex; }
-    .flow-input-area input {
-      flex: 1; padding: 0.85rem 1.15rem;
-      border: 1px solid var(--card-border); border-radius: 1rem;
-      background: var(--bg); color: var(--fg);
-      font-family: inherit; font-size: 0.95rem; outline: none;
+    .flow-input-area.visible, .chat-input.visible { display: flex; }
+    .flow-input-area input, .chat-input input {
+      flex: 1; padding: 0.85rem 1.15rem; border: 1px solid var(--card-border); border-radius: 1rem;
+      background: var(--bg); color: var(--fg); font-family: inherit; font-size: 0.95rem; outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .flow-input-area input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-    .flow-input-area input::placeholder { color: var(--muted); opacity: 0.5; }
-    .flow-input-area button {
+    .flow-input-area input:focus, .chat-input input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .flow-input-area input::placeholder, .chat-input input::placeholder { color: var(--muted); opacity: 0.5; }
+    .flow-input-area button, .chat-input .send-btn {
       padding: 0.85rem 1.5rem; border: none; border-radius: 1rem;
-      background: var(--accent); color: #050505;
-      font-family: inherit; font-size: 0.95rem; font-weight: 600;
+      background: var(--accent); color: #050505; font-family: inherit; font-size: 0.95rem; font-weight: 600;
       cursor: pointer; transition: opacity 0.2s, transform 0.2s;
     }
-    .flow-input-area button:hover { transform: translateY(-1px); }
-
-    /* Free chat input */
-    .chat-input {
-      display: none; gap: 0.75rem; padding: 1rem 1.5rem;
-      border-top: 1px solid var(--card-border); background: var(--bg-soft);
-      position: relative; z-index: 2;
-    }
-    .chat-input.visible { display: flex; }
-    .chat-input input {
-      flex: 1; padding: 0.85rem 1.15rem;
-      border: 1px solid var(--card-border); border-radius: 1rem;
-      background: var(--bg); color: var(--fg);
-      font-family: inherit; font-size: 0.95rem; outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .chat-input input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-    .chat-input input::placeholder { color: var(--muted); opacity: 0.5; }
-    .chat-input .send-btn {
-      padding: 0.85rem 1.5rem; border: none; border-radius: 1rem;
-      background: var(--accent); color: #050505;
-      font-family: inherit; font-size: 0.95rem; font-weight: 600;
-      cursor: pointer; transition: opacity 0.2s, transform 0.2s;
-    }
-    .chat-input .send-btn:hover { transform: translateY(-1px); }
+    .flow-input-area button:hover, .chat-input .send-btn:hover { transform: translateY(-1px); }
     .chat-input .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-    .loading {
-      flex: 1; display: flex; align-items: center; justify-content: center;
-      color: var(--muted); font-size: 1rem;
-    }
-
+    .loading { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--muted); }
     .typing { display: flex; gap: 0.3rem; align-items: center; padding: 0.5rem 0; align-self: flex-start; }
-    .typing span {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--muted);
-      animation: blink 1.4s infinite both;
-    }
+    .typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1.4s infinite both; }
     .typing span:nth-child(2) { animation-delay: 0.2s; }
     .typing span:nth-child(3) { animation-delay: 0.4s; }
-
     @keyframes msg-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
   </style>
@@ -170,15 +119,12 @@
     <h2>Chat with <span>Kerehama</span></h2>
     <div class="status"><div class="dot"></div> Online</div>
   </div>
-
   <div class="loading" id="loading">Loading chat…</div>
   <div class="messages" id="messages" style="display:none;"></div>
-
   <div class="flow-input-area" id="flow-input">
     <input type="text" id="flow-text" placeholder="Type your answer…" autocomplete="off">
     <button id="flow-send">Send</button>
   </div>
-
   <div class="chat-input" id="chat-input">
     <input type="text" id="msg-input" placeholder="Type a message…" autocomplete="off">
     <button class="send-btn" id="send-btn">Send</button>
@@ -188,7 +134,6 @@
   <script>
     const SUPABASE_URL = 'https://ewlufiwgnnnfwdjoafcu.supabase.co';
     const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3bHVmaXdnbm5uZndkam9hZmN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTI3MTMsImV4cCI6MjA5MDQ4ODcxM30.C8XNhInLONhDYtt0twygGFg0M4sufZI3oyCTeFjoP-Y';
-
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
     const chatId = window.location.pathname.replace('/chat/', '').replace(/\/$/, '');
     const messagesEl = document.getElementById('messages');
@@ -198,28 +143,24 @@
     const sendBtn = document.getElementById('send-btn');
     const flowInputEl = document.getElementById('flow-input');
     const flowText = document.getElementById('flow-text');
-    const flowSend = document.getElementById('flow-send');
+    const flowSendBtn = document.getElementById('flow-send');
 
     let chatData = null;
     const renderedIds = new Set();
-    let flowActive = false;
-    let flowCallback = null;
 
     function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
     function formatTime(ts) { return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
     function scrollToBottom() { messagesEl.scrollTop = messagesEl.scrollHeight; }
 
-    // Add a bot message (local only, not stored)
+    // ── BOT MESSAGES (local only) ──
     function addBotMsg(text) {
       return new Promise(resolve => {
-        // Show typing indicator
         const typing = document.createElement('div');
         typing.className = 'typing';
         typing.innerHTML = '<span></span><span></span><span></span>';
         messagesEl.appendChild(typing);
         scrollToBottom();
-
-        const delay = Math.min(400 + text.length * 15, 1500);
+        const delay = Math.min(400 + text.length * 12, 1200);
         setTimeout(() => {
           typing.remove();
           const div = document.createElement('div');
@@ -232,7 +173,6 @@
       });
     }
 
-    // Show option buttons, returns the chosen value
     function showOptions(options) {
       return new Promise(resolve => {
         const container = document.createElement('div');
@@ -242,12 +182,7 @@
           btn.className = 'opt-btn';
           btn.textContent = opt.label;
           btn.addEventListener('click', () => {
-            // Disable all buttons, highlight selected
-            container.querySelectorAll('.opt-btn').forEach(b => {
-              b.disabled = true;
-              if (b === btn) b.classList.add('selected');
-            });
-            // Show as client message
+            container.querySelectorAll('.opt-btn').forEach(b => { b.disabled = true; if (b === btn) b.classList.add('selected'); });
             const reply = document.createElement('div');
             reply.className = 'msg client';
             reply.innerHTML = `<div class="text">${esc(opt.label)}</div>`;
@@ -262,22 +197,18 @@
       });
     }
 
-    // Ask a text question, returns the answer
     function askText(placeholder) {
       return new Promise(resolve => {
         flowInputEl.classList.add('visible');
         flowText.placeholder = placeholder || 'Type your answer…';
         flowText.value = '';
         flowText.focus();
-
         const handler = () => {
           const val = flowText.value.trim();
           if (!val) return;
           flowInputEl.classList.remove('visible');
-          flowText.removeEventListener('keydown', keyHandler);
-          flowSend.removeEventListener('click', handler);
-
-          // Show as client message
+          flowText.removeEventListener('keydown', kh);
+          flowSendBtn.removeEventListener('click', handler);
           const reply = document.createElement('div');
           reply.className = 'msg client';
           reply.innerHTML = `<div class="text">${esc(val)}</div>`;
@@ -285,203 +216,172 @@
           scrollToBottom();
           resolve(val);
         };
-
-        const keyHandler = (e) => { if (e.key === 'Enter') handler(); };
-        flowText.addEventListener('keydown', keyHandler);
-        flowSend.addEventListener('click', handler);
+        const kh = (e) => { if (e.key === 'Enter') handler(); };
+        flowText.addEventListener('keydown', kh);
+        flowSendBtn.addEventListener('click', handler);
       });
     }
 
-    // ── ONBOARDING FLOWS ──
+    // ── DYNAMIC FORM RUNNER ──
+    async function runDynamicForm(form) {
+      const name = chatData.client_name.split(' ')[0];
+      const greeting = (form.greeting || 'Welcome! 👋').replace('{name}', name);
+      await addBotMsg(greeting);
 
-    async function runBuildSiteFlow() {
+      // Show section chooser
+      if (!form.sections || form.sections.length === 0) {
+        await addBotMsg("How can I help you today? Send a message below 👇");
+        return null;
+      }
+
+      await addBotMsg("What can I help you with today?");
+      const sectionChoice = await showOptions(form.sections.map(s => ({ label: s.label, value: s.value })));
+      const section = form.sections.find(s => s.value === sectionChoice);
+      if (!section) return null;
+
       const answers = {};
+      answers._section = section.label;
 
-      await addBotMsg("Awesome! Let's get some details so I can help you out 🔨");
-
-      await addBotMsg("What's the name of the business?");
-      answers.companyName = await askText("Business name…");
-
-      await addBotMsg("How many people work there?");
-      answers.companySize = await showOptions([
-        { label: 'Just me', value: '1' },
-        { label: '2–5', value: '2-5' },
-        { label: '6–20', value: '6-20' },
-        { label: '20+', value: '20+' },
-      ]);
-
-      await addBotMsg("Where is the business based?");
-      answers.location = await askText("City / region…");
-
-      await addBotMsg("What does the business do? Just a quick summary");
-      answers.description = await askText("e.g. We're a landscaping company…");
-
-      await addBotMsg("Do you already have a website?");
-      answers.hasWebsite = await showOptions([
-        { label: 'Yes', value: 'yes' },
-        { label: 'No', value: 'no' },
-      ]);
-
-      if (answers.hasWebsite === 'yes') {
-        await addBotMsg("What's the URL?");
-        answers.existingUrl = await askText("e.g. example.com");
+      for (const q of (section.questions || [])) {
+        await addBotMsg(q.text);
+        if (q.type === 'choice' && q.options) {
+          answers[q.key || q.text] = await showOptions(q.options.map(o => ({ label: o.label, value: o.value || o.label })));
+        } else {
+          answers[q.key || q.text] = await askText(q.placeholder || 'Type your answer…');
+        }
       }
-
-      await addBotMsg("Do you have a domain name ready?");
-      answers.hasDomain = await showOptions([
-        { label: 'Yes, I have one', value: 'yes' },
-        { label: 'No, I need one', value: 'no' },
-        { label: 'Not sure', value: 'unsure' },
-      ]);
-
-      if (answers.hasDomain === 'yes') {
-        await addBotMsg("What's the domain?");
-        answers.domain = await askText("e.g. mybusiness.co.nz");
-      }
-
-      await addBotMsg("Any specific features you want? (e.g. contact form, booking system, portfolio, shop)");
-      answers.features = await askText("Features you need…");
-
-      await addBotMsg("Last one — what's your rough budget?");
-      answers.budget = await showOptions([
-        { label: 'Under $300', value: 'under-300' },
-        { label: '$300–$600', value: '300-600' },
-        { label: '$600–$1000', value: '600-1000' },
-        { label: '$1000+', value: '1000+' },
-        { label: 'Not sure yet', value: 'unsure' },
-      ]);
 
       // Build summary
-      let summary = `📋 NEW SITE REQUEST\n\n`;
-      summary += `Business: ${answers.companyName}\n`;
-      summary += `Size: ${answers.companySize} people\n`;
-      summary += `Location: ${answers.location}\n`;
-      summary += `About: ${answers.description}\n`;
-      summary += `Existing site: ${answers.hasWebsite === 'yes' ? answers.existingUrl : 'No'}\n`;
-      summary += `Domain: ${answers.hasDomain === 'yes' ? answers.domain : (answers.hasDomain === 'no' ? 'Needs one' : 'Not sure')}\n`;
-      summary += `Features: ${answers.features}\n`;
-      summary += `Budget: ${answers.budget}`;
-
-      return { category: 'build-a-site', summary };
-    }
-
-    async function runSupportFlow() {
-      const answers = {};
-
-      await addBotMsg("No worries, what do you need help with?");
-      answers.type = await showOptions([
-        { label: '💰 Pricing', value: 'pricing' },
-        { label: '🌐 Website issue', value: 'website' },
-        { label: '📦 Other', value: 'other' },
-      ]);
-
-      if (answers.type === 'pricing') {
-        await addBotMsg("What would you like to know about pricing?");
-        answers.pricingQuestion = await askText("Your question…");
-
-        let summary = `🔧 SUPPORT — Pricing\n\n`;
-        summary += `Question: ${answers.pricingQuestion}`;
-        return { category: 'support-pricing', summary };
+      let summary = `📋 ${section.label.toUpperCase()}\n\n`;
+      for (const [key, val] of Object.entries(answers)) {
+        if (key === '_section') continue;
+        summary += `${key}: ${val}\n`;
       }
 
-      if (answers.type === 'website') {
-        await addBotMsg("Was the website built by Kerehama Labs?");
-        answers.builtByUs = await showOptions([
-          { label: 'Yes', value: 'yes' },
-          { label: 'No', value: 'no' },
-          { label: "I'm not sure", value: 'unsure' },
-        ]);
-
-        await addBotMsg("What's the website URL?");
-        answers.siteUrl = await askText("e.g. example.com");
-
-        await addBotMsg("What's going wrong? Describe the issue");
-        answers.issue = await askText("Describe the problem…");
-
-        let summary = `🔧 SUPPORT — Website Issue\n\n`;
-        summary += `Built by Kerehama Labs: ${answers.builtByUs}\n`;
-        summary += `Site: ${answers.siteUrl}\n`;
-        summary += `Issue: ${answers.issue}`;
-        return { category: 'support-website', summary };
-      }
-
-      // Other
-      await addBotMsg("Tell me what you need help with");
-      answers.otherDetails = await askText("Describe what you need…");
-
-      let summary = `🔧 SUPPORT — Other\n\n`;
-      summary += `Details: ${answers.otherDetails}`;
-      return { category: 'support-other', summary };
+      return { category: section.value, summary: summary.trim() };
     }
 
-    async function runOtherFlow() {
-      await addBotMsg("Sweet, what's on your mind?");
-      const details = await askText("What can I help with…");
-
-      let summary = `💬 GENERAL ENQUIRY\n\n`;
-      summary += `Details: ${details}`;
-      return { category: 'other', summary };
+    // ── HARDCODED FALLBACK FORM ──
+    function getDefaultForm() {
+      return {
+        greeting: "Hey {name}! 👋 Welcome to Kerehama Labs",
+        sections: [
+          {
+            label: "🔨 Build a site", value: "build-a-site",
+            questions: [
+              { type: "text", text: "What's the name of the business?", key: "Business", placeholder: "Business name…" },
+              { type: "choice", text: "How many people work there?", key: "Size", options: [
+                { label: "Just me", value: "1" }, { label: "2–5", value: "2-5" },
+                { label: "6–20", value: "6-20" }, { label: "20+", value: "20+" }
+              ]},
+              { type: "text", text: "Where is the business based?", key: "Location", placeholder: "City / region…" },
+              { type: "text", text: "What does the business do?", key: "About", placeholder: "Quick summary…" },
+              { type: "choice", text: "Do you already have a website?", key: "Has website", options: [
+                { label: "Yes", value: "Yes" }, { label: "No", value: "No" }
+              ]},
+              { type: "choice", text: "Do you have a domain name?", key: "Has domain", options: [
+                { label: "Yes, I have one", value: "Yes" }, { label: "No, I need one", value: "No" }, { label: "Not sure", value: "Unsure" }
+              ]},
+              { type: "text", text: "Any specific features you need? (contact form, booking, shop, portfolio, etc.)", key: "Features", placeholder: "Features…" },
+              { type: "choice", text: "What's your rough budget?", key: "Budget", options: [
+                { label: "Under $300", value: "Under $300" }, { label: "$300–$600", value: "$300-$600" },
+                { label: "$600–$1000", value: "$600-$1000" }, { label: "$1000+", value: "$1000+" }, { label: "Not sure yet", value: "Unsure" }
+              ]}
+            ]
+          },
+          {
+            label: "🔧 Support", value: "support",
+            questions: [
+              { type: "choice", text: "What do you need help with?", key: "Type", options: [
+                { label: "💰 Pricing", value: "Pricing" }, { label: "🌐 Website issue", value: "Website" }, { label: "📦 Other", value: "Other" }
+              ]},
+              { type: "choice", text: "Was the website built by Kerehama Labs?", key: "Built by us", options: [
+                { label: "Yes", value: "Yes" }, { label: "No", value: "No" }, { label: "Not sure", value: "Unsure" }
+              ]},
+              { type: "text", text: "Describe the issue or question", key: "Details", placeholder: "Tell me more…" }
+            ]
+          },
+          {
+            label: "💬 Other", value: "other",
+            questions: [
+              { type: "text", text: "What's on your mind?", key: "Details", placeholder: "Tell me what you need…" }
+            ]
+          }
+        ]
+      };
     }
 
-    // ── MAIN ONBOARDING ──
-
+    // ── ONBOARDING ──
     async function startOnboarding() {
-      flowActive = true;
-      const name = chatData.client_name.split(' ')[0];
-
-      await addBotMsg(`Hey ${name}! 👋 Welcome to Kerehama Labs`);
-      await addBotMsg("What can I help you with today?");
-
-      const choice = await showOptions([
-        { label: '🔨 Build a site', value: 'build' },
-        { label: '🔧 Support', value: 'support' },
-        { label: '💬 Other', value: 'other' },
-      ]);
-
-      let result;
-      if (choice === 'build') result = await runBuildSiteFlow();
-      else if (choice === 'support') result = await runSupportFlow();
-      else result = await runOtherFlow();
-
-      // Send the summary as a hidden message (sender='system' style — use 'client' but mark as summary)
-      // We prefix with __SUMMARY__ so the client view can hide it
-      await sb.from('messages').insert({
-        chat_id: chatId, sender: 'client', content: '__SUMMARY__\n' + result.summary
-      });
-
-      // Tag the chat with the category
+      // Try to load custom form from Supabase
+      let form = null;
       try {
-        const { data: current } = await sb.from('chats').select('tags').eq('id', chatId).single();
-        const tags = [...new Set([...(current?.tags || []), result.category])];
-        await sb.from('chats').update({ tags, last_message_at: new Date().toISOString() }).eq('id', chatId);
-      } catch (e) {
-        await sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', chatId);
+        const { data } = await sb.from('forms').select('*').eq('is_default', true).limit(1).single();
+        if (data) form = data;
+      } catch (e) { /* no forms table or no default — use fallback */ }
+
+      if (!form) form = getDefaultForm();
+
+      const result = await runDynamicForm(form);
+
+      if (result) {
+        // Send hidden summary
+        await sb.from('messages').insert({ chat_id: chatId, sender: 'client', content: '__SUMMARY__\n' + result.summary });
+        // Tag the chat
+        try {
+          const { data: current } = await sb.from('chats').select('tags').eq('id', chatId).single();
+          const tags = [...new Set([...(current?.tags || []), result.category])];
+          await sb.from('chats').update({ tags, last_message_at: new Date().toISOString() }).eq('id', chatId);
+        } catch (e) {
+          await sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', chatId);
+        }
       }
 
       await addBotMsg("Thanks for that! I'll review everything and get back to you within 1–2 business days 📨");
       await addBotMsg("If there's anything else you want to add, feel free to send a message below 👇");
 
-      // Transition to free chat
-      flowActive = false;
       chatInputEl.classList.add('visible');
       msgInput.focus();
     }
 
-    // ── MESSAGE RENDERING ──
+    // ── RENDER REAL MESSAGES ──
+    function renderCard(cardData, ts) {
+      const card = document.createElement('div');
+      card.className = 'card-msg';
+      let btnHtml = '';
+      if (cardData.buttons && cardData.buttons.length) {
+        btnHtml = '<div class="card-buttons">' + cardData.buttons.map((b, i) =>
+          `<a href="${esc(b.url || '#')}" target="_blank" rel="noopener" class="card-btn ${i === 0 ? 'primary' : 'secondary'}">${esc(b.label)}</a>`
+        ).join('') + '</div>';
+      }
+      card.innerHTML = `
+        <div class="card-body">
+          ${cardData.title ? `<div class="card-title">${esc(cardData.title)}</div>` : ''}
+          ${cardData.desc ? `<div class="card-desc">${esc(cardData.desc)}</div>` : ''}
+        </div>
+        ${btnHtml}
+        <div class="card-meta">Kerehama · ${formatTime(ts)}</div>
+      `;
+      messagesEl.appendChild(card);
+      scrollToBottom();
+    }
 
-    function addRealMessage(msg, cls) {
+    function addRealMessage(msg) {
       if (msg.id && renderedIds.has(msg.id)) return;
       if (msg.id) renderedIds.add(msg.id);
-
-      // Hide summary messages from client view
+      // Hide summaries
       if (msg.content && msg.content.startsWith('__SUMMARY__')) return;
+      // Render cards
+      if (msg.content && msg.content.startsWith('__CARD__')) {
+        try {
+          const cardData = JSON.parse(msg.content.replace('__CARD__', ''));
+          renderCard(cardData, msg.created_at);
+          return;
+        } catch (e) {}
+      }
 
       const div = document.createElement('div');
-      div.className = `msg ${msg.sender} ${cls || ''}`;
-      if (msg.id) div.dataset.id = msg.id;
-      if (msg._tempId) div.dataset.tempId = msg._tempId;
-
-      // Preserve newlines in summary messages
+      div.className = `msg ${msg.sender}`;
       const content = esc(msg.content).replace(/\n/g, '<br>');
       div.innerHTML = `
         <div class="text">${content}</div>
@@ -492,93 +392,55 @@
     }
 
     // ── INIT ──
-
     async function init() {
       if (!chatId) { window.location.href = '/chat/'; return; }
-
-      const { data: chat, error: chatErr } = await sb
-        .from('chats').select('*').eq('id', chatId).single();
-
-      if (chatErr || !chat) {
-        loadingEl.textContent = 'Chat not found. It may have been deleted.';
-        return;
-      }
+      const { data: chat, error: chatErr } = await sb.from('chats').select('*').eq('id', chatId).single();
+      if (chatErr || !chat) { loadingEl.textContent = 'Chat not found.'; return; }
 
       chatData = chat;
       document.title = `Chat with Kerehama — ${chat.client_name}`;
-
-      // Load existing messages
-      const { data: msgs } = await sb
-        .from('messages').select('*').eq('chat_id', chatId)
-        .order('created_at', { ascending: true });
+      const { data: msgs } = await sb.from('messages').select('*').eq('chat_id', chatId).order('created_at', { ascending: true });
 
       loadingEl.style.display = 'none';
       messagesEl.style.display = 'flex';
 
       if (msgs && msgs.length > 0) {
-        // Has history — show messages + free chat (skip onboarding)
         msgs.forEach(m => addRealMessage(m));
         chatInputEl.classList.add('visible');
         msgInput.focus();
       } else {
-        // No messages — run onboarding flow
         startOnboarding();
       }
 
-      // Real-time subscription
       sb.channel(`chat-${chatId}`)
-        .on('postgres_changes', {
-          event: 'INSERT', schema: 'public', table: 'messages',
-          filter: `chat_id=eq.${chatId}`
-        }, (payload) => {
-          addRealMessage(payload.new);
-        })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `chat_id=eq.${chatId}` },
+          (payload) => addRealMessage(payload.new))
         .subscribe();
     }
 
-    // ── FREE CHAT SEND ──
-
+    // ── SEND MESSAGE ──
     let tempCounter = 0;
-
     async function sendMessage() {
       const text = msgInput.value.trim();
       if (!text) return;
       msgInput.value = '';
-
       const tempId = 'temp-' + (++tempCounter);
-      // Optimistic render
       const div = document.createElement('div');
       div.className = 'msg client sending';
       div.dataset.tempId = tempId;
       div.innerHTML = `<div class="text">${esc(text)}</div><div class="meta">You · now</div>`;
       messagesEl.appendChild(div);
       scrollToBottom();
-
-      const { data, error } = await sb
-        .from('messages')
-        .insert({ chat_id: chatId, sender: 'client', content: text })
-        .select().single();
-
-      // Remove temp
+      const { data, error } = await sb.from('messages').insert({ chat_id: chatId, sender: 'client', content: text }).select().single();
       const tempEl = document.querySelector(`[data-temp-id="${tempId}"]`);
       if (tempEl) tempEl.remove();
-
-      if (error) {
-        alert('Failed to send. Try again.');
-        msgInput.value = text;
-      } else if (data) {
-        addRealMessage(data);
-      }
-
+      if (error) { alert('Failed to send.'); msgInput.value = text; }
+      else if (data) addRealMessage(data);
       sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', chatId);
       msgInput.focus();
     }
-
     sendBtn.addEventListener('click', sendMessage);
-    msgInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-    });
-
+    msgInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
     init();
   </script>
 </body>
