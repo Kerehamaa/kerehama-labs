@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Chat room — Kerehama Labs">
+  <meta name="description" content="Chat with Kerehama — labs.kerehama.nz">
   <title>Chat — Kerehama Labs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,6 +39,12 @@
     .chat-header h2 span { color: var(--accent); }
     .chat-header .back { color: var(--muted); text-decoration: none; font-size: 0.9rem; }
     .chat-header .back:hover { color: var(--accent); }
+    .chat-header .status {
+      font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 0.4rem;
+    }
+    .chat-header .status .dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #4ade80;
+    }
 
     .messages {
       flex: 1; overflow-y: auto; padding: 1.5rem;
@@ -50,9 +56,9 @@
     .messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
 
     .msg {
-      max-width: 75%; padding: 0.85rem 1.15rem;
+      max-width: 80%; padding: 0.85rem 1.15rem;
       border-radius: 1rem; font-size: 0.95rem; line-height: 1.5;
-      animation: msg-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      animation: msg-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
       word-wrap: break-word;
     }
     .msg.client {
@@ -60,7 +66,7 @@
       background: var(--accent); color: #050505;
       border-bottom-right-radius: 0.25rem;
     }
-    .msg.admin {
+    .msg.admin, .msg.bot {
       align-self: flex-start;
       background: var(--bg-soft); border: 1px solid var(--card-border);
       border-bottom-left-radius: 0.25rem;
@@ -69,17 +75,60 @@
     .msg .meta { font-size: 0.7rem; opacity: 0.6; margin-top: 0.35rem; }
     .msg.client .meta { color: #050505; }
 
-    .empty-state {
-      flex: 1; display: flex; align-items: center; justify-content: center;
-      color: var(--muted); font-size: 0.95rem; opacity: 0.6;
+    /* Option buttons in chat */
+    .options {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      align-self: flex-start; padding: 0.25rem 0;
+      animation: msg-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
+    .opt-btn {
+      padding: 0.65rem 1.25rem;
+      border: 1px solid var(--accent); border-radius: 999px;
+      background: transparent; color: var(--fg);
+      font-family: inherit; font-size: 0.9rem; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .opt-btn:hover {
+      background: var(--accent); color: #050505;
+      transform: translateY(-1px); box-shadow: 0 4px 16px rgba(6,182,212,0.2);
+    }
+    .opt-btn.selected {
+      background: var(--accent); color: #050505;
+      pointer-events: none;
+    }
+    .opt-btn:disabled { opacity: 0.3; pointer-events: none; }
 
-    .chat-input {
+    /* Text input for flow questions */
+    .flow-input-area {
+      display: none; gap: 0.75rem; padding: 1rem 1.5rem;
+      border-top: 1px solid var(--card-border); background: var(--bg-soft);
       position: relative; z-index: 2;
-      display: flex; gap: 0.75rem; padding: 1rem 1.5rem;
-      border-top: 1px solid var(--card-border);
-      background: var(--bg-soft);
     }
+    .flow-input-area.visible { display: flex; }
+    .flow-input-area input {
+      flex: 1; padding: 0.85rem 1.15rem;
+      border: 1px solid var(--card-border); border-radius: 1rem;
+      background: var(--bg); color: var(--fg);
+      font-family: inherit; font-size: 0.95rem; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .flow-input-area input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .flow-input-area input::placeholder { color: var(--muted); opacity: 0.5; }
+    .flow-input-area button {
+      padding: 0.85rem 1.5rem; border: none; border-radius: 1rem;
+      background: var(--accent); color: #050505;
+      font-family: inherit; font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; transition: opacity 0.2s, transform 0.2s;
+    }
+    .flow-input-area button:hover { transform: translateY(-1px); }
+
+    /* Free chat input */
+    .chat-input {
+      display: none; gap: 0.75rem; padding: 1rem 1.5rem;
+      border-top: 1px solid var(--card-border); background: var(--bg-soft);
+      position: relative; z-index: 2;
+    }
+    .chat-input.visible { display: flex; }
     .chat-input input {
       flex: 1; padding: 0.85rem 1.15rem;
       border: 1px solid var(--card-border); border-radius: 1rem;
@@ -89,32 +138,48 @@
     }
     .chat-input input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
     .chat-input input::placeholder { color: var(--muted); opacity: 0.5; }
-    .send-btn {
+    .chat-input .send-btn {
       padding: 0.85rem 1.5rem; border: none; border-radius: 1rem;
       background: var(--accent); color: #050505;
       font-family: inherit; font-size: 0.95rem; font-weight: 600;
       cursor: pointer; transition: opacity 0.2s, transform 0.2s;
     }
-    .send-btn:hover { transform: translateY(-1px); }
-    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .chat-input .send-btn:hover { transform: translateY(-1px); }
+    .chat-input .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
     .loading {
       flex: 1; display: flex; align-items: center; justify-content: center;
       color: var(--muted); font-size: 1rem;
     }
 
+    .typing { display: flex; gap: 0.3rem; align-items: center; padding: 0.5rem 0; align-self: flex-start; }
+    .typing span {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--muted);
+      animation: blink 1.4s infinite both;
+    }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
     @keyframes msg-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
   </style>
 </head>
 <body>
   <div class="chat-header">
-    <a href="/chat/" class="back">← New chat</a>
+    <a href="/chat/" class="back">← Back</a>
     <h2>Chat with <span>Kerehama</span></h2>
+    <div class="status"><div class="dot"></div> Online</div>
   </div>
 
   <div class="loading" id="loading">Loading chat…</div>
   <div class="messages" id="messages" style="display:none;"></div>
-  <div class="chat-input" id="input-area" style="display:none;">
+
+  <div class="flow-input-area" id="flow-input">
+    <input type="text" id="flow-text" placeholder="Type your answer…" autocomplete="off">
+    <button id="flow-send">Send</button>
+  </div>
+
+  <div class="chat-input" id="chat-input">
     <input type="text" id="msg-input" placeholder="Type a message…" autocomplete="off">
     <button class="send-btn" id="send-btn">Send</button>
   </div>
@@ -128,55 +193,301 @@
     const chatId = window.location.pathname.replace('/chat/', '').replace(/\/$/, '');
     const messagesEl = document.getElementById('messages');
     const loadingEl = document.getElementById('loading');
-    const inputArea = document.getElementById('input-area');
+    const chatInputEl = document.getElementById('chat-input');
     const msgInput = document.getElementById('msg-input');
     const sendBtn = document.getElementById('send-btn');
+    const flowInputEl = document.getElementById('flow-input');
+    const flowText = document.getElementById('flow-text');
+    const flowSend = document.getElementById('flow-send');
 
     let chatData = null;
-    const renderedIds = new Set(); // track rendered message IDs to prevent duplicates
+    const renderedIds = new Set();
+    let flowActive = false;
+    let flowCallback = null;
 
-    function escapeHtml(str) {
-      const d = document.createElement('div');
-      d.textContent = str;
-      return d.innerHTML;
+    function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+    function formatTime(ts) { return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+    function scrollToBottom() { messagesEl.scrollTop = messagesEl.scrollHeight; }
+
+    // Add a bot message (local only, not stored)
+    function addBotMsg(text) {
+      return new Promise(resolve => {
+        // Show typing indicator
+        const typing = document.createElement('div');
+        typing.className = 'typing';
+        typing.innerHTML = '<span></span><span></span><span></span>';
+        messagesEl.appendChild(typing);
+        scrollToBottom();
+
+        const delay = Math.min(400 + text.length * 15, 1500);
+        setTimeout(() => {
+          typing.remove();
+          const div = document.createElement('div');
+          div.className = 'msg bot';
+          div.innerHTML = `<div class="text">${esc(text)}</div>`;
+          messagesEl.appendChild(div);
+          scrollToBottom();
+          resolve();
+        }, delay);
+      });
     }
 
-    function formatTime(ts) {
-      return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    // Show option buttons, returns the chosen value
+    function showOptions(options) {
+      return new Promise(resolve => {
+        const container = document.createElement('div');
+        container.className = 'options';
+        options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'opt-btn';
+          btn.textContent = opt.label;
+          btn.addEventListener('click', () => {
+            // Disable all buttons, highlight selected
+            container.querySelectorAll('.opt-btn').forEach(b => {
+              b.disabled = true;
+              if (b === btn) b.classList.add('selected');
+            });
+            // Show as client message
+            const reply = document.createElement('div');
+            reply.className = 'msg client';
+            reply.innerHTML = `<div class="text">${esc(opt.label)}</div>`;
+            messagesEl.appendChild(reply);
+            scrollToBottom();
+            resolve(opt.value);
+          });
+          container.appendChild(btn);
+        });
+        messagesEl.appendChild(container);
+        scrollToBottom();
+      });
     }
 
-    function scrollToBottom() {
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+    // Ask a text question, returns the answer
+    function askText(placeholder) {
+      return new Promise(resolve => {
+        flowInputEl.classList.add('visible');
+        flowText.placeholder = placeholder || 'Type your answer…';
+        flowText.value = '';
+        flowText.focus();
+
+        const handler = () => {
+          const val = flowText.value.trim();
+          if (!val) return;
+          flowInputEl.classList.remove('visible');
+          flowText.removeEventListener('keydown', keyHandler);
+          flowSend.removeEventListener('click', handler);
+
+          // Show as client message
+          const reply = document.createElement('div');
+          reply.className = 'msg client';
+          reply.innerHTML = `<div class="text">${esc(val)}</div>`;
+          messagesEl.appendChild(reply);
+          scrollToBottom();
+          resolve(val);
+        };
+
+        const keyHandler = (e) => { if (e.key === 'Enter') handler(); };
+        flowText.addEventListener('keydown', keyHandler);
+        flowSend.addEventListener('click', handler);
+      });
     }
 
-    function removeEmptyState() {
-      const el = document.getElementById('empty-state');
-      if (el) el.remove();
-    }
+    // ── ONBOARDING FLOWS ──
 
-    function addMessageToUI(msg, cls) {
-      // Skip if already rendered
-      if (msg.id && renderedIds.has(msg.id)) {
-        // But update the temp message if it exists (remove sending state)
-        const temp = document.querySelector(`[data-temp-id="${msg._tempId}"]`);
-        if (temp) temp.remove();
-        return;
+    async function runBuildSiteFlow() {
+      const answers = {};
+
+      await addBotMsg("Awesome! Let's get some details so I can help you out 🔨");
+
+      await addBotMsg("What's the name of the business?");
+      answers.companyName = await askText("Business name…");
+
+      await addBotMsg("How many people work there?");
+      answers.companySize = await showOptions([
+        { label: 'Just me', value: '1' },
+        { label: '2–5', value: '2-5' },
+        { label: '6–20', value: '6-20' },
+        { label: '20+', value: '20+' },
+      ]);
+
+      await addBotMsg("Where is the business based?");
+      answers.location = await askText("City / region…");
+
+      await addBotMsg("What does the business do? Just a quick summary");
+      answers.description = await askText("e.g. We're a landscaping company…");
+
+      await addBotMsg("Do you already have a website?");
+      answers.hasWebsite = await showOptions([
+        { label: 'Yes', value: 'yes' },
+        { label: 'No', value: 'no' },
+      ]);
+
+      if (answers.hasWebsite === 'yes') {
+        await addBotMsg("What's the URL?");
+        answers.existingUrl = await askText("e.g. example.com");
       }
-      if (msg.id) renderedIds.add(msg.id);
 
-      removeEmptyState();
+      await addBotMsg("Do you have a domain name ready?");
+      answers.hasDomain = await showOptions([
+        { label: 'Yes, I have one', value: 'yes' },
+        { label: 'No, I need one', value: 'no' },
+        { label: 'Not sure', value: 'unsure' },
+      ]);
+
+      if (answers.hasDomain === 'yes') {
+        await addBotMsg("What's the domain?");
+        answers.domain = await askText("e.g. mybusiness.co.nz");
+      }
+
+      await addBotMsg("Any specific features you want? (e.g. contact form, booking system, portfolio, shop)");
+      answers.features = await askText("Features you need…");
+
+      await addBotMsg("Last one — what's your rough budget?");
+      answers.budget = await showOptions([
+        { label: 'Under $300', value: 'under-300' },
+        { label: '$300–$600', value: '300-600' },
+        { label: '$600–$1000', value: '600-1000' },
+        { label: '$1000+', value: '1000+' },
+        { label: 'Not sure yet', value: 'unsure' },
+      ]);
+
+      // Build summary
+      let summary = `📋 NEW SITE REQUEST\n\n`;
+      summary += `Business: ${answers.companyName}\n`;
+      summary += `Size: ${answers.companySize} people\n`;
+      summary += `Location: ${answers.location}\n`;
+      summary += `About: ${answers.description}\n`;
+      summary += `Existing site: ${answers.hasWebsite === 'yes' ? answers.existingUrl : 'No'}\n`;
+      summary += `Domain: ${answers.hasDomain === 'yes' ? answers.domain : (answers.hasDomain === 'no' ? 'Needs one' : 'Not sure')}\n`;
+      summary += `Features: ${answers.features}\n`;
+      summary += `Budget: ${answers.budget}`;
+
+      return { category: 'build-a-site', summary };
+    }
+
+    async function runSupportFlow() {
+      const answers = {};
+
+      await addBotMsg("No worries, what do you need help with?");
+      answers.type = await showOptions([
+        { label: '💰 Pricing', value: 'pricing' },
+        { label: '🌐 Website issue', value: 'website' },
+        { label: '📦 Other', value: 'other' },
+      ]);
+
+      if (answers.type === 'pricing') {
+        await addBotMsg("What would you like to know about pricing?");
+        answers.pricingQuestion = await askText("Your question…");
+
+        let summary = `🔧 SUPPORT — Pricing\n\n`;
+        summary += `Question: ${answers.pricingQuestion}`;
+        return { category: 'support-pricing', summary };
+      }
+
+      if (answers.type === 'website') {
+        await addBotMsg("Was the website built by Kerehama Labs?");
+        answers.builtByUs = await showOptions([
+          { label: 'Yes', value: 'yes' },
+          { label: 'No', value: 'no' },
+          { label: "I'm not sure", value: 'unsure' },
+        ]);
+
+        await addBotMsg("What's the website URL?");
+        answers.siteUrl = await askText("e.g. example.com");
+
+        await addBotMsg("What's going wrong? Describe the issue");
+        answers.issue = await askText("Describe the problem…");
+
+        let summary = `🔧 SUPPORT — Website Issue\n\n`;
+        summary += `Built by Kerehama Labs: ${answers.builtByUs}\n`;
+        summary += `Site: ${answers.siteUrl}\n`;
+        summary += `Issue: ${answers.issue}`;
+        return { category: 'support-website', summary };
+      }
+
+      // Other
+      await addBotMsg("Tell me what you need help with");
+      answers.otherDetails = await askText("Describe what you need…");
+
+      let summary = `🔧 SUPPORT — Other\n\n`;
+      summary += `Details: ${answers.otherDetails}`;
+      return { category: 'support-other', summary };
+    }
+
+    async function runOtherFlow() {
+      await addBotMsg("Sweet, what's on your mind?");
+      const details = await askText("What can I help with…");
+
+      let summary = `💬 GENERAL ENQUIRY\n\n`;
+      summary += `Details: ${details}`;
+      return { category: 'other', summary };
+    }
+
+    // ── MAIN ONBOARDING ──
+
+    async function startOnboarding() {
+      flowActive = true;
+      const name = chatData.client_name.split(' ')[0];
+
+      await addBotMsg(`Hey ${name}! 👋 Welcome to Kerehama Labs`);
+      await addBotMsg("What can I help you with today?");
+
+      const choice = await showOptions([
+        { label: '🔨 Build a site', value: 'build' },
+        { label: '🔧 Support', value: 'support' },
+        { label: '💬 Other', value: 'other' },
+      ]);
+
+      let result;
+      if (choice === 'build') result = await runBuildSiteFlow();
+      else if (choice === 'support') result = await runSupportFlow();
+      else result = await runOtherFlow();
+
+      // Send the summary as a real message to Supabase
+      await sb.from('messages').insert({
+        chat_id: chatId, sender: 'client', content: result.summary
+      });
+
+      // Tag the chat with the category
+      try {
+        const { data: current } = await sb.from('chats').select('tags').eq('id', chatId).single();
+        const tags = [...new Set([...(current?.tags || []), result.category])];
+        await sb.from('chats').update({ tags, last_message_at: new Date().toISOString() }).eq('id', chatId);
+      } catch (e) {
+        // Tags column might not exist yet, that's ok
+        await sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', chatId);
+      }
+
+      await addBotMsg("Nice, I've got all that! I'll get back to you soon. Feel free to add anything else below 👇");
+
+      // Transition to free chat
+      flowActive = false;
+      chatInputEl.classList.add('visible');
+      msgInput.focus();
+    }
+
+    // ── MESSAGE RENDERING ──
+
+    function addRealMessage(msg, cls) {
+      if (msg.id && renderedIds.has(msg.id)) return;
+      if (msg.id) renderedIds.add(msg.id);
 
       const div = document.createElement('div');
       div.className = `msg ${msg.sender} ${cls || ''}`;
       if (msg.id) div.dataset.id = msg.id;
       if (msg._tempId) div.dataset.tempId = msg._tempId;
+
+      // Preserve newlines in summary messages
+      const content = esc(msg.content).replace(/\n/g, '<br>');
       div.innerHTML = `
-        <div class="text">${escapeHtml(msg.content)}</div>
+        <div class="text">${content}</div>
         <div class="meta">${msg.sender === 'admin' ? 'Kerehama' : (chatData?.client_name || 'You')} · ${formatTime(msg.created_at || new Date().toISOString())}</div>
       `;
       messagesEl.appendChild(div);
       scrollToBottom();
     }
+
+    // ── INIT ──
 
     async function init() {
       if (!chatId) { window.location.href = '/chat/'; return; }
@@ -192,22 +503,22 @@
       chatData = chat;
       document.title = `Chat with Kerehama — ${chat.client_name}`;
 
+      // Load existing messages
       const { data: msgs } = await sb
         .from('messages').select('*').eq('chat_id', chatId)
         .order('created_at', { ascending: true });
 
       loadingEl.style.display = 'none';
       messagesEl.style.display = 'flex';
-      inputArea.style.display = 'flex';
 
       if (msgs && msgs.length > 0) {
-        msgs.forEach(m => addMessageToUI(m));
+        // Has history — show messages + free chat (skip onboarding)
+        msgs.forEach(m => addRealMessage(m));
+        chatInputEl.classList.add('visible');
+        msgInput.focus();
       } else {
-        const empty = document.createElement('div');
-        empty.className = 'empty-state';
-        empty.id = 'empty-state';
-        empty.textContent = 'No messages yet — say hello!';
-        messagesEl.appendChild(empty);
+        // No messages — run onboarding flow
+        startOnboarding();
       }
 
       // Real-time subscription
@@ -216,37 +527,35 @@
           event: 'INSERT', schema: 'public', table: 'messages',
           filter: `chat_id=eq.${chatId}`
         }, (payload) => {
-          addMessageToUI(payload.new);
+          addRealMessage(payload.new);
         })
         .subscribe();
-
-      msgInput.focus();
     }
+
+    // ── FREE CHAT SEND ──
 
     let tempCounter = 0;
 
     async function sendMessage() {
       const text = msgInput.value.trim();
       if (!text) return;
-
       msgInput.value = '';
-      const tempId = 'temp-' + (++tempCounter);
 
-      // Optimistic render — show immediately
-      addMessageToUI({
-        _tempId: tempId,
-        sender: 'client',
-        content: text,
-        created_at: new Date().toISOString()
-      }, 'sending');
+      const tempId = 'temp-' + (++tempCounter);
+      // Optimistic render
+      const div = document.createElement('div');
+      div.className = 'msg client sending';
+      div.dataset.tempId = tempId;
+      div.innerHTML = `<div class="text">${esc(text)}</div><div class="meta">You · now</div>`;
+      messagesEl.appendChild(div);
+      scrollToBottom();
 
       const { data, error } = await sb
         .from('messages')
         .insert({ chat_id: chatId, sender: 'client', content: text })
-        .select()
-        .single();
+        .select().single();
 
-      // Remove temp message and render the real one
+      // Remove temp
       const tempEl = document.querySelector(`[data-temp-id="${tempId}"]`);
       if (tempEl) tempEl.remove();
 
@@ -254,11 +563,10 @@
         alert('Failed to send. Try again.');
         msgInput.value = text;
       } else if (data) {
-        addMessageToUI(data);
+        addRealMessage(data);
       }
 
-      // Update timestamp
-      sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', chatId).then(() => {});
+      sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', chatId);
       msgInput.focus();
     }
 
