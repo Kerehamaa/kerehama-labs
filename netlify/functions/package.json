@@ -1,0 +1,7 @@
+{
+  "name": "labs-functions",
+  "type": "module",
+  "dependencies": {
+    "nodemailer": "^6.9.0"
+  }
+}
