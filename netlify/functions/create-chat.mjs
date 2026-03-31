@@ -11,7 +11,7 @@ export default async (req) => {
   }
 
   const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ewlufiwgnnnfwdjoafcu.supabase.co';
-  const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+  const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY1 || process.env.SUPABASE_SERVICE_KEY;
 
   if (!SUPABASE_SERVICE_KEY) {
     console.error('Missing SUPABASE_SERVICE_KEY env var');
