@@ -1,6 +1,6 @@
 {
-  "name": "labs-functions",
-  "type": "module",
+  "name": "kerehama-labs",
+  "private": true,
   "dependencies": {
     "nodemailer": "^6.9.0"
   }
