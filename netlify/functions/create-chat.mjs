@@ -56,6 +56,7 @@ export default async (req) => {
 
       await transporter.sendMail({
         from: `"Kerehama Labs" <${gmailUser}>`,
+        replyTo: '"Kerehama Labs" <chat@kerehama.nz>',
         to: email,
         subject: 'Your chat with Kerehama',
         html: `

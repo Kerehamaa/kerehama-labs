@@ -28,6 +28,7 @@ export default async (req) => {
 
     await transporter.sendMail({
       from: `"Kerehama Labs" <${process.env.GMAIL_USER}>`,
+      replyTo: '"Kerehama Labs" <chat@kerehama.nz>',
       to,
       subject,
       ...(html ? { html } : { text: body }),
