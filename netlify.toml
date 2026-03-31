@@ -1,9 +1,28 @@
 [build]
   publish = "."
+  functions = "netlify/functions"
 
-# SPA-style fallback: if someone hits /sites/whatever/ and there's no file,
-# serve the sites/index.html so we can show a "site not found" message
-# (each real site will have its own folder under /sites/sitename/)
+# Chat routes — order matters (admin before wildcard)
+[[redirects]]
+  from = "/chat/admin"
+  to = "/chat/admin.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/chat/admin/"
+  to = "/chat/admin.html"
+  status = 200
+  force = false
+
+# Chat room — any /chat/<id> serves the room page
+[[redirects]]
+  from = "/chat/:id"
+  to = "/chat/room.html"
+  status = 200
+  force = false
+
+# SPA-style fallback for sites
 [[redirects]]
   from = "/sites/*"
   to = "/sites/index.html"

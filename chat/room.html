@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Chat room — Kerehama Labs">
+  <title>Chat — Kerehama Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0D0E10;
+      --bg-soft: #141617;
+      --fg: #FFFFFF;
+      --muted: #A9ACAF;
+      --accent: #06b6d4;
+      --accent-soft: rgba(6, 182, 212, 0.12);
+      --card-border: rgba(255, 255, 255, 0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      background: var(--bg); color: var(--fg);
+      display: flex; flex-direction: column;
+    }
+    body::before {
+      content: ''; position: fixed; inset: -20% auto auto -25%;
+      width: 60vw; height: 60vw;
+      background: radial-gradient(circle at 30% 30%, rgba(6,182,212,0.25), transparent 70%);
+      filter: blur(120px); opacity: 0.3; pointer-events: none; z-index: 0;
+    }
+
+    /* Header */
+    .chat-header {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--card-border);
+      background: var(--bg-soft);
+    }
+    .chat-header h2 { font-size: 1.1rem; font-weight: 600; }
+    .chat-header h2 span { color: var(--accent); }
+    .chat-header .back { color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+    .chat-header .back:hover { color: var(--accent); }
+
+    /* Messages area */
+    .messages {
+      flex: 1; overflow-y: auto; padding: 1.5rem;
+      display: flex; flex-direction: column; gap: 0.75rem;
+      position: relative; z-index: 1;
+    }
+    .messages::-webkit-scrollbar { width: 6px; }
+    .messages::-webkit-scrollbar-track { background: transparent; }
+    .messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+    .msg {
+      max-width: 75%; padding: 0.85rem 1.15rem;
+      border-radius: 1rem; font-size: 0.95rem; line-height: 1.5;
+      animation: msg-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .msg.client {
+      align-self: flex-end;
+      background: var(--accent); color: #050505;
+      border-bottom-right-radius: 0.25rem;
+    }
+    .msg.admin {
+      align-self: flex-start;
+      background: var(--bg-soft); border: 1px solid var(--card-border);
+      border-bottom-left-radius: 0.25rem;
+    }
+    .msg .meta {
+      font-size: 0.7rem; opacity: 0.6; margin-top: 0.35rem;
+    }
+    .msg.client .meta { color: #050505; }
+
+    .empty-state {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 0.95rem; opacity: 0.6;
+    }
+
+    .typing-indicator {
+      align-self: flex-start; padding: 0.6rem 1rem;
+      background: var(--bg-soft); border: 1px solid var(--card-border);
+      border-radius: 1rem; display: none; gap: 0.3rem; align-items: center;
+    }
+    .typing-indicator.visible { display: flex; }
+    .typing-indicator span {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--muted);
+      animation: blink 1.4s infinite both;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+    /* Input area */
+    .chat-input {
+      position: relative; z-index: 2;
+      display: flex; gap: 0.75rem; padding: 1rem 1.5rem;
+      border-top: 1px solid var(--card-border);
+      background: var(--bg-soft);
+    }
+    .chat-input input {
+      flex: 1; padding: 0.85rem 1.15rem;
+      border: 1px solid var(--card-border); border-radius: 1rem;
+      background: var(--bg); color: var(--fg);
+      font-family: inherit; font-size: 0.95rem; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .chat-input input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .chat-input input::placeholder { color: var(--muted); opacity: 0.5; }
+    .send-btn {
+      padding: 0.85rem 1.5rem; border: none; border-radius: 1rem;
+      background: var(--accent); color: #050505;
+      font-family: inherit; font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; transition: opacity 0.2s, transform 0.2s;
+    }
+    .send-btn:hover { transform: translateY(-1px); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* Loading */
+    .loading {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 1rem;
+    }
+
+    @keyframes msg-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
+    @keyframes fade-up { from { opacity: 0; transform: translateY(35px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <div class="chat-header">
+    <a href="/chat/" class="back">← New chat</a>
+    <h2>Chat with <span>Kerehama</span></h2>
+  </div>
+
+  <div class="loading" id="loading">Loading chat…</div>
+
+  <div class="messages" id="messages" style="display:none;"></div>
+
+  <div class="chat-input" id="input-area" style="display:none;">
+    <input type="text" id="msg-input" placeholder="Type a message…" autocomplete="off" autofocus>
+    <button class="send-btn" id="send-btn">Send</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://ewlufiwgnnnfwdjoafcu.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3bHVmaXdnbm5uZndkam9hZmN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTI3MTMsImV4cCI6MjA5MDQ4ODcxM30.C8XNhInLONhDYtt0twygGFg0M4sufZI3oyCTeFjoP-Y';
+
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    const chatId = window.location.pathname.replace('/chat/', '').replace(/\/$/, '');
+    const messagesEl = document.getElementById('messages');
+    const loadingEl = document.getElementById('loading');
+    const inputArea = document.getElementById('input-area');
+    const msgInput = document.getElementById('msg-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    let chatData = null;
+
+    function formatTime(ts) {
+      const d = new Date(ts);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderMessage(msg) {
+      const div = document.createElement('div');
+      div.className = `msg ${msg.sender}`;
+      div.innerHTML = `
+        <div class="text">${escapeHtml(msg.content)}</div>
+        <div class="meta">${msg.sender === 'admin' ? 'Kerehama' : chatData?.client_name || 'You'} · ${formatTime(msg.created_at)}</div>
+      `;
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    async function init() {
+      if (!chatId) { window.location.href = '/chat/'; return; }
+
+      // Load chat info
+      const { data: chat, error: chatErr } = await sb
+        .from('chats')
+        .select('*')
+        .eq('id', chatId)
+        .single();
+
+      if (chatErr || !chat) {
+        loadingEl.textContent = 'Chat not found. It may have been deleted.';
+        return;
+      }
+
+      chatData = chat;
+      document.title = `Chat with Kerehama — ${chat.client_name}`;
+
+      // Load existing messages
+      const { data: msgs } = await sb
+        .from('messages')
+        .select('*')
+        .eq('chat_id', chatId)
+        .order('created_at', { ascending: true });
+
+      loadingEl.style.display = 'none';
+      messagesEl.style.display = 'flex';
+      inputArea.style.display = 'flex';
+
+      if (msgs && msgs.length > 0) {
+        msgs.forEach(renderMessage);
+      } else {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.id = 'empty-state';
+        empty.textContent = 'No messages yet — say hello!';
+        messagesEl.appendChild(empty);
+      }
+
+      // Subscribe to new messages
+      sb.channel(`chat-${chatId}`)
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `chat_id=eq.${chatId}`
+        }, (payload) => {
+          const emptyEl = document.getElementById('empty-state');
+          if (emptyEl) emptyEl.remove();
+          renderMessage(payload.new);
+        })
+        .subscribe();
+
+      msgInput.focus();
+    }
+
+    async function sendMessage() {
+      const text = msgInput.value.trim();
+      if (!text) return;
+
+      sendBtn.disabled = true;
+      msgInput.value = '';
+
+      const { error } = await sb
+        .from('messages')
+        .insert({ chat_id: chatId, sender: 'client', content: text });
+
+      if (error) {
+        msgInput.value = text;
+        alert('Failed to send. Try again.');
+      }
+
+      // Update last_message_at
+      await sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', chatId);
+
+      sendBtn.disabled = false;
+      msgInput.focus();
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    msgInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+
+    init();
+  </script>
+</body>
+</html>
