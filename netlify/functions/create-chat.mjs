@@ -50,19 +50,7 @@ export default async (req) => {
       body: JSON.stringify({
         to: email,
         subject: `Your chat with Kerehama`,
-        html: `
-          <div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto; padding: 2rem;">
-            <h2 style="color: #06b6d4;">Hey ${name}!</h2>
-            <p>Your chat room is ready. Use the link below to come back anytime:</p>
-            <p style="margin: 1.5rem 0;">
-              <a href="${chatLink}" style="display: inline-block; padding: 12px 28px; background: #06b6d4; color: #050505; text-decoration: none; border-radius: 8px; font-weight: 600;">
-                Open Chat →
-              </a>
-            </p>
-            <p style="color: #888; font-size: 14px;">Or copy this link: ${chatLink}</p>
-            <p style="margin-top: 2rem; color: #888; font-size: 13px;">— Kerehama Andrews<br><a href="https://kerehama.nz" style="color: #06b6d4;">kerehama.nz</a></p>
-          </div>
-        `
+        body: `Hey ${name}!\n\nYour chat room is ready. Use the link below to come back anytime:\n\n${chatLink}\n\nBookmark it so you don't lose it!\n\n— Kerehama Andrews\nkerehama.nz`
       })
     });
 
