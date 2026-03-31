@@ -11,13 +11,8 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg: #0D0E10;
-      --bg-soft: #141617;
-      --fg: #FFFFFF;
-      --muted: #A9ACAF;
-      --accent: #06b6d4;
-      --accent-soft: rgba(6, 182, 212, 0.12);
-      --card-border: rgba(255, 255, 255, 0.06);
+      --bg: #0D0E10; --bg-soft: #141617; --fg: #FFFFFF; --muted: #A9ACAF;
+      --accent: #06b6d4; --accent-soft: rgba(6,182,212,0.12); --card-border: rgba(255,255,255,0.06);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
@@ -33,7 +28,6 @@
       filter: blur(120px); opacity: 0.3; pointer-events: none; z-index: 0;
     }
 
-    /* Header */
     .chat-header {
       position: relative; z-index: 2;
       display: flex; align-items: center; justify-content: space-between;
@@ -46,7 +40,6 @@
     .chat-header .back { color: var(--muted); text-decoration: none; font-size: 0.9rem; }
     .chat-header .back:hover { color: var(--accent); }
 
-    /* Messages area */
     .messages {
       flex: 1; overflow-y: auto; padding: 1.5rem;
       display: flex; flex-direction: column; gap: 0.75rem;
@@ -60,6 +53,7 @@
       max-width: 75%; padding: 0.85rem 1.15rem;
       border-radius: 1rem; font-size: 0.95rem; line-height: 1.5;
       animation: msg-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      word-wrap: break-word;
     }
     .msg.client {
       align-self: flex-end;
@@ -71,9 +65,8 @@
       background: var(--bg-soft); border: 1px solid var(--card-border);
       border-bottom-left-radius: 0.25rem;
     }
-    .msg .meta {
-      font-size: 0.7rem; opacity: 0.6; margin-top: 0.35rem;
-    }
+    .msg.sending { opacity: 0.6; }
+    .msg .meta { font-size: 0.7rem; opacity: 0.6; margin-top: 0.35rem; }
     .msg.client .meta { color: #050505; }
 
     .empty-state {
@@ -81,20 +74,6 @@
       color: var(--muted); font-size: 0.95rem; opacity: 0.6;
     }
 
-    .typing-indicator {
-      align-self: flex-start; padding: 0.6rem 1rem;
-      background: var(--bg-soft); border: 1px solid var(--card-border);
-      border-radius: 1rem; display: none; gap: 0.3rem; align-items: center;
-    }
-    .typing-indicator.visible { display: flex; }
-    .typing-indicator span {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--muted);
-      animation: blink 1.4s infinite both;
-    }
-    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
-    /* Input area */
     .chat-input {
       position: relative; z-index: 2;
       display: flex; gap: 0.75rem; padding: 1rem 1.5rem;
@@ -119,15 +98,12 @@
     .send-btn:hover { transform: translateY(-1px); }
     .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-    /* Loading */
     .loading {
       flex: 1; display: flex; align-items: center; justify-content: center;
       color: var(--muted); font-size: 1rem;
     }
 
     @keyframes msg-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
-    @keyframes fade-up { from { opacity: 0; transform: translateY(35px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -137,11 +113,9 @@
   </div>
 
   <div class="loading" id="loading">Loading chat…</div>
-
   <div class="messages" id="messages" style="display:none;"></div>
-
   <div class="chat-input" id="input-area" style="display:none;">
-    <input type="text" id="msg-input" placeholder="Type a message…" autocomplete="off" autofocus>
+    <input type="text" id="msg-input" placeholder="Type a message…" autocomplete="off">
     <button class="send-btn" id="send-btn">Send</button>
   </div>
 
@@ -151,7 +125,6 @@
     const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3bHVmaXdnbm5uZndkam9hZmN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTI3MTMsImV4cCI6MjA5MDQ4ODcxM30.C8XNhInLONhDYtt0twygGFg0M4sufZI3oyCTeFjoP-Y';
 
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-
     const chatId = window.location.pathname.replace('/chat/', '').replace(/\/$/, '');
     const messagesEl = document.getElementById('messages');
     const loadingEl = document.getElementById('loading');
@@ -160,22 +133,7 @@
     const sendBtn = document.getElementById('send-btn');
 
     let chatData = null;
-
-    function formatTime(ts) {
-      const d = new Date(ts);
-      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    function renderMessage(msg) {
-      const div = document.createElement('div');
-      div.className = `msg ${msg.sender}`;
-      div.innerHTML = `
-        <div class="text">${escapeHtml(msg.content)}</div>
-        <div class="meta">${msg.sender === 'admin' ? 'Kerehama' : chatData?.client_name || 'You'} · ${formatTime(msg.created_at)}</div>
-      `;
-      messagesEl.appendChild(div);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
+    const renderedIds = new Set(); // track rendered message IDs to prevent duplicates
 
     function escapeHtml(str) {
       const d = document.createElement('div');
@@ -183,15 +141,48 @@
       return d.innerHTML;
     }
 
+    function formatTime(ts) {
+      return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function scrollToBottom() {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function removeEmptyState() {
+      const el = document.getElementById('empty-state');
+      if (el) el.remove();
+    }
+
+    function addMessageToUI(msg, cls) {
+      // Skip if already rendered
+      if (msg.id && renderedIds.has(msg.id)) {
+        // But update the temp message if it exists (remove sending state)
+        const temp = document.querySelector(`[data-temp-id="${msg._tempId}"]`);
+        if (temp) temp.remove();
+        return;
+      }
+      if (msg.id) renderedIds.add(msg.id);
+
+      removeEmptyState();
+
+      const div = document.createElement('div');
+      div.className = `msg ${msg.sender} ${cls || ''}`;
+      if (msg.id) div.dataset.id = msg.id;
+      if (msg._tempId) div.dataset.tempId = msg._tempId;
+      div.innerHTML = `
+        <div class="text">${escapeHtml(msg.content)}</div>
+        <div class="meta">${msg.sender === 'admin' ? 'Kerehama' : (chatData?.client_name || 'You')} · ${formatTime(msg.created_at || new Date().toISOString())}</div>
+      `;
+      messagesEl.appendChild(div);
+      scrollToBottom();
+    }
+
     async function init() {
       if (!chatId) { window.location.href = '/chat/'; return; }
 
-      // Load chat info
       const { data: chat, error: chatErr } = await sb
-        .from('chats')
-        .select('*')
-        .eq('id', chatId)
-        .single();
+        .from('chats').select('*').eq('id', chatId).single();
 
       if (chatErr || !chat) {
         loadingEl.textContent = 'Chat not found. It may have been deleted.';
@@ -201,11 +192,8 @@
       chatData = chat;
       document.title = `Chat with Kerehama — ${chat.client_name}`;
 
-      // Load existing messages
       const { data: msgs } = await sb
-        .from('messages')
-        .select('*')
-        .eq('chat_id', chatId)
+        .from('messages').select('*').eq('chat_id', chatId)
         .order('created_at', { ascending: true });
 
       loadingEl.style.display = 'none';
@@ -213,7 +201,7 @@
       inputArea.style.display = 'flex';
 
       if (msgs && msgs.length > 0) {
-        msgs.forEach(renderMessage);
+        msgs.forEach(m => addMessageToUI(m));
       } else {
         const empty = document.createElement('div');
         empty.className = 'empty-state';
@@ -222,43 +210,55 @@
         messagesEl.appendChild(empty);
       }
 
-      // Subscribe to new messages
+      // Real-time subscription
       sb.channel(`chat-${chatId}`)
         .on('postgres_changes', {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
+          event: 'INSERT', schema: 'public', table: 'messages',
           filter: `chat_id=eq.${chatId}`
         }, (payload) => {
-          const emptyEl = document.getElementById('empty-state');
-          if (emptyEl) emptyEl.remove();
-          renderMessage(payload.new);
+          addMessageToUI(payload.new);
         })
         .subscribe();
 
       msgInput.focus();
     }
 
+    let tempCounter = 0;
+
     async function sendMessage() {
       const text = msgInput.value.trim();
       if (!text) return;
 
-      sendBtn.disabled = true;
       msgInput.value = '';
+      const tempId = 'temp-' + (++tempCounter);
 
-      const { error } = await sb
+      // Optimistic render — show immediately
+      addMessageToUI({
+        _tempId: tempId,
+        sender: 'client',
+        content: text,
+        created_at: new Date().toISOString()
+      }, 'sending');
+
+      const { data, error } = await sb
         .from('messages')
-        .insert({ chat_id: chatId, sender: 'client', content: text });
+        .insert({ chat_id: chatId, sender: 'client', content: text })
+        .select()
+        .single();
+
+      // Remove temp message and render the real one
+      const tempEl = document.querySelector(`[data-temp-id="${tempId}"]`);
+      if (tempEl) tempEl.remove();
 
       if (error) {
-        msgInput.value = text;
         alert('Failed to send. Try again.');
+        msgInput.value = text;
+      } else if (data) {
+        addMessageToUI(data);
       }
 
-      // Update last_message_at
-      await sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', chatId);
-
-      sendBtn.disabled = false;
+      // Update timestamp
+      sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', chatId).then(() => {});
       msgInput.focus();
     }
 
