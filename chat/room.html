@@ -443,9 +443,10 @@
       else if (choice === 'support') result = await runSupportFlow();
       else result = await runOtherFlow();
 
-      // Send the summary as a real message to Supabase
+      // Send the summary as a hidden message (sender='system' style — use 'client' but mark as summary)
+      // We prefix with __SUMMARY__ so the client view can hide it
       await sb.from('messages').insert({
-        chat_id: chatId, sender: 'client', content: result.summary
+        chat_id: chatId, sender: 'client', content: '__SUMMARY__\n' + result.summary
       });
 
       // Tag the chat with the category
@@ -454,11 +455,11 @@
         const tags = [...new Set([...(current?.tags || []), result.category])];
         await sb.from('chats').update({ tags, last_message_at: new Date().toISOString() }).eq('id', chatId);
       } catch (e) {
-        // Tags column might not exist yet, that's ok
         await sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', chatId);
       }
 
-      await addBotMsg("Nice, I've got all that! I'll get back to you soon. Feel free to add anything else below 👇");
+      await addBotMsg("Thanks for that! I'll review everything and get back to you within 1–2 business days 📨");
+      await addBotMsg("If there's anything else you want to add, feel free to send a message below 👇");
 
       // Transition to free chat
       flowActive = false;
@@ -471,6 +472,9 @@
     function addRealMessage(msg, cls) {
       if (msg.id && renderedIds.has(msg.id)) return;
       if (msg.id) renderedIds.add(msg.id);
+
+      // Hide summary messages from client view
+      if (msg.content && msg.content.startsWith('__SUMMARY__')) return;
 
       const div = document.createElement('div');
       div.className = `msg ${msg.sender} ${cls || ''}`;

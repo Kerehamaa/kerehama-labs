@@ -432,10 +432,17 @@
       const empty = container.querySelector('.panel-empty');
       if (empty) empty.remove();
 
+      // Strip summary prefix and show cleanly
+      let content = m.content || '';
+      const isSummary = content.startsWith('__SUMMARY__');
+      if (isSummary) content = content.replace('__SUMMARY__\n', '');
+
       const div = document.createElement('div');
       div.className = `msg ${m.sender}`;
+      if (isSummary) div.style.cssText = 'background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.2); align-self: stretch; max-width: 100%;';
       div.innerHTML = `
-        <div class="text">${esc(m.content)}</div>
+        ${isSummary ? '<div style="font-size:0.7rem;color:var(--accent);font-weight:600;margin-bottom:0.4rem;">📋 INTAKE SUMMARY</div>' : ''}
+        <div class="text">${esc(content).replace(/\n/g, '<br>')}</div>
         <div class="meta">${m.sender === 'client' ? esc(chat?.client_name || 'Client') : 'You'} · ${formatTime(m.created_at)}</div>
       `;
       container.appendChild(div);
