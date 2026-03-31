@@ -1,0 +1,11 @@
+[build]
+  publish = "."
+
+# SPA-style fallback: if someone hits /sites/whatever/ and there's no file,
+# serve the sites/index.html so we can show a "site not found" message
+# (each real site will have its own folder under /sites/sitename/)
+[[redirects]]
+  from = "/sites/*"
+  to = "/sites/index.html"
+  status = 200
+  force = false
