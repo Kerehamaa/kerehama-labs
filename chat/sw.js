@@ -1,4 +1,4 @@
-const CACHE = 'kl-admin-v1';
+const CACHE = 'kl-admin-v2';
 const URLS = ['/chat/admin.html', '/chat/manifest.json'];
 
 self.addEventListener('install', e => {

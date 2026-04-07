@@ -8,181 +8,211 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="KL Admin">
   <link rel="apple-touch-icon" href="/chat/icon-192.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Admin — Kerehama Chat</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: dark;
-      --bg: #0D0E10; --bg-soft: #141617; --bg-hover: #1a1c1e; --fg: #FFFFFF; --muted: #A9ACAF;
-      --accent: #06b6d4; --accent-soft: rgba(6,182,212,0.12); --card-border: rgba(255,255,255,0.06);
-      --danger: #f87171; --success: #4ade80;
+      --bg: #09090b; --bg-soft: #18181b; --bg-hover: #27272a;
+      --fg: #fafafa; --muted: #a1a1aa; --muted-fg: #71717a;
+      --accent: #06b6d4; --accent-hover: #22d3ee; --accent-soft: rgba(6,182,212,0.1); --accent-border: rgba(6,182,212,0.2);
+      --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.12);
+      --danger: #ef4444; --danger-soft: rgba(239,68,68,0.1);
+      --success: #22c55e; --success-soft: rgba(34,197,94,0.1);
+      --radius: 12px; --radius-sm: 8px; --radius-lg: 16px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; } @media all and (display-mode: standalone) { body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); } }
-    body { font-family: 'Space Grotesk', system-ui, sans-serif; background: var(--bg); color: var(--fg); display: flex; flex-direction: column; }
-    body::before { content:''; position:fixed; inset:-20% auto auto -25%; width:60vw; height:60vw; background:radial-gradient(circle at 30% 30%,rgba(6,182,212,0.25),transparent 70%); filter:blur(120px); opacity:0.15; pointer-events:none; z-index:0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg); color: var(--fg);
+      display: flex; flex-direction: column;
+      padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);
+    }
+    .icon { font-family: 'Material Symbols Rounded'; font-size: 20px; font-weight: normal; font-style: normal; line-height: 1; letter-spacing: normal; text-transform: none; white-space: nowrap; word-wrap: normal; direction: ltr; -webkit-font-smoothing: antialiased; }
+    .icon-sm { font-size: 18px; }
+    .icon-lg { font-size: 24px; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
 
     /* ── LOGIN ── */
     .login-screen { flex:1; display:flex; align-items:center; justify-content:center; position:relative; z-index:1; }
-    .login-box { display:flex; flex-direction:column; align-items:center; gap:1.5rem; max-width:360px; width:100%; padding:2rem; }
-    .login-box h1 { font-size:1.5rem; font-weight:600; }
-    .login-box h1 span { color:var(--accent); }
-    .field-input { width:100%; padding:0.85rem 1.15rem; border:1px solid var(--card-border); border-radius:0.75rem; background:var(--bg-soft); color:var(--fg); font-family:inherit; font-size:0.95rem; outline:none; transition:border-color 0.2s,box-shadow 0.2s; }
+    .login-screen::before { content:''; position:fixed; top:-30%; left:-20%; width:50vw; height:50vw; background:radial-gradient(circle,rgba(6,182,212,0.15),transparent 70%); filter:blur(100px); pointer-events:none; }
+    .login-box { display:flex; flex-direction:column; align-items:center; gap:20px; max-width:340px; width:90%; }
+    .login-box .logo { width:48px; height:48px; border-radius:14px; background:var(--accent-soft); border:1px solid var(--accent-border); display:flex; align-items:center; justify-content:center; }
+    .login-box .logo .icon { color:var(--accent); font-size:24px; }
+    .login-box h1 { font-size:1.25rem; font-weight:700; letter-spacing:-0.01em; }
+    .login-box p { color:var(--muted); font-size:0.85rem; margin-top:-8px; }
+    .field-input { width:100%; padding:12px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-soft); color:var(--fg); font-family:inherit; font-size:0.9rem; outline:none; transition:all 0.2s; }
     .field-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
-    .field-input::placeholder { color:var(--muted); opacity:0.5; }
-    .btn-primary { padding:0.75rem 2rem; border:1px solid var(--accent); border-radius:999px; background:transparent; color:var(--fg); font-family:inherit; font-size:0.95rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
-    .btn-primary:hover { background:var(--accent); color:#050505; transform:translateY(-2px); }
-    .login-error { color:var(--danger); font-size:0.85rem; min-height:1.2em; }
+    .field-input::placeholder { color:var(--muted-fg); }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 20px; border:none; border-radius:var(--radius-sm); font-family:inherit; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.15s; }
+    .btn-accent { background:var(--accent); color:#09090b; }
+    .btn-accent:hover { background:var(--accent-hover); transform:translateY(-1px); }
+    .btn-ghost { background:transparent; border:1px solid var(--border); color:var(--muted); }
+    .btn-ghost:hover { border-color:var(--accent-border); color:var(--fg); }
+    .btn-danger { background:transparent; border:1px solid rgba(239,68,68,0.3); color:var(--danger); }
+    .btn-danger:hover { background:var(--danger-soft); }
+    .btn-sm { padding:6px 12px; font-size:0.8rem; border-radius:6px; }
+    .btn-icon { width:36px; height:36px; padding:0; border-radius:var(--radius-sm); background:transparent; border:1px solid var(--border); color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+    .btn-icon:hover { border-color:var(--accent-border); color:var(--accent); background:var(--accent-soft); }
+    .btn-icon.active { border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
+    .btn-icon.danger:hover { border-color:rgba(239,68,68,0.3); color:var(--danger); background:var(--danger-soft); }
+    .login-error { color:var(--danger); font-size:0.8rem; min-height:1.1em; }
 
     /* ── LAYOUT ── */
-    .admin-layout { display:none; flex:1; position:relative; z-index:1; overflow:hidden; }
+    .admin-layout { display:none; flex:1; overflow:hidden; }
     .admin-layout.active { display:flex; }
 
     /* ── SIDEBAR ── */
-    .sidebar { width:340px; min-width:340px; border-right:1px solid var(--card-border); display:flex; flex-direction:column; background:var(--bg-soft); }
-    .sidebar-tabs { display:flex; border-bottom:1px solid var(--card-border); }
-    .sidebar-tab { flex:1; padding:0.85rem; text-align:center; font-size:0.85rem; font-weight:600; cursor:pointer; color:var(--muted); border-bottom:2px solid transparent; transition:all 0.2s; }
-    .sidebar-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+    .sidebar { width:360px; min-width:360px; border-right:1px solid var(--border); display:flex; flex-direction:column; background:var(--bg); }
+    .sidebar-tabs { display:flex; padding:4px; margin:8px 12px; background:var(--bg-soft); border-radius:var(--radius-sm); gap:2px; }
+    .sidebar-tab { flex:1; padding:8px; text-align:center; font-size:0.8rem; font-weight:600; cursor:pointer; color:var(--muted); border-radius:6px; transition:all 0.15s; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .sidebar-tab.active { color:var(--fg); background:var(--bg-hover); }
     .sidebar-tab:hover { color:var(--fg); }
     .sidebar-content { flex:1; overflow-y:auto; }
-    .sidebar-content::-webkit-scrollbar { width:5px; }
-    .sidebar-content::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:3px; }
 
-    .sidebar-header { padding:0.85rem 1.25rem; border-bottom:1px solid var(--card-border); display:flex; justify-content:space-between; align-items:center; }
-    .sidebar-header h3 { font-size:0.9rem; font-weight:600; color:var(--accent); }
-    .badge { color:var(--muted); font-size:0.75rem; }
-    .sidebar-search { padding:0.6rem 1rem; border-bottom:1px solid var(--card-border); }
-    .sidebar-search input { width:100%; padding:0.55rem 0.85rem; border:1px solid var(--card-border); border-radius:0.6rem; background:var(--bg); color:var(--fg); font-family:inherit; font-size:0.8rem; outline:none; }
+    .sidebar-header { padding:10px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+    .sidebar-header h3 { font-size:0.8rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
+    .sidebar-search { padding:8px 12px; border-bottom:1px solid var(--border); }
+    .sidebar-search input { width:100%; padding:8px 12px 8px 36px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-soft); color:var(--fg); font-family:inherit; font-size:0.8rem; outline:none; }
     .sidebar-search input:focus { border-color:var(--accent); }
-    .sidebar-search input::placeholder { color:var(--muted); opacity:0.4; }
+    .sidebar-search input::placeholder { color:var(--muted-fg); }
+    .search-wrap { position:relative; }
+    .search-wrap .icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--muted-fg); font-size:16px; }
 
     /* Chat items */
-    .chat-item { padding:0.85rem 1.25rem; border-bottom:1px solid var(--card-border); cursor:pointer; transition:background 0.15s; }
-    .chat-item:hover { background:var(--bg-hover); }
+    .chat-item { padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:all 0.1s; }
+    .chat-item:hover { background:var(--bg-soft); }
     .chat-item.active { background:var(--accent-soft); border-left:3px solid var(--accent); }
     .chat-item .top { display:flex; justify-content:space-between; align-items:center; }
-    .chat-item .name { font-weight:600; font-size:0.9rem; }
-    .chat-item .alias { color:var(--accent); font-size:0.7rem; margin-left:0.35rem; }
-    .chat-item .email { color:var(--muted); font-size:0.75rem; margin-top:0.1rem; }
-    .chat-item .time { color:var(--muted); font-size:0.7rem; white-space:nowrap; }
-    .tags { display:flex; gap:0.3rem; margin-top:0.3rem; flex-wrap:wrap; }
-    .tag { font-size:0.6rem; font-weight:600; padding:0.1rem 0.45rem; border-radius:999px; background:var(--accent-soft); color:var(--accent); }
-    .no-items { padding:2rem; text-align:center; color:var(--muted); font-size:0.85rem; }
+    .chat-item .name { font-weight:600; font-size:0.88rem; }
+    .chat-item .alias { color:var(--accent); font-size:0.7rem; margin-left:6px; }
+    .chat-item .email { color:var(--muted); font-size:0.75rem; margin-top:2px; }
+    .chat-item .time { color:var(--muted-fg); font-size:0.7rem; white-space:nowrap; }
+    .tags { display:flex; gap:4px; margin-top:6px; flex-wrap:wrap; }
+    .tag { font-size:0.65rem; font-weight:600; padding:2px 8px; border-radius:999px; background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent-border); }
+    .no-items { padding:40px 20px; text-align:center; color:var(--muted-fg); font-size:0.85rem; }
 
     /* ── MAIN PANEL ── */
     .main-panel { flex:1; display:flex; flex-direction:column; min-width:0; position:relative; }
-    .panel-header { padding:0.75rem 1.25rem; border-bottom:1px solid var(--card-border); background:var(--bg-soft); display:flex; justify-content:space-between; align-items:center; }
-    .panel-header .left { display:flex; flex-direction:column; gap:0.1rem; min-width:0; }
-    .panel-header h3 { font-size:1rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .panel-header { padding:10px 16px; border-bottom:1px solid var(--border); background:var(--bg-soft); display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .panel-header .left { display:flex; flex-direction:column; gap:1px; min-width:0; flex:1; }
+    .panel-header h3 { font-size:0.95rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .panel-header .sub { color:var(--accent); font-size:0.75rem; text-decoration:none; }
-    .toolbar { display:flex; gap:0.4rem; }
-    .tb { width:34px; height:34px; border:1px solid var(--card-border); border-radius:0.5rem; background:transparent; color:var(--muted); font-size:0.95rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:border-color 0.2s,color 0.2s; }
-    .tb:hover { border-color:var(--accent); color:var(--accent); }
-    .tb.active { border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
-    .tb.danger:hover { border-color:var(--danger); color:var(--danger); }
-    .mobile-back { display:none; color:var(--muted); text-decoration:none; font-size:0.8rem; cursor:pointer; }
+    .panel-header .sub:hover { text-decoration:underline; }
+    .toolbar { display:flex; gap:4px; }
+    .mobile-back { display:none; color:var(--muted); text-decoration:none; font-size:0.8rem; cursor:pointer; display:none; align-items:center; gap:4px; }
     .mobile-back:hover { color:var(--accent); }
 
     /* Messages */
-    .panel-messages { flex:1; overflow-y:auto; padding:1.25rem; display:flex; flex-direction:column; gap:0.65rem; }
-    .panel-messages::-webkit-scrollbar { width:5px; }
-    .panel-messages::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:3px; }
-    .msg { max-width:75%; padding:0.8rem 1.1rem; border-radius:1rem; font-size:0.9rem; line-height:1.5; word-wrap:break-word; animation:msg-in 0.25s ease; }
-    .msg.client { align-self:flex-start; background:var(--bg-soft); border:1px solid var(--card-border); border-bottom-left-radius:0.25rem; }
-    .msg.admin { align-self:flex-end; background:var(--accent); color:#050505; border-bottom-right-radius:0.25rem; }
-    .msg .meta { font-size:0.65rem; opacity:0.6; margin-top:0.3rem; }
+    .panel-messages { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:6px; }
+    .msg { max-width:75%; padding:10px 14px; border-radius:var(--radius-lg); font-size:0.88rem; line-height:1.55; word-wrap:break-word; animation:msg-in 0.2s ease; }
+    .msg.client { align-self:flex-start; background:var(--bg-soft); border:1px solid var(--border); border-bottom-left-radius:4px; }
+    .msg.admin { align-self:flex-end; background:var(--accent); color:#050505; border-bottom-right-radius:4px; }
+    .msg .meta { font-size:0.65rem; opacity:0.5; margin-top:4px; }
     .msg.admin .meta { color:#050505; }
-    .msg.summary { align-self:stretch; max-width:100%; background:rgba(6,182,212,0.06); border:1px solid rgba(6,182,212,0.15); }
-    .msg.summary .label { font-size:0.7rem; color:var(--accent); font-weight:600; margin-bottom:0.3rem; }
-    .msg.card-preview { align-self:flex-end; max-width:85%; background:var(--bg-soft); border:1px solid var(--accent); border-radius:1rem; }
-    .msg.card-preview .card-title { font-weight:600; font-size:0.95rem; }
-    .msg.card-preview .card-desc { color:var(--muted); font-size:0.85rem; margin-top:0.2rem; }
-    .msg.card-preview .card-btns { display:flex; gap:0.4rem; flex-wrap:wrap; margin-top:0.5rem; }
-    .msg.card-preview .card-btns span { font-size:0.75rem; padding:0.3rem 0.8rem; border-radius:999px; background:var(--accent-soft); color:var(--accent); }
-    .panel-empty { flex:1; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:0.9rem; opacity:0.4; }
+    .msg.summary { align-self:stretch; max-width:100%; background:var(--accent-soft); border:1px solid var(--accent-border); border-radius:var(--radius); }
+    .msg.summary .label { font-size:0.7rem; color:var(--accent); font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:4px; }
+    .msg.card-preview { align-self:flex-end; max-width:85%; background:var(--bg-soft); border:1px solid var(--accent-border); border-radius:var(--radius); }
+    .msg.card-preview .card-title { font-weight:700; font-size:0.9rem; }
+    .msg.card-preview .card-desc { color:var(--muted); font-size:0.82rem; margin-top:3px; line-height:1.5; }
+    .msg.card-preview .card-btns { display:flex; gap:4px; flex-wrap:wrap; margin-top:8px; }
+    .msg.card-preview .card-btns span { font-size:0.72rem; padding:4px 10px; border-radius:999px; background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent-border); }
+    .panel-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--muted-fg); gap:8px; }
+    .panel-empty .icon { font-size:40px; opacity:0.3; }
 
     /* Input bar */
-    .admin-input { display:flex; gap:0.6rem; padding:0.85rem 1.25rem; border-top:1px solid var(--card-border); background:var(--bg-soft); }
-    .admin-input input { flex:1; padding:0.75rem 1rem; border:1px solid var(--card-border); border-radius:0.75rem; background:var(--bg); color:var(--fg); font-family:inherit; font-size:0.9rem; outline:none; }
+    .admin-input { display:flex; gap:8px; padding:12px 16px; border-top:1px solid var(--border); background:var(--bg-soft); align-items:flex-end; }
+    .admin-input input { flex:1; padding:10px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg); color:var(--fg); font-family:inherit; font-size:0.88rem; outline:none; }
     .admin-input input:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
-    .admin-input input::placeholder { color:var(--muted); opacity:0.4; }
-    .admin-input button { padding:0.75rem 1.25rem; border:none; border-radius:0.75rem; background:var(--accent); color:#050505; font-family:inherit; font-size:0.9rem; font-weight:600; cursor:pointer; }
-    .admin-input button:disabled { opacity:0.3; cursor:not-allowed; }
+    .admin-input input::placeholder { color:var(--muted-fg); }
+    .admin-input .send-btn { width:40px; height:40px; border:none; border-radius:var(--radius-sm); background:var(--accent); color:#050505; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+    .admin-input .send-btn:hover { background:var(--accent-hover); transform:translateY(-1px); }
+    .admin-input .send-btn:disabled { opacity:0.3; cursor:not-allowed; transform:none; }
+
+    /* ── ACTION BAR (above input) ── */
+    .action-bar { display:flex; gap:4px; padding:6px 16px; border-top:1px solid var(--border); background:var(--bg); }
+    .action-chip { display:flex; align-items:center; gap:4px; padding:6px 12px; border-radius:999px; background:var(--bg-soft); border:1px solid var(--border); color:var(--muted); font-size:0.75rem; font-weight:500; cursor:pointer; transition:all 0.15s; font-family:inherit; }
+    .action-chip:hover { border-color:var(--accent-border); color:var(--accent); background:var(--accent-soft); }
+    .action-chip .icon { font-size:14px; }
 
     /* ── NOTES PANEL ── */
-    .notes-panel { position:absolute; top:0; right:-380px; width:380px; height:100%; background:var(--bg-soft); border-left:1px solid var(--card-border); display:flex; flex-direction:column; transition:right 0.3s cubic-bezier(0.22,1,0.36,1); z-index:10; }
+    .notes-panel { position:absolute; top:0; right:-400px; width:400px; height:100%; background:var(--bg-soft); border-left:1px solid var(--border); display:flex; flex-direction:column; transition:right 0.25s cubic-bezier(0.22,1,0.36,1); z-index:10; box-shadow:var(--shadow); }
     .notes-panel.open { right:0; }
-    .notes-panel .np-header { padding:1rem 1.25rem; border-bottom:1px solid var(--card-border); display:flex; justify-content:space-between; align-items:center; }
-    .notes-panel .np-header h3 { font-size:0.95rem; font-weight:600; }
-    .notes-panel .np-close { background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer; }
-    .notes-panel .np-close:hover { color:var(--fg); }
-    .notes-panel textarea { flex:1; margin:1rem; padding:1rem; border:1px solid var(--card-border); border-radius:0.75rem; background:var(--bg); color:var(--fg); font-family:inherit; font-size:0.9rem; line-height:1.6; resize:none; outline:none; }
+    .notes-panel .np-header { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+    .notes-panel .np-header h3 { font-size:0.9rem; font-weight:700; display:flex; align-items:center; gap:6px; }
+    .notes-panel textarea { flex:1; margin:12px; padding:12px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg); color:var(--fg); font-family:inherit; font-size:0.85rem; line-height:1.6; resize:none; outline:none; }
     .notes-panel textarea:focus { border-color:var(--accent); }
-    .notes-panel textarea::placeholder { color:var(--muted); opacity:0.4; }
-    .notes-panel .np-status { padding:0 1.25rem 1rem; font-size:0.75rem; color:var(--muted); }
+    .notes-panel textarea::placeholder { color:var(--muted-fg); }
+    .notes-panel .np-status { padding:0 16px 12px; font-size:0.72rem; color:var(--muted-fg); }
 
     /* ── MODALS ── */
-    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:200; align-items:center; justify-content:center; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); z-index:200; align-items:center; justify-content:center; }
     .modal-overlay.open { display:flex; }
-    .modal { background:var(--bg-soft); border:1px solid var(--card-border); border-radius:1.25rem; width:92%; max-width:560px; max-height:90vh; overflow-y:auto; padding:0; }
-    .modal-head { padding:1.25rem 1.5rem; border-bottom:1px solid var(--card-border); display:flex; justify-content:space-between; align-items:center; }
-    .modal-head h3 { font-size:1.05rem; font-weight:600; }
+    .modal { background:var(--bg-soft); border:1px solid var(--border-strong); border-radius:var(--radius-lg); width:92%; max-width:540px; max-height:85vh; overflow-y:auto; box-shadow:var(--shadow); }
+    .modal-head { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+    .modal-head h3 { font-size:1rem; font-weight:700; }
     .modal-head h3 span { color:var(--accent); }
-    .modal-close { background:none; border:none; color:var(--muted); font-size:1.3rem; cursor:pointer; }
-    .modal-close:hover { color:var(--fg); }
-    .modal-body { padding:1.5rem; display:flex; flex-direction:column; gap:1.25rem; }
-    .modal-footer { padding:1rem 1.5rem; border-top:1px solid var(--card-border); display:flex; gap:0.75rem; justify-content:flex-end; }
-    .field { display:flex; flex-direction:column; gap:0.3rem; }
-    .field label { font-size:0.8rem; color:var(--muted); }
+    .modal-body { padding:20px; display:flex; flex-direction:column; gap:16px; }
+    .modal-footer { padding:12px 20px; border-top:1px solid var(--border); display:flex; gap:8px; justify-content:flex-end; }
+    .field { display:flex; flex-direction:column; gap:4px; }
+    .field label { font-size:0.75rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; }
     .field textarea { min-height:60px; resize:vertical; }
-    .row { display:flex; gap:0.75rem; }
+    .row { display:flex; gap:12px; }
     .row .field { flex:1; }
-    .btn-accent { padding:0.7rem 1.5rem; border:none; border-radius:999px; background:var(--accent); color:#050505; font-family:inherit; font-size:0.9rem; font-weight:600; cursor:pointer; transition:transform 0.2s; }
-    .btn-accent:hover { transform:translateY(-1px); }
-    .btn-ghost { padding:0.7rem 1.5rem; border:1px solid var(--card-border); border-radius:999px; background:transparent; color:var(--muted); font-family:inherit; font-size:0.9rem; cursor:pointer; }
-    .btn-ghost:hover { border-color:var(--muted); }
-    .btn-danger { padding:0.7rem 1.5rem; border:1px solid var(--danger); border-radius:999px; background:transparent; color:var(--danger); font-family:inherit; font-size:0.9rem; cursor:pointer; margin-right:auto; }
-    .btn-danger:hover { background:var(--danger); color:#050505; }
-    .btn-sm { padding:0.45rem 1rem; font-size:0.8rem; border-radius:0.5rem; cursor:pointer; border:1px solid var(--card-border); background:transparent; color:var(--muted); font-family:inherit; }
-    .btn-sm:hover { border-color:var(--accent); color:var(--accent); }
 
-    /* Card builder - button rows */
-    .card-btn-row { display:flex; gap:0.5rem; align-items:center; }
+    /* Card builder button rows */
+    .card-btn-row { display:flex; gap:6px; align-items:center; margin-bottom:6px; }
     .card-btn-row input { flex:1; }
-    .card-btn-row .remove-btn { width:32px; height:32px; border:1px solid var(--card-border); border-radius:0.5rem; background:transparent; color:var(--danger); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.9rem; }
-    .card-btn-row .remove-btn:hover { border-color:var(--danger); }
-    .style-select { padding:0.5rem; border:1px solid var(--card-border); border-radius:0.5rem; background:var(--bg); color:var(--fg); font-family:inherit; font-size:0.8rem; }
+    .style-select { padding:8px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--fg); font-family:inherit; font-size:0.8rem; }
 
-    /* Form builder */
-    .form-item { padding:0.85rem 1.25rem; border-bottom:1px solid var(--card-border); cursor:pointer; transition:background 0.15s; display:flex; justify-content:space-between; align-items:center; }
-    .form-item:hover { background:var(--bg-hover); }
-    .form-item .fi-name { font-weight:600; font-size:0.9rem; }
-    .form-item .fi-default { font-size:0.65rem; padding:0.1rem 0.5rem; border-radius:999px; background:var(--success); color:#050505; font-weight:600; }
+    /* Form items */
+    .form-item { padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:all 0.1s; display:flex; justify-content:space-between; align-items:center; }
+    .form-item:hover { background:var(--bg-soft); }
+    .form-item .fi-name { font-weight:600; font-size:0.88rem; }
+    .form-item .fi-default { font-size:0.65rem; padding:2px 8px; border-radius:999px; background:var(--success-soft); color:var(--success); font-weight:700; border:1px solid rgba(34,197,94,0.2); }
     .form-item .fi-sections { color:var(--muted); font-size:0.75rem; }
-    .section-block { border:1px solid var(--card-border); border-radius:0.75rem; overflow:hidden; }
-    .section-head { padding:0.75rem 1rem; background:var(--bg-hover); display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
-    .section-head .sec-label { font-weight:600; font-size:0.85rem; }
-    .section-body { padding:0.75rem 1rem; display:flex; flex-direction:column; gap:0.65rem; }
-    .q-item { padding:0.5rem 0.75rem; border:1px solid var(--card-border); border-radius:0.5rem; display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; }
-    .q-item .q-type { font-size:0.65rem; padding:0.1rem 0.4rem; border-radius:4px; background:var(--accent-soft); color:var(--accent); font-weight:600; margin-right:0.5rem; }
-    .q-actions { display:flex; gap:0.3rem; }
-    .q-actions button { width:24px; height:24px; border:1px solid var(--card-border); border-radius:4px; background:transparent; color:var(--muted); cursor:pointer; font-size:0.7rem; display:flex; align-items:center; justify-content:center; }
-    .q-actions button:hover { border-color:var(--accent); color:var(--accent); }
+    .section-block { border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; margin-bottom:8px; }
+    .section-head { padding:10px 12px; background:var(--bg-hover); display:flex; justify-content:space-between; align-items:center; }
+    .section-head .sec-label { font-weight:600; font-size:0.82rem; }
+    .section-body { padding:10px 12px; display:flex; flex-direction:column; gap:6px; }
+    .q-item { padding:8px 10px; border:1px solid var(--border); border-radius:6px; display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; }
+    .q-item .q-type { font-size:0.65rem; padding:2px 6px; border-radius:4px; background:var(--accent-soft); color:var(--accent); font-weight:700; margin-right:6px; }
+    .q-actions { display:flex; gap:3px; }
+    .q-actions button { width:26px; height:26px; border:1px solid var(--border); border-radius:4px; background:transparent; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; font-family:'Material Symbols Rounded'; font-size:14px; }
+    .q-actions button:hover { border-color:var(--accent-border); color:var(--accent); }
 
-    .no-selection { flex:1; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:0.95rem; opacity:0.35; }
+    /* ── FORM PICKER POPOVER ── */
+    .form-picker { position:absolute; bottom:100%; left:0; margin-bottom:4px; background:var(--bg-soft); border:1px solid var(--border-strong); border-radius:var(--radius); box-shadow:var(--shadow); min-width:220px; max-height:300px; overflow-y:auto; z-index:50; display:none; }
+    .form-picker.open { display:block; }
+    .form-picker .fp-header { padding:10px 14px; border-bottom:1px solid var(--border); font-size:0.75rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; }
+    .form-picker .fp-item { padding:10px 14px; cursor:pointer; transition:all 0.1s; display:flex; align-items:center; gap:8px; font-size:0.85rem; }
+    .form-picker .fp-item:hover { background:var(--bg-hover); }
+    .form-picker .fp-item .icon { font-size:16px; color:var(--accent); }
+    .form-picker .fp-empty { padding:20px; text-align:center; color:var(--muted-fg); font-size:0.82rem; }
+
+    .no-selection { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--muted-fg); gap:8px; }
+    .no-selection .icon { font-size:48px; opacity:0.2; }
+    .no-selection p { font-size:0.9rem; }
 
     @media (max-width:700px) {
       .sidebar { width:100%; min-width:unset; }
       .main-panel { display:none; }
       .admin-layout.chat-open .sidebar { display:none; }
       .admin-layout.chat-open .main-panel { display:flex; }
-      .mobile-back { display:block !important; }
+      .mobile-back { display:flex !important; }
       .notes-panel { width:100%; right:-100%; }
     }
-    @keyframes msg-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes msg-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
   </style>
 </head>
 <body>
@@ -190,9 +220,11 @@
 <!-- Login -->
 <div class="login-screen" id="login-screen">
   <div class="login-box">
-    <h1>Admin <span>Login</span></h1>
-    <input class="field-input" type="password" id="password" placeholder="Password" autofocus>
-    <button class="btn-primary" onclick="attemptLogin()">Enter →</button>
+    <div class="logo"><span class="icon">shield_person</span></div>
+    <h1>Kerehama Admin</h1>
+    <p>Sign in to manage your chats</p>
+    <input class="field-input" type="password" id="password" placeholder="Enter password" autofocus>
+    <button class="btn btn-accent" style="width:100%;" onclick="attemptLogin()">Sign In</button>
     <p class="login-error" id="login-error">&nbsp;</p>
   </div>
 </div>
@@ -201,24 +233,30 @@
 <div class="admin-layout" id="admin-layout">
   <div class="sidebar">
     <div class="sidebar-tabs">
-      <div class="sidebar-tab active" data-tab="chats" onclick="switchTab('chats')">💬 Chats</div>
-      <div class="sidebar-tab" data-tab="forms" onclick="switchTab('forms')">📝 Forms</div>
+      <div class="sidebar-tab active" data-tab="chats" onclick="switchTab('chats')">
+        <span class="icon icon-sm">chat</span> Chats
+      </div>
+      <div class="sidebar-tab" data-tab="forms" onclick="switchTab('forms')">
+        <span class="icon icon-sm">description</span> Forms
+      </div>
     </div>
     <div id="tab-chats">
-      <div class="sidebar-search"><input type="text" id="search-input" placeholder="Search…" autocomplete="off"></div>
+      <div class="sidebar-search"><div class="search-wrap"><span class="icon">search</span><input type="text" id="search-input" placeholder="Search chats…" autocomplete="off"></div></div>
       <div class="sidebar-content" id="chat-list"><div class="no-items">Loading…</div></div>
     </div>
     <div id="tab-forms" style="display:none;">
-      <div class="sidebar-header"><h3>Intake Forms</h3><button class="btn-sm" onclick="createForm()">+ New</button></div>
+      <div class="sidebar-header"><h3>Intake Forms</h3><button class="btn btn-ghost btn-sm" onclick="createForm()"><span class="icon icon-sm">add</span> New</button></div>
       <div class="sidebar-content" id="form-list"><div class="no-items">Loading…</div></div>
     </div>
   </div>
 
   <div class="main-panel" id="main-panel">
-    <div class="no-selection" id="no-selection">Select a chat or form</div>
-    <!-- Notes slide panel -->
+    <div class="no-selection" id="no-selection">
+      <span class="icon">forum</span>
+      <p>Select a chat to get started</p>
+    </div>
     <div class="notes-panel" id="notes-panel">
-      <div class="np-header"><h3>📝 Notes</h3><button class="np-close" onclick="toggleNotes()">✕</button></div>
+      <div class="np-header"><h3><span class="icon icon-sm">sticky_note_2</span> Notes</h3><button class="btn-icon" onclick="toggleNotes()"><span class="icon icon-sm">close</span></button></div>
       <textarea id="notes-textarea" placeholder="Write private notes about this client…"></textarea>
       <div class="np-status" id="notes-status">Auto-saves as you type</div>
     </div>
@@ -228,16 +266,16 @@
 <!-- Card Builder Modal -->
 <div class="modal-overlay" id="card-modal" onclick="if(event.target===this)closeCardModal()">
   <div class="modal">
-    <div class="modal-head"><h3>Send a <span>Card</span></h3><button class="modal-close" onclick="closeCardModal()">✕</button></div>
+    <div class="modal-head"><h3>Send a <span>Card</span></h3><button class="btn-icon" onclick="closeCardModal()"><span class="icon icon-sm">close</span></button></div>
     <div class="modal-body">
       <div class="field"><label>Title</label><input class="field-input" id="card-title" placeholder="e.g. Your proposal is ready"></div>
       <div class="field"><label>Description</label><textarea class="field-input" id="card-desc" placeholder="Optional description…"></textarea></div>
       <div class="field"><label>Buttons</label><div id="card-buttons-list"></div></div>
-      <button class="btn-sm" onclick="addCardButton()">+ Add Button</button>
+      <button class="btn btn-ghost btn-sm" onclick="addCardButton()"><span class="icon icon-sm">add</span> Add Button</button>
     </div>
     <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeCardModal()">Cancel</button>
-      <button class="btn-accent" onclick="sendCard()">Send Card</button>
+      <button class="btn btn-ghost" onclick="closeCardModal()">Cancel</button>
+      <button class="btn btn-accent" onclick="sendCard()"><span class="icon icon-sm">send</span> Send Card</button>
     </div>
   </div>
 </div>
@@ -300,9 +338,9 @@ function switchTab(tab) {
 // ── SEARCH ──
 document.getElementById('search-input').addEventListener('input', e => { searchTerm = e.target.value.toLowerCase(); renderChatList(); });
 
-// ══════════════════════════════════
+// ══════════════════
 // CHATS
-// ══════════════════════════════════
+// ══════════════════
 async function loadChats() {
   const { data } = await sb.from('chats').select('*').order('last_message_at', { ascending: false });
   chats = data || []; renderChatList();
@@ -333,27 +371,30 @@ async function openChat(id) {
   renderChatList();
 
   const panel = document.getElementById('main-panel');
-  // Keep notes panel
   const notesPanel = document.getElementById('notes-panel');
 
   panel.innerHTML = `
     <div class="panel-header">
       <div class="left">
-        <span class="mobile-back" onclick="closeChat()">← Back</span>
+        <a class="mobile-back" onclick="closeChat()"><span class="icon icon-sm">arrow_back</span> Back</a>
         <h3>${esc(dname(chat))}</h3>
         <a class="sub" href="mailto:${esc(chat.client_email)}">${esc(chat.client_email)}</a>
       </div>
       <div class="toolbar">
-        <button class="tb" onclick="toggleNotes()" title="Notes" id="notes-btn">📝</button>
-        <button class="tb" onclick="openCardModal()" title="Send card">🃏</button>
-        <button class="tb" onclick="openDetailModal('${id}')" title="Edit details">✏️</button>
-        <button class="tb" onclick="copyLink('${id}')" title="Copy link" id="copy-btn">🔗</button>
+        <button class="btn-icon" onclick="toggleNotes()" title="Notes" id="notes-btn"><span class="icon icon-sm">sticky_note_2</span></button>
+        <button class="btn-icon" onclick="openDetailModal('${id}')" title="Edit"><span class="icon icon-sm">edit</span></button>
+        <button class="btn-icon" onclick="copyLink('${id}')" title="Copy link" id="copy-btn"><span class="icon icon-sm">link</span></button>
       </div>
     </div>
     <div class="panel-messages" id="panel-messages"></div>
+    <div class="action-bar" id="action-bar">
+      <button class="action-chip" onclick="openCardModal()"><span class="icon">style</span> Card</button>
+      <button class="action-chip" onclick="toggleFormPicker()" id="form-picker-btn"><span class="icon">description</span> Send Form</button>
+      <div class="form-picker" id="form-picker"></div>
+    </div>
     <div class="admin-input">
       <input class="field-input" type="text" id="admin-msg" placeholder="Reply as Kerehama…" autocomplete="off">
-      <button onclick="sendAdminMsg()">Send</button>
+      <button class="send-btn" onclick="sendAdminMsg()"><span class="icon">send</span></button>
     </div>
   `;
   panel.appendChild(notesPanel);
@@ -361,15 +402,13 @@ async function openChat(id) {
   document.getElementById('admin-msg').addEventListener('keydown', e => { if (e.key === 'Enter') sendAdminMsg(); });
   document.getElementById('admin-msg').focus();
 
-  // Load notes
   const notesArea = document.getElementById('notes-textarea');
   notesArea.value = chat.notes || '';
   notesArea.oninput = () => { clearTimeout(notesSaveTimer); document.getElementById('notes-status').textContent = 'Saving…'; notesSaveTimer = setTimeout(() => saveNotes(id, notesArea.value), 800); };
 
-  // Load messages
   const { data: msgs } = await sb.from('messages').select('*').eq('chat_id', id).order('created_at', { ascending: true });
   const container = document.getElementById('panel-messages');
-  if (!msgs?.length) { container.innerHTML = '<div class="panel-empty">No messages yet</div>'; }
+  if (!msgs?.length) { container.innerHTML = '<div class="panel-empty"><span class="icon">chat_bubble_outline</span>No messages yet</div>'; }
   else { container.innerHTML = ''; msgs.forEach(m => appendMsg(m, chat)); container.scrollTop = container.scrollHeight; }
 }
 
@@ -389,7 +428,7 @@ function appendMsg(m, chat) {
     content = content.replace('__SUMMARY__\n', '');
     const div = document.createElement('div');
     div.className = 'msg summary';
-    div.innerHTML = `<div class="label">📋 INTAKE SUMMARY</div><div class="text">${esc(content).replace(/\n/g, '<br>')}</div><div class="meta">${formatTime(m.created_at)}</div>`;
+    div.innerHTML = `<div class="label"><span class="icon icon-sm">assignment</span> INTAKE SUMMARY</div><div class="text">${esc(content).replace(/\n/g, '<br>')}</div><div class="meta">${formatTime(m.created_at)}</div>`;
     container.appendChild(div);
   } else if (isCard) {
     try {
@@ -416,8 +455,8 @@ function appendMsg(m, chat) {
 function closeChat() {
   currentChatId = null; renderedMsgIds.clear();
   document.getElementById('admin-layout').classList.remove('chat-open');
-  document.getElementById('main-panel').innerHTML = '<div class="no-selection">Select a chat or form</div>';
-  document.getElementById('main-panel').appendChild(document.getElementById('notes-panel') || createNotesPanel());
+  document.getElementById('main-panel').innerHTML = '<div class="no-selection"><span class="icon">forum</span><p>Select a chat to get started</p></div>';
+  document.getElementById('main-panel').appendChild(document.getElementById('notes-panel') || (() => { const d = document.createElement('div'); d.id = 'notes-panel'; d.className = 'notes-panel'; return d; })());
   document.getElementById('notes-panel').classList.remove('open');
   renderChatList();
 }
@@ -432,6 +471,52 @@ async function sendAdminMsg() {
   await sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', currentChatId);
   input.focus();
 }
+
+// ── FORM PICKER ──
+function toggleFormPicker() {
+  const picker = document.getElementById('form-picker');
+  picker.classList.toggle('open');
+  if (picker.classList.contains('open')) renderFormPicker();
+}
+
+function renderFormPicker() {
+  const picker = document.getElementById('form-picker');
+  if (!forms.length) { picker.innerHTML = '<div class="fp-empty">No forms created yet</div>'; return; }
+  picker.innerHTML = `<div class="fp-header">Choose a form to send</div>` + forms.map(f => `
+    <div class="fp-item" onclick="sendFormToChat('${f.id}')">
+      <span class="icon">description</span>
+      <div>
+        <div style="font-weight:600;">${esc(f.name)}</div>
+        <div style="font-size:0.72rem;color:var(--muted);">${(f.sections || []).length} section(s)</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function sendFormToChat(formId) {
+  const form = forms.find(f => f.id === formId);
+  if (!form || !currentChatId) return;
+  document.getElementById('form-picker').classList.remove('open');
+
+  const cardData = {
+    title: form.name,
+    desc: form.greeting || 'Please fill out this form',
+    buttons: [{ label: 'Start Form', style: 'primary' }]
+  };
+  const content = '__CARD__' + JSON.stringify(cardData);
+  const { data } = await sb.from('messages').insert({ chat_id: currentChatId, sender: 'admin', content }).select().single();
+  if (data) appendMsg(data, chats.find(c => c.id === currentChatId));
+  await sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', currentChatId);
+}
+
+// Close form picker on outside click
+document.addEventListener('click', (e) => {
+  const picker = document.getElementById('form-picker');
+  const btn = document.getElementById('form-picker-btn');
+  if (picker && !picker.contains(e.target) && btn !== e.target && !btn?.contains(e.target)) {
+    picker.classList.remove('open');
+  }
+});
 
 // ── NOTES ──
 function toggleNotes() {
@@ -452,7 +537,7 @@ async function saveNotes(chatId, text) {
 function copyLink(id) {
   navigator.clipboard.writeText(`https://labs.kerehama.nz/chat/${id}`);
   const btn = document.getElementById('copy-btn');
-  if (btn) { btn.textContent = '✅'; setTimeout(() => btn.textContent = '🔗', 1500); }
+  if (btn) { btn.innerHTML = '<span class="icon icon-sm">check</span>'; setTimeout(() => btn.innerHTML = '<span class="icon icon-sm">link</span>', 1500); }
 }
 
 // ── DETAIL MODAL ──
@@ -460,13 +545,13 @@ function openDetailModal(id) {
   const chat = chats.find(c => c.id === id);
   if (!chat) return;
   document.getElementById('detail-content').innerHTML = `
-    <div class="modal-head"><h3>Edit <span>${esc(chat.client_name)}</span></h3><button class="modal-close" onclick="closeDetailModal()">✕</button></div>
+    <div class="modal-head"><h3>Edit <span>${esc(chat.client_name)}</span></h3><button class="btn-icon" onclick="closeDetailModal()"><span class="icon icon-sm">close</span></button></div>
     <div class="modal-body">
-      <div style="font-size:0.8rem;color:var(--muted);">🔗 https://labs.kerehama.nz/chat/${chat.id}</div>
+      <div style="font-size:0.75rem;color:var(--muted-fg);display:flex;align-items:center;gap:4px;"><span class="icon icon-sm">link</span> labs.kerehama.nz/chat/${chat.id}</div>
       <div class="row"><div class="field"><label>Display Name</label><input class="field-input" id="d-name" value="${esc(chat.display_name || '')}" placeholder="Override name…"></div><div class="field"><label>Original</label><input class="field-input" value="${esc(chat.client_name)}" disabled style="opacity:0.4;"></div></div>
       <div class="field"><label>Tags (comma separated)</label><input class="field-input" id="d-tags" value="${esc((chat.tags || []).join(', '))}" placeholder="client, urgent, friend"></div>
     </div>
-    <div class="modal-footer"><button class="btn-danger" onclick="deleteChat('${chat.id}')">Delete</button><button class="btn-ghost" onclick="closeDetailModal()">Cancel</button><button class="btn-accent" onclick="saveDetail('${chat.id}')">Save</button></div>
+    <div class="modal-footer"><button class="btn btn-danger" onclick="deleteChat('${chat.id}')"><span class="icon icon-sm">delete</span> Delete</button><button class="btn btn-ghost" onclick="closeDetailModal()">Cancel</button><button class="btn btn-accent" onclick="saveDetail('${chat.id}')"><span class="icon icon-sm">check</span> Save</button></div>
   `;
   document.getElementById('detail-modal').classList.add('open');
 }
@@ -490,9 +575,9 @@ async function deleteChat(id) {
   renderChatList();
 }
 
-// ══════════════════════════════════
+// ══════════════════
 // CARD BUILDER
-// ══════════════════════════════════
+// ══════════════════
 let cardButtons = [];
 
 function openCardModal() {
@@ -509,14 +594,14 @@ function addCardButton() { cardButtons.push({ label: '', url: '', style: 'second
 function renderCardButtons() {
   const list = document.getElementById('card-buttons-list');
   list.innerHTML = cardButtons.map((b, i) => `
-    <div class="card-btn-row" style="margin-bottom:0.5rem;">
+    <div class="card-btn-row">
       <input class="field-input" placeholder="Label" value="${esc(b.label)}" oninput="cardButtons[${i}].label=this.value">
       <input class="field-input" placeholder="URL" value="${esc(b.url)}" oninput="cardButtons[${i}].url=this.value">
       <select class="style-select" onchange="cardButtons[${i}].style=this.value">
         <option value="primary" ${b.style === 'primary' ? 'selected' : ''}>Primary</option>
         <option value="secondary" ${b.style === 'secondary' ? 'selected' : ''}>Secondary</option>
       </select>
-      ${cardButtons.length > 1 ? `<button class="remove-btn" onclick="cardButtons.splice(${i},1);renderCardButtons()">✕</button>` : ''}
+      ${cardButtons.length > 1 ? `<button class="btn-icon" style="width:28px;height:28px;" onclick="cardButtons.splice(${i},1);renderCardButtons()"><span class="icon" style="font-size:14px;color:var(--danger);">close</span></button>` : ''}
     </div>
   `).join('');
 }
@@ -526,19 +611,17 @@ async function sendCard() {
   const desc = document.getElementById('card-desc').value.trim();
   const buttons = cardButtons.filter(b => b.label.trim());
   if (!title && !desc) return alert('Add a title or description');
-
   const cardData = { title, desc, buttons };
   const content = '__CARD__' + JSON.stringify(cardData);
-
-  await sb.from('messages').insert({ chat_id: currentChatId, sender: 'admin', content });
+  const { data } = await sb.from('messages').insert({ chat_id: currentChatId, sender: 'admin', content }).select().single();
+  if (data) appendMsg(data, chats.find(c => c.id === currentChatId));
   await sb.from('chats').update({ last_message_at: new Date().toISOString() }).eq('id', currentChatId);
-
   closeCardModal();
 }
 
-// ══════════════════════════════════
+// ══════════════════
 // FORM BUILDER
-// ══════════════════════════════════
+// ══════════════════
 async function loadForms() {
   try {
     const { data } = await sb.from('forms').select('*').order('created_at', { ascending: false });
@@ -567,49 +650,42 @@ function editForm(id) {
   currentFormId = id;
   const form = forms.find(f => f.id === id);
   if (!form) return;
-
-  const modal = document.getElementById('form-content');
-  modal.innerHTML = `
-    <div class="modal-head"><h3>Edit <span>${esc(form.name)}</span></h3><button class="modal-close" onclick="closeFormModal()">✕</button></div>
+  document.getElementById('form-content').innerHTML = `
+    <div class="modal-head"><h3>Edit <span>${esc(form.name)}</span></h3><button class="btn-icon" onclick="closeFormModal()"><span class="icon icon-sm">close</span></button></div>
     <div class="modal-body">
       <div class="row">
         <div class="field"><label>Form Name</label><input class="field-input" id="f-name" value="${esc(form.name)}"></div>
         <div class="field" style="flex:0 0 auto;align-self:flex-end;">
-          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.85rem;">
             <input type="checkbox" id="f-default" ${form.is_default ? 'checked' : ''}> Default
           </label>
         </div>
       </div>
       <div class="field"><label>Greeting (use {name} for client's name)</label><input class="field-input" id="f-greeting" value="${esc(form.greeting || '')}" placeholder="Hey {name}! 👋"></div>
       <div class="field"><label>Sections</label><div id="f-sections"></div></div>
-      <button class="btn-sm" onclick="addSection()">+ Add Section</button>
+      <button class="btn btn-ghost btn-sm" onclick="addSection()"><span class="icon icon-sm">add</span> Add Section</button>
     </div>
-    <div class="modal-footer"><button class="btn-danger" onclick="deleteForm('${id}')">Delete</button><button class="btn-ghost" onclick="closeFormModal()">Cancel</button><button class="btn-accent" onclick="saveForm('${id}')">Save Form</button></div>
+    <div class="modal-footer"><button class="btn btn-danger" onclick="deleteForm('${id}')"><span class="icon icon-sm">delete</span> Delete</button><button class="btn btn-ghost" onclick="closeFormModal()">Cancel</button><button class="btn btn-accent" onclick="saveForm('${id}')"><span class="icon icon-sm">check</span> Save</button></div>
   `;
   renderSections();
   document.getElementById('form-modal').classList.add('open');
 }
 
 function closeFormModal() { document.getElementById('form-modal').classList.remove('open'); currentFormId = null; }
-
 function getEditingForm() { return forms.find(f => f.id === currentFormId); }
 
 function renderSections() {
   const form = getEditingForm();
   if (!form) return;
   const container = document.getElementById('f-sections');
-  if (!form.sections?.length) { container.innerHTML = '<div class="no-items" style="padding:1rem;">No sections yet</div>'; return; }
-
+  if (!form.sections?.length) { container.innerHTML = '<div class="no-items" style="padding:16px;">No sections yet</div>'; return; }
   container.innerHTML = form.sections.map((s, si) => `
-    <div class="section-block" style="margin-bottom:0.75rem;">
+    <div class="section-block">
       <div class="section-head">
-        <div>
-          <span class="sec-label">${esc(s.label)}</span>
-          <span style="color:var(--muted);font-size:0.7rem;margin-left:0.5rem;">${(s.questions || []).length} q</span>
-        </div>
+        <div><span class="sec-label">${esc(s.label)}</span><span style="color:var(--muted-fg);font-size:0.7rem;margin-left:8px;">${(s.questions || []).length} questions</span></div>
         <div class="q-actions">
-          <button onclick="editSection(${si})" title="Edit">✏️</button>
-          <button onclick="removeSection(${si})" title="Remove">🗑️</button>
+          <button onclick="editSection(${si})" title="Edit">edit</button>
+          <button onclick="removeSection(${si})" title="Remove" style="color:var(--danger);">delete</button>
         </div>
       </div>
       <div class="section-body">
@@ -617,14 +693,14 @@ function renderSections() {
           <div class="q-item">
             <div><span class="q-type">${q.type}</span>${esc(q.text)}</div>
             <div class="q-actions">
-              <button onclick="editQuestion(${si},${qi})">✏️</button>
-              <button onclick="removeQuestion(${si},${qi})">🗑️</button>
-              ${qi > 0 ? `<button onclick="moveQuestion(${si},${qi},-1)">↑</button>` : ''}
-              ${qi < s.questions.length - 1 ? `<button onclick="moveQuestion(${si},${qi},1)">↓</button>` : ''}
+              <button onclick="editQuestion(${si},${qi})">edit</button>
+              <button onclick="removeQuestion(${si},${qi})" style="color:var(--danger);">close</button>
+              ${qi > 0 ? `<button onclick="moveQuestion(${si},${qi},-1)">arrow_upward</button>` : ''}
+              ${qi < s.questions.length - 1 ? `<button onclick="moveQuestion(${si},${qi},1)">arrow_downward</button>` : ''}
             </div>
           </div>
         `).join('')}
-        <button class="btn-sm" onclick="addQuestion(${si})" style="margin-top:0.4rem;">+ Add Question</button>
+        <button class="btn btn-ghost btn-sm" onclick="addQuestion(${si})" style="margin-top:4px;"><span class="icon icon-sm">add</span> Add Question</button>
       </div>
     </div>
   `).join('');
@@ -634,118 +710,58 @@ function addSection() {
   const form = getEditingForm();
   if (!form) return;
   if (!form.sections) form.sections = [];
-  form.sections.push({ label: '📦 New Section', value: 'new-section', questions: [] });
+  form.sections.push({ label: 'New Section', value: 'new-section', questions: [] });
   renderSections();
 }
-
 function editSection(si) {
-  const form = getEditingForm();
-  const s = form.sections[si];
-  const label = prompt('Section label (with emoji):', s.label);
-  if (label === null) return;
-  const value = prompt('Section value (slug):', s.value);
-  if (value === null) return;
-  s.label = label; s.value = value;
-  renderSections();
+  const form = getEditingForm(); const s = form.sections[si];
+  const label = prompt('Section label:', s.label); if (label === null) return;
+  const value = prompt('Section value (slug):', s.value); if (value === null) return;
+  s.label = label; s.value = value; renderSections();
 }
+function removeSection(si) { if (!confirm('Remove this section?')) return; getEditingForm().sections.splice(si, 1); renderSections(); }
+function addQuestion(si) { openQModal(si, -1); }
+function editQuestion(si, qi) { openQModal(si, qi); }
+function removeQuestion(si, qi) { getEditingForm().sections[si].questions.splice(qi, 1); renderSections(); }
+function moveQuestion(si, qi, dir) { const qs = getEditingForm().sections[si].questions; const ni = qi + dir; if (ni < 0 || ni >= qs.length) return; [qs[qi], qs[ni]] = [qs[ni], qs[qi]]; renderSections(); }
 
-function removeSection(si) {
-  if (!confirm('Remove this section?')) return;
-  getEditingForm().sections.splice(si, 1);
-  renderSections();
-}
-
-function addQuestion(si) {
-  openQModal(si, -1);
-}
-
-function editQuestion(si, qi) {
-  openQModal(si, qi);
-}
-
-function removeQuestion(si, qi) {
-  getEditingForm().sections[si].questions.splice(qi, 1);
-  renderSections();
-}
-
-function moveQuestion(si, qi, dir) {
-  const qs = getEditingForm().sections[si].questions;
-  const ni = qi + dir;
-  if (ni < 0 || ni >= qs.length) return;
-  [qs[qi], qs[ni]] = [qs[ni], qs[qi]];
-  renderSections();
-}
-
-// Question editor modal
 function openQModal(si, qi) {
-  const form = getEditingForm();
-  const isNew = qi === -1;
+  const form = getEditingForm(); const isNew = qi === -1;
   const q = isNew ? { type: 'text', text: '', placeholder: '', key: '' } : { ...form.sections[si].questions[qi] };
   const opts = q.options || [{ label: '', value: '' }];
-
   document.getElementById('q-content').innerHTML = `
-    <div class="modal-head"><h3>${isNew ? 'Add' : 'Edit'} <span>Question</span></h3><button class="modal-close" onclick="closeQModal()">✕</button></div>
+    <div class="modal-head"><h3>${isNew ? 'Add' : 'Edit'} <span>Question</span></h3><button class="btn-icon" onclick="closeQModal()"><span class="icon icon-sm">close</span></button></div>
     <div class="modal-body">
-      <div class="field"><label>Type</label>
-        <select class="field-input" id="q-type" onchange="toggleQOptions()">
-          <option value="text" ${q.type === 'text' ? 'selected' : ''}>Text Input</option>
-          <option value="choice" ${q.type === 'choice' ? 'selected' : ''}>Choice Buttons</option>
-        </select>
-      </div>
+      <div class="field"><label>Type</label><select class="field-input" id="q-type" onchange="toggleQOptions()"><option value="text" ${q.type === 'text' ? 'selected' : ''}>Text Input</option><option value="choice" ${q.type === 'choice' ? 'selected' : ''}>Choice Buttons</option></select></div>
       <div class="field"><label>Question Text</label><input class="field-input" id="q-text" value="${esc(q.text)}" placeholder="What's the business name?"></div>
-      <div class="row">
-        <div class="field"><label>Key (for summary)</label><input class="field-input" id="q-key" value="${esc(q.key || '')}" placeholder="e.g. Business Name"></div>
-        <div class="field"><label>Placeholder</label><input class="field-input" id="q-placeholder" value="${esc(q.placeholder || '')}" placeholder="Placeholder text…"></div>
-      </div>
-      <div id="q-options-section" style="display:${q.type === 'choice' ? '' : 'none'};">
-        <div class="field"><label>Options</label><div id="q-options-list"></div></div>
-        <button class="btn-sm" onclick="addQOption()" style="margin-top:0.4rem;">+ Add Option</button>
-      </div>
+      <div class="row"><div class="field"><label>Key (for summary)</label><input class="field-input" id="q-key" value="${esc(q.key || '')}" placeholder="e.g. Business Name"></div><div class="field"><label>Placeholder</label><input class="field-input" id="q-placeholder" value="${esc(q.placeholder || '')}" placeholder="Placeholder text…"></div></div>
+      <div id="q-options-section" style="display:${q.type === 'choice' ? '' : 'none'};"><div class="field"><label>Options</label><div id="q-options-list"></div></div><button class="btn btn-ghost btn-sm" onclick="addQOption()"><span class="icon icon-sm">add</span> Add Option</button></div>
     </div>
-    <div class="modal-footer"><button class="btn-ghost" onclick="closeQModal()">Cancel</button><button class="btn-accent" onclick="saveQuestion(${si},${qi})">Save</button></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeQModal()">Cancel</button><button class="btn btn-accent" onclick="saveQuestion(${si},${qi})"><span class="icon icon-sm">check</span> Save</button></div>
   `;
-  window._qOpts = [...opts];
-  renderQOptions();
+  window._qOpts = [...opts]; renderQOptions();
   document.getElementById('q-modal').classList.add('open');
 }
-
 function closeQModal() { document.getElementById('q-modal').classList.remove('open'); }
-
-function toggleQOptions() {
-  document.getElementById('q-options-section').style.display = document.getElementById('q-type').value === 'choice' ? '' : 'none';
-}
-
+function toggleQOptions() { document.getElementById('q-options-section').style.display = document.getElementById('q-type').value === 'choice' ? '' : 'none'; }
 function renderQOptions() {
-  const list = document.getElementById('q-options-list');
-  if (!list) return;
+  const list = document.getElementById('q-options-list'); if (!list) return;
   list.innerHTML = window._qOpts.map((o, i) => `
-    <div class="card-btn-row" style="margin-bottom:0.4rem;">
+    <div class="card-btn-row">
       <input class="field-input" placeholder="Label" value="${esc(o.label)}" oninput="window._qOpts[${i}].label=this.value">
-      <input class="field-input" placeholder="Value (optional)" value="${esc(o.value || '')}" oninput="window._qOpts[${i}].value=this.value">
-      ${window._qOpts.length > 1 ? `<button class="remove-btn" onclick="window._qOpts.splice(${i},1);renderQOptions()">✕</button>` : ''}
+      <input class="field-input" placeholder="Value" value="${esc(o.value || '')}" oninput="window._qOpts[${i}].value=this.value">
+      ${window._qOpts.length > 1 ? `<button class="btn-icon" style="width:28px;height:28px;" onclick="window._qOpts.splice(${i},1);renderQOptions()"><span class="icon" style="font-size:14px;color:var(--danger);">close</span></button>` : ''}
     </div>
   `).join('');
 }
-
 function addQOption() { window._qOpts.push({ label: '', value: '' }); renderQOptions(); }
-
 function saveQuestion(si, qi) {
   const form = getEditingForm();
-  const q = {
-    type: document.getElementById('q-type').value,
-    text: document.getElementById('q-text').value.trim(),
-    key: document.getElementById('q-key').value.trim(),
-    placeholder: document.getElementById('q-placeholder').value.trim(),
-  };
+  const q = { type: document.getElementById('q-type').value, text: document.getElementById('q-text').value.trim(), key: document.getElementById('q-key').value.trim(), placeholder: document.getElementById('q-placeholder').value.trim() };
   if (!q.text) return alert('Question text is required');
-  if (q.type === 'choice') {
-    q.options = window._qOpts.filter(o => o.label.trim()).map(o => ({ label: o.label, value: o.value || o.label }));
-    if (!q.options.length) return alert('Add at least one option');
-  }
-  if (qi === -1) form.sections[si].questions.push(q);
-  else form.sections[si].questions[qi] = q;
-  closeQModal();
-  renderSections();
+  if (q.type === 'choice') { q.options = window._qOpts.filter(o => o.label.trim()).map(o => ({ label: o.label, value: o.value || o.label })); if (!q.options.length) return alert('Add at least one option'); }
+  if (qi === -1) form.sections[si].questions.push(q); else form.sections[si].questions[qi] = q;
+  closeQModal(); renderSections();
 }
 
 async function saveForm(id) {
@@ -753,19 +769,11 @@ async function saveForm(id) {
   const greeting = document.getElementById('f-greeting').value.trim();
   const isDefault = document.getElementById('f-default').checked;
   const form = getEditingForm();
-
-  if (isDefault) {
-    // Unset other defaults
-    await sb.from('forms').update({ is_default: false }).neq('id', id);
-    forms.forEach(f => { if (f.id !== id) f.is_default = false; });
-  }
-
+  if (isDefault) { await sb.from('forms').update({ is_default: false }).neq('id', id); forms.forEach(f => { if (f.id !== id) f.is_default = false; }); }
   await sb.from('forms').update({ name, greeting, is_default: isDefault, sections: form.sections }).eq('id', id);
   form.name = name; form.greeting = greeting; form.is_default = isDefault;
-
   closeFormModal(); renderFormList();
 }
-
 async function deleteForm(id) {
   if (!confirm('Delete this form?')) return;
   await sb.from('forms').delete().eq('id', id);
@@ -773,19 +781,15 @@ async function deleteForm(id) {
   closeFormModal(); renderFormList();
 }
 
-// ══════════════════════════════════
+// ══════════════════
 // REAL-TIME
-// ══════════════════════════════════
+// ══════════════════
 function subscribeToAll() {
   sb.channel('admin-all')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
       const msg = payload.new;
       const chat = chats.find(c => c.id === msg.chat_id);
-      if (chat) {
-        chat.last_message_at = msg.created_at;
-        chats.sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
-        renderChatList();
-      }
+      if (chat) { chat.last_message_at = msg.created_at; chats.sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at)); renderChatList(); }
       if (msg.chat_id === currentChatId) appendMsg(msg, chat);
     })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chats' }, (payload) => {
