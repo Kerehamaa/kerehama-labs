@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Kerehama Admin",
+    "slug": "kerehama-admin",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": null,
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#0D0E10",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "nz.kerehama.admin"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0D0E10"
+      },
+      "package": "nz.kerehama.admin"
+    },
+    "web": {
+      "favicon": null
+    }
+  }
+}
