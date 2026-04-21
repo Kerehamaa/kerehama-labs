@@ -70,6 +70,17 @@ Total to start: $300 + $15/month ongoing.
 - Status: Email drafted, awaiting Kerehama to send
 - First email: plain text, subject "I built something for Imperial Barbers"
 
+### New Hong Kong Takeaways — PHASE 4 COMPLETE
+- Address: 1308 Cameron Road, Greerton, Tauranga 3112
+- Phone: 07-577 6510
+- Hours: Mon-Sun 12pm-10pm, Smorgasbord 3:30pm-8:30/9pm
+- Email: None found
+- Current site: newhongkongtakeaways.wixsite.com/website (terrible free Wix)
+- Family-owned since 2001
+- Demo: https://labs.kerehama.nz/sites/new-hong-kong/
+- Status: No email — Kerehama will contact them directly (call/walk-in/text)
+- Approach: family-owned discount angle
+
 ## Infrastructure
 - Repo: Kerehamaa/kerehama-labs (GitHub)
 - SSH key alias: github.com-kerehama-labs
