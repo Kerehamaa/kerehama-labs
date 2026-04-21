@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Imperial Barbers Tauranga — Premium cuts, hot towel shaves, and professional grooming. Walk-ins welcome, 7 days a week.">
+  <title>Imperial Barbers Tauranga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: #111111;
+      --fg: #ffffff;
+      --muted: #999999;
+      --gold: #c8a45e;
+      --gold-soft: rgba(200,164,94,0.12);
+      --gold-glow: rgba(200,164,94,0.25);
+      --border: rgba(255,255,255,0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 2rem;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; font-weight: 700; color: var(--gold);
+      text-decoration: none; letter-spacing: 0.02em;
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.85rem;
+      font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 6rem 2rem 4rem;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, var(--gold-glow), transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(200,164,94,0.08), transparent 50%);
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 700px; }
+    .hero-icon { font-size: 3rem; margin-bottom: 1.5rem; }
+    .hero-eyebrow {
+      text-transform: uppercase; letter-spacing: 0.3em; font-size: 0.75rem;
+      color: var(--gold); margin-bottom: 1rem; font-weight: 500;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700; line-height: 1.1; margin-bottom: 1.25rem;
+    }
+    .hero h1 em {
+      font-style: italic; color: var(--gold);
+    }
+    .hero .subtitle {
+      font-size: 1.1rem; color: var(--muted); max-width: 480px;
+      margin: 0 auto 2.5rem; line-height: 1.7; font-weight: 300;
+    }
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 1rem 2.5rem;
+      background: var(--gold); color: #0a0a0a;
+      text-decoration: none; font-weight: 600; font-size: 0.9rem;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      border-radius: 0; border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .hero-cta:hover { background: #d4b36a; transform: translateY(-1px); }
+
+    /* ── SECTIONS ── */
+    section { padding: 5rem 2rem; }
+    .section-inner { max-width: 1000px; margin: 0 auto; }
+    .section-label {
+      text-transform: uppercase; letter-spacing: 0.25em; font-size: 0.7rem;
+      color: var(--gold); margin-bottom: 0.75rem; font-weight: 500;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 600; margin-bottom: 1rem;
+    }
+    .section-desc {
+      color: var(--muted); font-size: 1rem; max-width: 550px;
+      line-height: 1.7; font-weight: 300; margin-bottom: 3rem;
+    }
+
+    /* ── SERVICES ── */
+    .services-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .service-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      padding: 2rem; transition: border-color 0.2s, transform 0.2s;
+    }
+    .service-card:hover {
+      border-color: var(--gold); transform: translateY(-2px);
+    }
+    .service-icon { font-size: 1.75rem; margin-bottom: 1rem; }
+    .service-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; margin-bottom: 0.5rem; font-weight: 600;
+    }
+    .service-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; font-weight: 300; }
+
+    /* ── ABOUT ── */
+    .about-section { background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    }
+    .about-text .highlight {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; color: var(--gold); margin-bottom: 1rem;
+      font-style: italic; font-weight: 400;
+    }
+    .about-text p { color: var(--muted); line-height: 1.8; font-weight: 300; margin-bottom: 1rem; }
+    .about-stats { display: flex; gap: 3rem; margin-top: 2rem; }
+    .stat { display: flex; flex-direction: column; }
+    .stat-number { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold); font-weight: 700; }
+    .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.25rem; }
+    .about-image {
+      width: 100%; aspect-ratio: 4/5;
+      background: linear-gradient(135deg, var(--bg) 0%, rgba(200,164,94,0.1) 100%);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+    }
+
+    /* ── HOURS ── */
+    .hours-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
+    }
+    .hours-list { list-style: none; }
+    .hours-list li {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 0; border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+    .hours-list .day { color: var(--fg); font-weight: 500; }
+    .hours-list .time { color: var(--gold); font-weight: 400; }
+    .location-card {
+      background: var(--bg-card); border: 1px solid var(--border); padding: 2.5rem;
+    }
+    .location-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; margin-bottom: 1.5rem; font-weight: 600;
+    }
+    .location-detail {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      margin-bottom: 1.25rem; color: var(--muted); font-size: 0.95rem; line-height: 1.5;
+    }
+    .location-detail .icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      text-align: center; padding: 5rem 2rem;
+      background: linear-gradient(180deg, var(--bg) 0%, rgba(200,164,94,0.06) 100%);
+    }
+    .cta-banner h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      margin-bottom: 1rem; font-weight: 600;
+    }
+    .cta-banner p { color: var(--muted); margin-bottom: 2rem; font-weight: 300; font-size: 1.05rem; }
+    .cta-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-gold {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 1rem 2.5rem;
+      background: var(--gold); color: #0a0a0a;
+      text-decoration: none; font-weight: 600; font-size: 0.85rem;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-gold:hover { background: #d4b36a; transform: translateY(-1px); }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 1rem 2.5rem;
+      background: transparent; color: var(--fg);
+      border: 1px solid var(--border);
+      text-decoration: none; font-weight: 500; font-size: 0.85rem;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--gold); transform: translateY(-1px); }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2.5rem 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .footer-links { display: flex; gap: 2rem; justify-content: center; margin-bottom: 1.5rem; }
+    .footer-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-copy { color: var(--muted); font-size: 0.75rem; opacity: 0.6; }
+    .footer-copy a { color: var(--muted); text-decoration: underline; }
+
+    /* ── DEMO BANNER ── */
+    .demo-banner {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      background: var(--gold); color: #0a0a0a;
+      text-align: center; padding: 0.75rem 1rem;
+      font-size: 0.85rem; font-weight: 500;
+    }
+    .demo-banner a { color: #0a0a0a; font-weight: 700; text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.25rem; }
+      .nav-links { display: none; }
+      section { padding: 3.5rem 1.25rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .about-image { display: none; }
+      .hours-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .about-stats { gap: 2rem; }
+      .cta-row { flex-direction: column; align-items: center; }
+    }
+
+    /* ── FADE IN ── */
+    .fade-in {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <a href="#" class="nav-brand">Imperial Barbers</a>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#about">About</a>
+      <a href="#hours">Hours</a>
+      <a href="#visit">Visit</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-icon">💈</div>
+      <p class="hero-eyebrow">Tauranga's Premium Barbershop</p>
+      <h1>Your Throne <em>Awaits</em></h1>
+      <p class="subtitle">Premium cuts, hot towel shaves, and professional grooming in a relaxed space. Walk-ins welcome, 7 days a week.</p>
+      <a href="#visit" class="hero-cta">Find Us →</a>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services">
+    <div class="section-inner fade-in">
+      <p class="section-label">What We Do</p>
+      <h2 class="section-title">Services</h2>
+      <p class="section-desc">Every visit is tailored to you. Walk in, sit back, and leave looking sharp.</p>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">✂️</div>
+          <h3>Premium Cuts</h3>
+          <p>From clean fades to classic styles — precision cutting that suits your look and lifestyle.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🪒</div>
+          <h3>Hot Towel Shaves</h3>
+          <p>The full experience. Hot towel, straight razor, smooth finish. Old-school done right.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🧔</div>
+          <h3>Beard Grooming</h3>
+          <p>Shape-ups, trims, and line-ups to keep your beard looking clean and defined.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">💆‍♂️</div>
+          <h3>Full Grooming</h3>
+          <p>Hair, beard, and styling all in one session. Walk out looking and feeling your best.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="about-section">
+    <div class="section-inner">
+      <div class="about-grid fade-in">
+        <div class="about-text">
+          <p class="section-label">Our Story</p>
+          <h2 class="section-title">More Than a Haircut</h2>
+          <p class="highlight">"Step in, sit down, and let us handle the rest."</p>
+          <p>Imperial Barbers is a premium barbershop on First Avenue in Tauranga. We opened our doors to give men a space where they can relax, get a quality cut, and walk out feeling sharp.</p>
+          <p>No appointments needed. No rushing. Just skilled barbers, good vibes, and premium service — every single day of the week.</p>
+          <div class="about-stats">
+            <div class="stat">
+              <span class="stat-number">7</span>
+              <span class="stat-label">Days Open</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">9–6</span>
+              <span class="stat-label">Daily Hours</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">Walk-In</span>
+            </div>
+          </div>
+        </div>
+        <div class="about-image">💈</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hours & Location -->
+  <section id="hours">
+    <div class="section-inner fade-in">
+      <p class="section-label">Visit Us</p>
+      <h2 class="section-title">Hours & Location</h2>
+      <p class="section-desc">Open every day. No appointments needed — just walk in.</p>
+      <div class="hours-grid">
+        <ul class="hours-list">
+          <li><span class="day">Monday</span><span class="time">9:00 AM – 6:00 PM</span></li>
+          <li><span class="day">Tuesday</span><span class="time">9:00 AM – 6:00 PM</span></li>
+          <li><span class="day">Wednesday</span><span class="time">9:00 AM – 6:00 PM</span></li>
+          <li><span class="day">Thursday</span><span class="time">9:00 AM – 6:00 PM</span></li>
+          <li><span class="day">Friday</span><span class="time">9:00 AM – 6:00 PM</span></li>
+          <li><span class="day">Saturday</span><span class="time">9:00 AM – 6:00 PM</span></li>
+          <li><span class="day">Sunday</span><span class="time">9:00 AM – 6:00 PM</span></li>
+        </ul>
+        <div class="location-card" id="visit">
+          <h3>Find Us</h3>
+          <div class="location-detail">
+            <span class="icon">📍</span>
+            <span>84 First Avenue<br>Tauranga 3110<br>New Zealand</span>
+          </div>
+          <div class="location-detail">
+            <span class="icon">📱</span>
+            <span>DM us on Instagram or Facebook</span>
+          </div>
+          <div class="location-detail">
+            <span class="icon">🚶</span>
+            <span>Walk-ins welcome — no booking needed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-banner">
+    <h2>Ready for a Fresh Cut?</h2>
+    <p>Walk in any day of the week. No appointment, no hassle.</p>
+    <div class="cta-row">
+      <a href="https://www.facebook.com/ImperialBarbersTauranga/" target="_blank" rel="noopener" class="btn-gold">Facebook →</a>
+      <a href="https://www.instagram.com/imperialbarbers_tauranga/" target="_blank" rel="noopener" class="btn-outline">Instagram →</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.facebook.com/ImperialBarbersTauranga/" target="_blank" rel="noopener">Facebook</a>
+      <a href="https://www.instagram.com/imperialbarbers_tauranga/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://maps.google.com/?q=84+First+Avenue+Tauranga+3110" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <p class="footer-copy">© 2025 Imperial Barbers Tauranga</p>
+  </footer>
+
+  <!-- Demo Banner -->
+  <div class="demo-banner">
+    ✨ This is a demo site built by <a href="https://kerehama.nz">Kerehama Andrews</a> — want something like this for your business?
+  </div>
+
+  <script>
+    // Fade-in on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
