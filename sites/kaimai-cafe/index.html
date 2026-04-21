@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Kaimai Cafe — Homemade food and great coffee in a peaceful rural setting on the lower Kaimai Ranges, the gateway to Tauranga.">
+  <title>Kaimai Cafe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#faf8f4;--bg2:#f3efe8;--fg:#2c2419;--fg2:#6b5e4e;--accent:#7a6240;--accent2:#5e4a2e;--cream:#fff9f0;--white:#fff;--border:rgba(0,0,0,.07)}
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--bg);color:var(--fg);line-height:1.7;-webkit-font-smoothing:antialiased}
+    img{display:block;width:100%;height:100%;object-fit:cover}
+    h1,h2,h3{font-family:'Playfair Display',serif}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.15rem 2.5rem;background:rgba(250,248,244,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .nav-brand{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--fg);text-decoration:none}
+    .nav-links{display:flex;gap:2rem;align-items:center}
+    .nav-links a{color:var(--fg2);text-decoration:none;font-size:.8rem;font-weight:500;letter-spacing:.03em;transition:color .2s}
+    .nav-links a:hover{color:var(--fg)}
+
+    .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem}
+    .hero-bg{position:absolute;inset:0;z-index:0}
+    .hero-bg img{filter:brightness(.45)saturate(.85)}
+    .hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(44,36,25,.3)0%,rgba(44,36,25,.7)100%)}
+    .hero-content{position:relative;z-index:1;max-width:650px}
+    .hero-content h1{color:var(--white);font-size:clamp(2.5rem,6vw,4.5rem);font-weight:700;line-height:1.1;margin-bottom:1rem}
+    .hero-tagline{color:rgba(255,255,255,.75);font-size:1rem;font-weight:300;letter-spacing:.08em;margin-bottom:2.5rem}
+    .btn{display:inline-block;padding:.9rem 2.5rem;background:var(--accent);color:var(--white);text-decoration:none;font-weight:600;font-size:.8rem;letter-spacing:.03em;border-radius:4px;transition:background .2s}
+    .btn:hover{background:var(--accent2)}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.35);color:var(--white)}
+    .btn-ghost:hover{border-color:var(--white);background:transparent}
+
+    section{padding:5rem 2.5rem}.container{max-width:1000px;margin:0 auto}
+    .section-label{font-size:.65rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.18em;margin-bottom:.75rem}
+    .section-title{font-size:clamp(1.75rem,3.5vw,2.5rem);margin-bottom:.5rem;font-weight:600}
+    .section-sub{color:var(--fg2);max-width:500px;margin-bottom:3rem;font-weight:300;font-size:1rem}
+
+    .story-section{background:var(--cream)}
+    .story-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+    .story-img{aspect-ratio:4/5;border-radius:8px;overflow:hidden}
+    .story-text p{color:var(--fg2);margin-bottom:1rem;font-weight:300;line-height:1.8}
+    .story-text blockquote{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--fg);margin:2rem 0;line-height:1.4;font-style:italic}
+
+    .menu-section{background:var(--bg2)}
+    .menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+    .menu-card{background:var(--white);border-radius:8px;overflow:hidden;border:1px solid var(--border);transition:transform .2s}
+    .menu-card:hover{transform:translateY(-4px)}
+    .menu-card-img{aspect-ratio:3/2}
+    .menu-card-body{padding:1.5rem}
+    .menu-card h3{font-size:1.1rem;margin-bottom:.5rem;font-weight:600}
+    .menu-card p{color:var(--fg2);font-size:.85rem;font-weight:300;line-height:1.6}
+
+    .info-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;padding:3rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+    .info-item{text-align:center}
+    .info-item h4{font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:.25rem}
+    .info-item p{font-size:.85rem;color:var(--fg2);font-weight:300}
+
+    .contact-section{background:var(--fg);color:var(--white)}
+    .contact-section .section-label{color:var(--accent)}
+    .contact-section .section-sub{color:rgba(255,255,255,.5)}
+    .contact-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+    .contact-card{padding:2rem;border:1px solid rgba(255,255,255,.1);border-radius:8px}
+    .contact-card-label{font-size:.65rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.5rem;font-weight:600}
+    .contact-card a{color:var(--white);text-decoration:none}
+
+    footer{padding:2rem;text-align:center;font-size:.8rem;color:var(--fg2)}
+    .demo-strip{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--fg);text-align:center;padding:.65rem;font-size:.8rem;color:rgba(255,255,255,.6)}
+    .demo-strip strong{color:var(--white)}.demo-strip a{color:var(--white);text-decoration:none}
+
+    @media(max-width:768px){
+      .story-layout,.menu-grid,.contact-cards{grid-template-columns:1fr}
+      .info-bar{grid-template-columns:1fr;gap:1.5rem}
+      .story-img{display:none}
+      nav{padding:1rem 1.25rem}.nav-links a:not(:last-child){display:none}
+    }
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}.reveal.visible{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-brand">Kaimai Cafe</a>
+    <div class="nav-links">
+      <a href="#menu">Menu</a>
+      <a href="#about">About</a>
+      <a href="#contact">Visit Us</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg">
+      <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1600&q=80" alt="Cafe interior" loading="eager">
+    </div>
+    <div class="hero-content">
+      <h1>Kaimai Cafe</h1>
+      <p class="hero-tagline">Homemade food. Great coffee. Peaceful rural setting on the lower Kaimai Ranges.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <a href="#menu" class="btn">View Menu</a>
+        <a href="#contact" class="btn btn-ghost">Find Us</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container reveal">
+      <div class="info-bar">
+        <div class="info-item">
+          <h4>Proudly Local</h4>
+          <p>OCD Coffee & Webster's Tea</p>
+        </div>
+        <div class="info-item">
+          <h4>Made On Site</h4>
+          <p>Everything fresh, every day</p>
+        </div>
+        <div class="info-item">
+          <h4>Gateway to Tauranga</h4>
+          <p>Lower Kaimai Ranges</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="menu" class="menu-section">
+    <div class="container reveal">
+      <p class="section-label">Our Menu</p>
+      <h2 class="section-title">Something for everyone.</h2>
+      <p class="section-sub">A delicious range of homemade cuisine from cabinet favourites to full meals.</p>
+      <div class="menu-grid">
+        <div class="menu-card">
+          <div class="menu-card-img"><img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80" alt="Coffee" loading="lazy"></div>
+          <div class="menu-card-body">
+            <h3>Coffee & Tea</h3>
+            <p>Proudly serving OCD Coffee and Webster's Tea, made just how you like it.</p>
+          </div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-img"><img src="https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=600&q=80" alt="Cabinet food" loading="lazy"></div>
+          <div class="menu-card-body">
+            <h3>Cabinet & Baking</h3>
+            <p>Sweet and savoury goodies baked fresh daily. Try the infamous date scones.</p>
+          </div>
+        </div>
+        <div class="menu-card">
+          <div class="menu-card-img"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80" alt="Meals" loading="lazy"></div>
+          <div class="menu-card-body">
+            <h3>Full Meals</h3>
+            <p>A la carte menu plus Heat & Eat frozen takeaways — home cooking made easy.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="story-section">
+    <div class="container reveal">
+      <div class="story-layout">
+        <div class="story-img">
+          <img src="https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=800&q=80" alt="Rural cafe setting" loading="lazy">
+        </div>
+        <div class="story-text">
+          <p class="section-label">Our Story</p>
+          <h2 class="section-title">The perfect stop.</h2>
+          <blockquote>"The gateway to Tauranga."</blockquote>
+          <p>Situated on the lower Kaimai Ranges, Kaimai Cafe is the perfect place to enjoy a delicious range of homemade cuisine and great coffee in a peaceful, picturesque, rural atmosphere with plenty of free parking.</p>
+          <p>Everything is made on site, from our sweet and savoury cabinet items to the infamous date scones that keep people coming back. We also offer Heat & Eat frozen takeaway meals — perfect for busy families who still want a proper home-cooked dinner.</p>
+          <p>Proudly serving local tea and coffee from OCD Coffee and Webster's Tea.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact-section">
+    <div class="container reveal">
+      <p class="section-label">Visit</p>
+      <h2 class="section-title">Come say hello.</h2>
+      <p class="section-sub">We're on the lower Kaimai Ranges — you can't miss us.</p>
+      <div class="contact-cards">
+        <div class="contact-card">
+          <div class="contact-card-label">Phone</div>
+          <div><a href="tel:075433136">07 543 3136</a></div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-label">Email</div>
+          <div><a href="mailto:hello@kaimaicafe.co.nz">hello@kaimaicafe.co.nz</a></div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-label">Social</div>
+          <div><a href="#">Facebook & Instagram</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Kaimai Cafe &mdash; Lower Kaimai Ranges, Tauranga</footer>
+  <div class="demo-strip">Demo site built by <strong><a href="https://kerehama.nz" target="_blank">Kerehama Andrews</a></strong></div>
+  <script>const o=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&e.target.classList.add('visible')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(e=>o.observe(e));</script>
+</body>
+</html>

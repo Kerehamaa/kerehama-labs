@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Buff Hair & Beauty — Full-service salon in Tauranga. Balayage, facials, ball hair & makeup, brows, and more. Westpac complex, Cameron Road.">
+  <title>Buff Hair & Beauty — Tauranga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Bodoni+Moda:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#1a1a1a;--bg2:#222;--fg:#f5f0eb;--fg2:#999;--accent:#d4a574;--accent2:#c08e5a;--white:#fff;--border:rgba(255,255,255,.08)}
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:Manrope,system-ui,sans-serif;background:var(--bg);color:var(--fg);line-height:1.65;-webkit-font-smoothing:antialiased}
+    img{display:block;width:100%;height:100%;object-fit:cover}
+    h1,h2,h3,blockquote,.section-title{font-family:'Bodoni Moda',serif}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.15rem 2.5rem;background:rgba(26,26,26,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    .nav-brand{font-family:'Bodoni Moda',serif;font-size:1.25rem;font-weight:700;color:var(--fg);text-decoration:none;font-style:italic}
+    .nav-links{display:flex;gap:2rem;align-items:center}
+    .nav-links a{color:var(--fg2);text-decoration:none;font-size:.75rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;transition:color .2s}
+    .nav-links a:hover{color:var(--fg)}
+    .btn{display:inline-block;padding:.85rem 2.25rem;background:var(--accent);color:var(--bg);text-decoration:none;font-weight:700;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;transition:background .2s}
+    .btn:hover{background:var(--accent2)}
+
+    .hero{min-height:100vh;position:relative;display:flex;align-items:flex-end;padding:0}
+    .hero-bg{position:absolute;inset:0}
+    .hero-bg img{filter:brightness(.35)saturate(.8)}
+    .hero-content{position:relative;z-index:1;padding:4rem;max-width:700px}
+    .hero-content h1{font-size:clamp(3rem,7vw,5rem);font-weight:700;font-style:italic;line-height:1.05;margin-bottom:1rem}
+    .hero-sub{color:rgba(245,240,235,.65);font-size:1rem;font-weight:300;max-width:450px;margin-bottom:2rem;line-height:1.7}
+    .hero-location{color:var(--accent);font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.15em;margin-bottom:1.5rem}
+
+    section{padding:5rem 2.5rem}.container{max-width:1050px;margin:0 auto}
+    .section-label{font-family:Manrope,sans-serif;font-size:.65rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.18em;margin-bottom:.75rem}
+    .section-title{font-size:clamp(1.75rem,3.5vw,2.75rem);font-weight:700;font-style:italic;margin-bottom:.5rem}
+    .section-sub{color:var(--fg2);max-width:480px;margin-bottom:3rem;font-weight:300}
+
+    .services-section{background:var(--bg2)}
+    .services-flex{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
+    .sv-card{padding:2rem;border:1px solid var(--border);transition:border-color .2s}
+    .sv-card:hover{border-color:var(--accent)}
+    .sv-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem;font-style:italic}
+    .sv-card p{color:var(--fg2);font-size:.85rem;font-weight:300;line-height:1.6}
+
+    .gallery-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+    .gallery-strip img{aspect-ratio:1;transition:filter .3s;filter:grayscale(.4)brightness(.8)}
+    .gallery-strip img:hover{filter:grayscale(0)brightness(1)}
+
+    .location-section{text-align:center;padding:6rem 2.5rem}
+    .location-section address{font-style:normal;color:var(--fg2);font-weight:300;font-size:1rem;margin-bottom:2rem;line-height:1.7}
+
+    .contact-section{background:var(--accent);color:var(--bg);text-align:center;padding:6rem 2.5rem}
+    .contact-section .section-title{color:var(--bg)}
+    .contact-section p{color:rgba(26,26,26,.65);margin-bottom:2rem;font-weight:300;max-width:400px;margin-left:auto;margin-right:auto}
+    .btn-dark{background:var(--bg);color:var(--fg)}.btn-dark:hover{background:#333}
+    .contact-links{display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-size:.85rem;flex-wrap:wrap}
+    .contact-links a{color:var(--bg);text-decoration:none;border-bottom:1px solid rgba(26,26,26,.25)}
+    .contact-links a:hover{border-color:var(--bg)}
+
+    footer{padding:2rem;text-align:center;font-size:.8rem;color:rgba(255,255,255,.2)}
+    .demo-strip{position:fixed;bottom:0;left:0;right:0;z-index:200;background:#111;text-align:center;padding:.65rem;font-size:.8rem;color:rgba(255,255,255,.5)}
+    .demo-strip strong{color:var(--fg)}.demo-strip a{color:var(--fg);text-decoration:none}
+
+    @media(max-width:768px){
+      .hero-content{padding:6rem 1.5rem 3rem}
+      .services-flex{grid-template-columns:1fr}.gallery-strip{grid-template-columns:repeat(2,1fr)}
+      nav{padding:1rem 1.25rem}.nav-links a:not(.btn){display:none}
+    }
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}.reveal.visible{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-brand">Buff</a>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#location">Location</a>
+      <a href="mailto:admin@bufftauranga.co.nz" class="btn">Book</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg">
+      <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1600&q=80" alt="Salon" loading="eager">
+    </div>
+    <div class="hero-content">
+      <p class="hero-location">Cameron Road, Tauranga</p>
+      <h1>Buff Hair & Beauty</h1>
+      <p class="hero-sub">From balayage to facials, from ball hair and makeup to stunning brows. One-stop salon with passionate, highly trained staff.</p>
+      <a href="mailto:admin@bufftauranga.co.nz" class="btn">Book an Appointment</a>
+    </div>
+  </section>
+
+  <section id="services" class="services-section">
+    <div class="container reveal">
+      <p class="section-label">What We Do</p>
+      <h2 class="section-title">Services</h2>
+      <p class="section-sub">Everything under one roof. Hair, skin, nails, and everything in between.</p>
+      <div class="services-flex">
+        <div class="sv-card">
+          <h3>Hair Colour</h3>
+          <p>Balayage, foils, toners, colour corrections, and full colour services from expert colourists.</p>
+        </div>
+        <div class="sv-card">
+          <h3>Cuts & Styling</h3>
+          <p>Precision cuts and styling for all hair types — from low-maintenance to red-carpet ready.</p>
+        </div>
+        <div class="sv-card">
+          <h3>Facials & Skin</h3>
+          <p>Professional facial treatments to cleanse, hydrate, and rejuvenate your skin.</p>
+        </div>
+        <div class="sv-card">
+          <h3>Brows & Lashes</h3>
+          <p>Shaping, tinting, lamination, and lash lifts for defined, effortless beauty.</p>
+        </div>
+        <div class="sv-card">
+          <h3>Ball & Events</h3>
+          <p>Hair and makeup for school balls, weddings, and special occasions. Look your absolute best.</p>
+        </div>
+        <div class="sv-card">
+          <h3>Nail Services</h3>
+          <p>Manicures, gel polish, and nail art — the finishing touch on any look.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:0">
+    <div class="gallery-strip">
+      <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&q=80" alt="Hair colour" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=500&q=80" alt="Styling" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=500&q=80" alt="Beauty treatment" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&q=80" alt="Nails" loading="lazy">
+    </div>
+  </section>
+
+  <section id="location" class="location-section reveal">
+    <p class="section-label">Find Us</p>
+    <h2 class="section-title">Westpac Complex, Cameron Road</h2>
+    <address>Cameron Road, Tauranga<br>Easy to find with plenty of parking</address>
+    <a href="tel:072424242" class="btn">Call 07 242 4242</a>
+  </section>
+
+  <section class="contact-section">
+    <p class="section-label" style="color:rgba(26,26,26,.5)">Get in Touch</p>
+    <h2 class="section-title">Ready for your next look?</h2>
+    <p>Book your appointment today.</p>
+    <a href="mailto:admin@bufftauranga.co.nz?subject=Booking" class="btn btn-dark">Book Now</a>
+    <div class="contact-links">
+      <a href="mailto:admin@bufftauranga.co.nz">admin@bufftauranga.co.nz</a>
+      <a href="tel:072424242">07 242 4242</a>
+    </div>
+  </section>
+
+  <footer>Buff Hair & Beauty &mdash; Cameron Road, Tauranga</footer>
+  <div class="demo-strip">Demo site built by <strong><a href="https://kerehama.nz" target="_blank">Kerehama Andrews</a></strong></div>
+  <script>const o=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&e.target.classList.add('visible')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(e=>o.observe(e));</script>
+</body>
+</html>

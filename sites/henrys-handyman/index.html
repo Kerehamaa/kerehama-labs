@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Henry's Handyman Repairs and Service Delivery — Tauranga's reliable handyman for painting, decks, fencing, tiling, water blasting, welding, and more.">
+  <title>Henry's Handyman — Tauranga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#fafaf8;--bg2:#f0efeb;--fg:#1a1a1a;--fg2:#555;--accent:#e07b2e;--accent2:#c96a1f;--white:#fff;--border:rgba(0,0,0,.08)}
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--fg);line-height:1.65;-webkit-font-smoothing:antialiased}
+    img{display:block;width:100%;height:100%;object-fit:cover}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(250,250,248,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .nav-brand{font-family:Sora,sans-serif;font-size:1.1rem;font-weight:800;color:var(--fg);text-decoration:none}
+    .nav-brand span{color:var(--accent)}
+    .nav-links{display:flex;gap:1.75rem;align-items:center}
+    .nav-links a{color:var(--fg2);text-decoration:none;font-size:.8rem;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:var(--fg)}
+    .btn{display:inline-block;padding:.85rem 2rem;background:var(--accent);color:var(--white);text-decoration:none;font-weight:600;font-size:.8rem;border-radius:6px;transition:background .2s,transform .15s}
+    .btn:hover{background:var(--accent2);transform:translateY(-1px)}
+    .btn-outline{background:transparent;color:var(--fg);border:1.5px solid var(--border)}
+    .btn-outline:hover{border-color:var(--fg);background:transparent}
+
+    .hero{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;padding-top:4rem}
+    .hero-text{display:flex;flex-direction:column;justify-content:center;padding:4rem 3rem 4rem 4rem}
+    .hero-label{font-size:.7rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;margin-bottom:1rem}
+    .hero-title{font-family:Sora,sans-serif;font-size:clamp(2rem,4vw,3.25rem);font-weight:800;line-height:1.15;margin-bottom:1.25rem}
+    .hero-sub{color:var(--fg2);font-size:1rem;max-width:440px;margin-bottom:2.5rem;line-height:1.7}
+    .hero-actions{display:flex;gap:1rem;flex-wrap:wrap}
+    .hero-img{position:relative;overflow:hidden}
+    .hero-img img{height:100%;min-height:600px}
+
+    section{padding:5rem 2.5rem}.container{max-width:1050px;margin:0 auto}
+    .section-label{font-size:.7rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.75rem}
+    .section-title{font-family:Sora,sans-serif;font-size:clamp(1.5rem,3vw,2.25rem);font-weight:700;margin-bottom:.5rem}
+    .section-sub{color:var(--fg2);max-width:480px;margin-bottom:3rem;line-height:1.7}
+
+    .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+    .service-card{background:var(--white);border-radius:10px;padding:2rem;border:1px solid var(--border);transition:transform .2s,box-shadow .2s}
+    .service-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.06)}
+    .service-icon{width:48px;height:48px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;font-size:1.25rem;color:var(--white)}
+    .service-card h3{font-family:Sora,sans-serif;font-size:1rem;font-weight:700;margin-bottom:.5rem}
+    .service-card p{color:var(--fg2);font-size:.85rem;line-height:1.6}
+
+    .why-section{background:var(--bg2)}
+    .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
+    .why-item{text-align:center}
+    .why-number{font-family:Sora,sans-serif;font-size:2.5rem;font-weight:800;color:var(--accent)}
+    .why-text{font-size:.8rem;color:var(--fg2);margin-top:.25rem;font-weight:500}
+
+    .gallery-section{background:var(--white)}
+    .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;border-radius:12px;overflow:hidden}
+    .gallery-grid img{aspect-ratio:4/3}
+
+    .contact-section{background:var(--fg);color:var(--white)}
+    .contact-section .section-label{color:var(--accent)}
+    .contact-section .section-sub{color:rgba(255,255,255,.6)}
+    .contact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2rem}
+    .contact-card{padding:2rem;border:1px solid rgba(255,255,255,.1);border-radius:10px}
+    .contact-card-label{font-size:.65rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.75rem;font-weight:600}
+    .contact-card-value{font-size:1rem}
+    .contact-card-value a{color:var(--white);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);transition:border-color .2s}
+    .contact-card-value a:hover{border-color:var(--white)}
+
+    .cta-section{text-align:center;padding:6rem 2.5rem;background:var(--accent);color:var(--white)}
+    .cta-section .section-title{color:var(--white);font-size:clamp(1.75rem,3.5vw,2.5rem)}
+    .cta-section p{color:rgba(255,255,255,.85);margin-bottom:2rem;max-width:450px;margin-left:auto;margin-right:auto}
+    .btn-white{background:var(--white);color:var(--accent)}
+    .btn-white:hover{background:rgba(255,255,255,.9)}
+
+    footer{padding:2rem 2.5rem;text-align:center;font-size:.8rem;color:var(--fg2);border-top:1px solid var(--border)}
+    .demo-strip{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--fg);text-align:center;padding:.65rem 1rem;font-size:.8rem;color:rgba(255,255,255,.6)}
+    .demo-strip strong{color:var(--white)}.demo-strip a{color:var(--white);text-decoration:none}
+
+    @media(max-width:768px){
+      .hero{grid-template-columns:1fr}.hero-text{padding:6rem 1.5rem 3rem}.hero-img{max-height:350px}
+      .services-grid{grid-template-columns:1fr}.why-grid{grid-template-columns:repeat(2,1fr)}
+      .gallery-grid{grid-template-columns:1fr}.contact-grid{grid-template-columns:1fr}
+      nav{padding:1rem 1.25rem}.nav-links a:not(.btn){display:none}
+    }
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}.reveal.visible{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="#" class="nav-brand">Henry's <span>Handyman</span></a>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#about">About</a>
+      <a href="#contact" class="btn">Get a Quote</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-text">
+      <p class="hero-label">Tauranga Handyman Services</p>
+      <h1 class="hero-title">Repairs, builds, and everything in between.</h1>
+      <p class="hero-sub">From painting and tiling to decks, fences, and welding — one call covers it all. Reliable, experienced, and local to Tauranga.</p>
+      <div class="hero-actions">
+        <a href="mailto:hmarais15@gmail.com" class="btn">Get a Free Quote</a>
+        <a href="tel:021406404" class="btn btn-outline">Call 021 406 404</a>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80" alt="Handyman at work" loading="eager">
+    </div>
+  </section>
+
+  <section id="services" class="services-section">
+    <div class="container reveal">
+      <p class="section-label">What I Do</p>
+      <h2 class="section-title">Services</h2>
+      <p class="section-sub">No job too small. From quick repairs to full builds, I handle it all with care.</p>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">&#9964;</div>
+          <h3>Painting</h3>
+          <p>Interior and exterior wall painting, sanding, and refurbishment of doors and railings.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#9744;</div>
+          <h3>Decks & Fences</h3>
+          <p>Custom-built decks and wooden fences to suit your property and budget.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#9830;</div>
+          <h3>Tiling & Waterproofing</h3>
+          <p>All tiling work including shower waterproofing, cleaning, and epoxy grouting.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#10070;</div>
+          <h3>Water Blasting</h3>
+          <p>Walls, fences, walkways, decks, and driveways — blasted back to clean.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#9881;</div>
+          <h3>Welding & Metalwork</h3>
+          <p>Welding, rustproofing, and painting on metal gates and structures.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">&#128273;</div>
+          <h3>Fixtures & Fittings</h3>
+          <p>Locks, handles, smoke alarms, taps, toilet systems, curtain rails, and more.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="why-section">
+    <div class="container reveal">
+      <div class="why-grid">
+        <div class="why-item"><div class="why-number">6+</div><div class="why-text">Service categories</div></div>
+        <div class="why-item"><div class="why-number">Tauranga</div><div class="why-text">Based locally</div></div>
+        <div class="why-item"><div class="why-number">1</div><div class="why-text">Call covers it all</div></div>
+        <div class="why-item"><div class="why-number">Free</div><div class="why-text">Quotes always</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="gallery-section">
+    <div class="container reveal">
+      <p class="section-label">The Work</p>
+      <h2 class="section-title">Quality craftsmanship, every time.</h2>
+      <p class="section-sub">Whether it's a quick repair or a full build, the standard stays the same.</p>
+      <div class="gallery-grid">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80" alt="Deck building" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=600&q=80" alt="Painting work" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80" alt="Tiling" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact-section">
+    <div class="container reveal">
+      <p class="section-label">Contact</p>
+      <h2 class="section-title">Get in touch.</h2>
+      <p class="section-sub">Call, text, or email for a free quote. Happy to come have a look at the job.</p>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="contact-card-label">Phone</div>
+          <div class="contact-card-value"><a href="tel:021406404">021 406 404</a></div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-label">Email</div>
+          <div class="contact-card-value"><a href="mailto:hmarais15@gmail.com">hmarais15@gmail.com</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <h2 class="section-title">Got a job that needs doing?</h2>
+    <p>Get a free, no-obligation quote today.</p>
+    <a href="mailto:hmarais15@gmail.com?subject=Quote%20Request" class="btn btn-white">Request a Quote</a>
+  </section>
+
+  <footer>Henry's Handyman Repairs and Service Delivery &mdash; Tauranga</footer>
+  <div class="demo-strip">Demo site built by <strong><a href="https://kerehama.nz" target="_blank">Kerehama Andrews</a></strong></div>
+  <script>
+    const o=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&e.target.classList.add('visible')})},{threshold:.1});
+    document.querySelectorAll('.reveal').forEach(e=>o.observe(e));
+  </script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Graced Opp Shop & Espresso Bar — Quality pre-loved clothing, baby gear, bric-a-brac, and barista coffee. Playroom for kids. Supporting Pregnancy Choice Tauranga.">
+  <title>Graced Opp Shop & Espresso Bar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#faf9f6;--bg2:#f3f0ea;--fg:#2d2a25;--fg2:#7a7469;--accent:#6b8f71;--accent2:#567354;--warm:#e8d5b5;--white:#fff;--border:rgba(0,0,0,.06)}
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:Karla,system-ui,sans-serif;background:var(--bg);color:var(--fg);line-height:1.7;-webkit-font-smoothing:antialiased}
+    img{display:block;width:100%;height:100%;object-fit:cover}
+    h1,h2,h3,blockquote{font-family:Fraunces,serif}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.15rem 2.5rem;background:rgba(250,249,246,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .nav-brand{font-family:Fraunces,serif;font-size:1.1rem;font-weight:700;color:var(--fg);text-decoration:none}
+    .nav-links{display:flex;gap:2rem;align-items:center}
+    .nav-links a{color:var(--fg2);text-decoration:none;font-size:.8rem;font-weight:400;transition:color .2s}
+    .nav-links a:hover{color:var(--fg)}
+    .btn{display:inline-block;padding:.85rem 2rem;background:var(--accent);color:var(--white);text-decoration:none;font-weight:600;font-size:.8rem;border-radius:6px;transition:background .2s}
+    .btn:hover{background:var(--accent2)}
+
+    .hero{min-height:100vh;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem}
+    .hero-bg{position:absolute;inset:0}
+    .hero-bg img{filter:brightness(.4)saturate(.8)}
+    .hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse,transparent 30%,rgba(45,42,37,.6)80%)}
+    .hero-content{position:relative;z-index:1;max-width:650px}
+    .hero-content h1{color:var(--white);font-size:clamp(2.25rem,5vw,3.75rem);font-weight:700;line-height:1.15;margin-bottom:1rem}
+    .hero-tag{color:rgba(255,255,255,.65);font-size:.95rem;font-weight:300;margin-bottom:2.5rem;line-height:1.6}
+    .hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+    .btn-light{background:var(--white);color:var(--fg)}.btn-light:hover{background:rgba(255,255,255,.9)}
+    .btn-ghost{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,.3)}.btn-ghost:hover{border-color:var(--white);background:transparent}
+
+    section{padding:5rem 2.5rem}.container{max-width:1000px;margin:0 auto}
+    .section-label{font-size:.65rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.18em;margin-bottom:.75rem}
+    .section-title{font-size:clamp(1.75rem,3.5vw,2.5rem);font-weight:700;margin-bottom:.5rem}
+    .section-sub{color:var(--fg2);max-width:480px;margin-bottom:3rem;font-weight:300}
+
+    .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+    .feat{background:var(--white);padding:2rem;border-radius:10px;border:1px solid var(--border);text-align:center}
+    .feat-icon{font-size:2rem;margin-bottom:1rem}
+    .feat h3{font-size:1rem;font-weight:600;margin-bottom:.5rem}
+    .feat p{color:var(--fg2);font-size:.85rem;font-weight:300;line-height:1.6}
+
+    .story-section{background:var(--bg2)}
+    .story-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+    .story-img{aspect-ratio:4/5;border-radius:10px;overflow:hidden}
+    .story-text p{color:var(--fg2);font-weight:300;line-height:1.8;margin-bottom:1rem}
+    .story-text blockquote{font-size:1.4rem;font-weight:600;color:var(--fg);margin:1.5rem 0;line-height:1.3;font-style:italic}
+
+    .hours-section{text-align:center;background:var(--warm);padding:4rem 2.5rem}
+    .hours-title{font-size:1.25rem;font-weight:700;margin-bottom:1.5rem}
+    .hours-grid{display:flex;gap:3rem;justify-content:center;flex-wrap:wrap}
+    .hours-item h4{font-weight:600;margin-bottom:.25rem}
+    .hours-item p{color:var(--fg2);font-weight:300;font-size:.9rem}
+
+    .contact-section{text-align:center;padding:6rem 2.5rem;background:var(--accent);color:var(--white)}
+    .contact-section .section-title{color:var(--white)}
+    .contact-section p{color:rgba(255,255,255,.75);margin-bottom:2rem;max-width:400px;margin-left:auto;margin-right:auto;font-weight:300}
+    .contact-links{display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-size:.85rem;flex-wrap:wrap}
+    .contact-links a{color:var(--white);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.3)}
+    .contact-links a:hover{border-color:var(--white)}
+
+    footer{padding:2rem;text-align:center;font-size:.8rem;color:var(--fg2)}
+    .demo-strip{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--fg);text-align:center;padding:.65rem;font-size:.8rem;color:rgba(255,255,255,.6)}
+    .demo-strip strong{color:var(--white)}.demo-strip a{color:var(--white);text-decoration:none}
+
+    @media(max-width:768px){
+      .features-grid{grid-template-columns:1fr}.story-layout{grid-template-columns:1fr}.story-img{display:none}
+      nav{padding:1rem 1.25rem}.nav-links a:not(.btn){display:none}
+    }
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}.reveal.visible{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-brand">Graced</a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#hours">Hours</a>
+      <a href="tel:075795683" class="btn">Visit Us</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg">
+      <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80" alt="Shop interior" loading="eager">
+    </div>
+    <div class="hero-content">
+      <h1>Graced Opp Shop & Espresso Bar</h1>
+      <p class="hero-tag">Pre-loved clothing, baby gear, homewares, and barista coffee — all under one roof. Kids play while you shop. Supporting Pregnancy Choice Tauranga.</p>
+      <div class="hero-actions">
+        <a href="#hours" class="btn btn-light">Opening Hours</a>
+        <a href="#about" class="btn btn-ghost">Our Story</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container reveal">
+      <p class="section-label">What We Offer</p>
+      <h2 class="section-title">Shop, sip, and relax.</h2>
+      <p class="section-sub">More than an op shop. A place to browse, grab a coffee, and let the kids play.</p>
+      <div class="features-grid">
+        <div class="feat">
+          <div class="feat-icon">&#128717;</div>
+          <h3>Pre-Loved Finds</h3>
+          <p>Quality clothing, baby gear, bric-a-brac, and homewares at great prices. New stock arriving constantly.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">&#9749;</div>
+          <h3>Espresso Bar</h3>
+          <p>Barista-made coffee to enjoy while you browse. Because shopping is better with a flat white.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">&#127912;</div>
+          <h3>Kids Playroom</h3>
+          <p>Children can play happily in our playroom while you take your time. Stress-free shopping for parents.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="story-section">
+    <div class="container reveal">
+      <div class="story-layout">
+        <div class="story-img">
+          <img src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800&q=80" alt="Shop" loading="lazy">
+        </div>
+        <div class="story-text">
+          <p class="section-label">Our Purpose</p>
+          <h2 class="section-title">Shopping with heart.</h2>
+          <blockquote>"Supporting Pregnancy Choice Tauranga."</blockquote>
+          <p>Graced Opp Shop operates as part of Pregnancy Choice — a service providing free pregnancy tests, information, and support to women facing unplanned pregnancies.</p>
+          <p>Every purchase you make supports this work. You get beautiful pre-loved items at great prices, and a community service gets the funding it needs to keep running.</p>
+          <p>Come in, grab a coffee, find something you love, and know that your money is making a difference.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="hours" class="hours-section reveal">
+    <h2 class="hours-title">Opening Hours</h2>
+    <div class="hours-grid">
+      <div class="hours-item">
+        <h4>Monday - Friday</h4>
+        <p>9:00am - 4:00pm</p>
+      </div>
+      <div class="hours-item">
+        <h4>Saturday</h4>
+        <p>10:00am - 1:00pm</p>
+      </div>
+      <div class="hours-item">
+        <h4>Sunday</h4>
+        <p>Closed</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-section">
+    <p class="section-label" style="color:rgba(255,255,255,.5)">Visit</p>
+    <h2 class="section-title">Come see us.</h2>
+    <p>Pop in for a browse and a coffee. You never know what you'll find.</p>
+    <a href="tel:075795683" class="btn" style="background:var(--white);color:var(--accent)">Call 07 579 5683</a>
+    <div class="contact-links">
+      <a href="mailto:mail@pregnancychoice.org.nz">mail@pregnancychoice.org.nz</a>
+      <a href="tel:075795683">07 579 5683</a>
+    </div>
+  </section>
+
+  <footer>Graced Opp Shop & Espresso Bar &mdash; Tauranga</footer>
+  <div class="demo-strip">Demo site built by <strong><a href="https://kerehama.nz" target="_blank">Kerehama Andrews</a></strong></div>
+  <script>const o=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&e.target.classList.add('visible')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(e=>o.observe(e));</script>
+</body>
+</html>

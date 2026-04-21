@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Yoga for Every Body — Boutique Balinese-feel yoga studio between Bethlehem and Te Puna. Small classes, private sessions, and workplace wellness.">
+  <title>Yoga for Every Body — Tauranga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f7f5f0;--bg2:#edeade;--fg:#2c2c2a;--fg2:#7a7a6e;--accent:#8b7355;--accent2:#6e5a42;--sage:#c5ceb7;--white:#fff;--border:rgba(0,0,0,.06)}
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:Jost,system-ui,sans-serif;background:var(--bg);color:var(--fg);line-height:1.75;-webkit-font-smoothing:antialiased}
+    img{display:block;width:100%;height:100%;object-fit:cover}
+    h1,h2,h3,blockquote{font-family:Lora,serif}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.15rem 2.5rem;background:rgba(247,245,240,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .nav-brand{font-family:Lora,serif;font-size:1.15rem;font-weight:600;color:var(--fg);text-decoration:none;font-style:italic}
+    .nav-links{display:flex;gap:2rem;align-items:center}
+    .nav-links a{color:var(--fg2);text-decoration:none;font-size:.8rem;font-weight:400;transition:color .2s}
+    .nav-links a:hover{color:var(--fg)}
+    .btn{display:inline-block;padding:.85rem 2.25rem;background:var(--accent);color:var(--white);text-decoration:none;font-weight:500;font-size:.8rem;letter-spacing:.03em;transition:background .2s}
+    .btn:hover{background:var(--accent2)}
+
+    .hero{min-height:100vh;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem}
+    .hero-bg{position:absolute;inset:0}
+    .hero-bg img{filter:brightness(.35)saturate(.75)}
+    .hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse,transparent 40%,rgba(44,44,42,.7)85%)}
+    .hero-content{position:relative;z-index:1;max-width:600px}
+    .hero-content h1{color:var(--white);font-size:clamp(2.5rem,6vw,4rem);font-weight:600;font-style:italic;line-height:1.15;margin-bottom:1rem}
+    .hero-tag{color:rgba(255,255,255,.65);font-size:.95rem;font-weight:300;margin-bottom:.75rem;line-height:1.6}
+    .hero-location{color:var(--sage);font-size:.7rem;font-weight:400;text-transform:uppercase;letter-spacing:.18em;margin-bottom:2.5rem}
+    .btn-white{background:var(--white);color:var(--fg)}.btn-white:hover{background:rgba(255,255,255,.9)}
+    .btn-ghost{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,.3)}.btn-ghost:hover{border-color:var(--white);background:transparent}
+
+    section{padding:5rem 2.5rem}.container{max-width:1000px;margin:0 auto}
+    .section-label{font-size:.65rem;font-weight:400;color:var(--accent);text-transform:uppercase;letter-spacing:.18em;margin-bottom:.75rem}
+    .section-title{font-size:clamp(1.75rem,3.5vw,2.5rem);font-weight:600;font-style:italic;margin-bottom:.5rem}
+    .section-sub{color:var(--fg2);max-width:480px;margin-bottom:3rem;font-weight:300}
+
+    .offerings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+    .off-card{background:var(--white);padding:2.25rem;border-radius:8px;border:1px solid var(--border);text-align:center;transition:transform .2s}
+    .off-card:hover{transform:translateY(-3px)}
+    .off-card h3{font-size:1.1rem;margin-bottom:.75rem;font-style:italic}
+    .off-card p{color:var(--fg2);font-size:.85rem;font-weight:300;line-height:1.6}
+    .off-divider{width:32px;height:1px;background:var(--accent);margin:1rem auto}
+
+    .about-section{background:var(--bg2)}
+    .about-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+    .about-img{aspect-ratio:4/5;border-radius:8px;overflow:hidden}
+    .about-text blockquote{font-size:1.5rem;color:var(--fg);font-style:italic;margin:1.5rem 0;line-height:1.35}
+    .about-text p{color:var(--fg2);font-weight:300;line-height:1.8;margin-bottom:1rem}
+
+    .feel-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:0;text-align:center}
+    .feel-item{padding:3rem 2rem;border-right:1px solid var(--border)}
+    .feel-item:last-child{border-right:none}
+    .feel-item h3{font-family:Lora,serif;font-size:1.15rem;font-style:italic;margin-bottom:.25rem}
+    .feel-item p{color:var(--fg2);font-size:.8rem;font-weight:300}
+
+    .contact-section{text-align:center;padding:6rem 2.5rem;background:var(--accent);color:var(--white)}
+    .contact-section .section-title{color:var(--white)}
+    .contact-section p{color:rgba(255,255,255,.7);margin-bottom:2rem;max-width:400px;margin-left:auto;margin-right:auto;font-weight:300}
+    .contact-links{display:flex;gap:2rem;justify-content:center;margin-top:2rem;font-size:.85rem;flex-wrap:wrap}
+    .contact-links a{color:var(--white);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.3)}
+    .contact-links a:hover{border-color:var(--white)}
+
+    footer{padding:2rem;text-align:center;font-size:.8rem;color:var(--fg2)}
+    .demo-strip{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--fg);text-align:center;padding:.65rem;font-size:.8rem;color:rgba(255,255,255,.6)}
+    .demo-strip strong{color:var(--white)}.demo-strip a{color:var(--white);text-decoration:none}
+
+    @media(max-width:768px){
+      .offerings-grid{grid-template-columns:1fr}.about-layout{grid-template-columns:1fr}.about-img{display:none}
+      .feel-bar{grid-template-columns:1fr}.feel-item{border-right:none;border-bottom:1px solid var(--border)}
+      nav{padding:1rem 1.25rem}.nav-links a:not(.btn){display:none}
+    }
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}.reveal.visible{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-brand">Yoga for Every Body</a>
+    <div class="nav-links">
+      <a href="#classes">Classes</a>
+      <a href="#about">About</a>
+      <a href="mailto:missiona@outlook.com" class="btn">Join a Class</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg">
+      <img src="https://images.unsplash.com/photo-1545389336-cf090694435e?w=1600&q=80" alt="Yoga" loading="eager">
+    </div>
+    <div class="hero-content">
+      <h1>Yoga for Every Body</h1>
+      <p class="hero-tag">Boutique Balinese-feel studio in a peaceful country setting. Small classes. Personal attention. Press the reset button.</p>
+      <p class="hero-location">Between Bethlehem & Te Puna, Tauranga</p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <a href="mailto:missiona@outlook.com" class="btn btn-white">Book a Class</a>
+        <a href="#classes" class="btn btn-ghost">View Classes</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container reveal">
+      <div class="feel-bar">
+        <div class="feel-item"><h3>Strengthen</h3><p>Build physical and mental strength</p></div>
+        <div class="feel-item"><h3>Lengthen</h3><p>Increase flexibility and range</p></div>
+        <div class="feel-item"><h3>Centre</h3><p>Observe your mind and find peace</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="classes">
+    <div class="container reveal">
+      <p class="section-label">What We Offer</p>
+      <h2 class="section-title">Classes & sessions.</h2>
+      <p class="section-sub">Small numbers for a personalised experience. Every class leaves you feeling reset.</p>
+      <div class="offerings-grid">
+        <div class="off-card">
+          <h3>Studio Classes</h3>
+          <div class="off-divider"></div>
+          <p>Small group classes in our Balinese-feel studio. Expect to decompress, stretch, strengthen, and leave with a sense of peace.</p>
+        </div>
+        <div class="off-card">
+          <h3>Private Sessions</h3>
+          <div class="off-divider"></div>
+          <p>One-on-one or private group sessions at the studio or a location of your choice. Tailored entirely to you.</p>
+        </div>
+        <div class="off-card">
+          <h3>Workplace Wellness</h3>
+          <div class="off-divider"></div>
+          <p>Yoga packages for workplaces, tailored to your team's needs. Reduce stress, improve focus, build wellbeing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="about-section">
+    <div class="container reveal">
+      <div class="about-layout">
+        <div class="about-img">
+          <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80" alt="Peaceful yoga" loading="lazy">
+        </div>
+        <div class="about-text">
+          <p class="section-label">The Studio</p>
+          <h2 class="section-title">A place to breathe.</h2>
+          <blockquote>"Come to class expecting to decompress and press the reset button."</blockquote>
+          <p>Yoga for Every Body is a boutique Balinese-feel yoga studio, located in a peaceful country setting between Bethlehem and Te Puna.</p>
+          <p>I teach people how to strengthen and lengthen, to observe their minds and to centre themselves. Classes leave you with a feeling of peace, and small numbers make for a truly personalised experience.</p>
+          <p>Whether you're brand new to yoga or have been practising for years, this is a space for you. Every body is welcome.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-section">
+    <p class="section-label" style="color:rgba(255,255,255,.5)">Join</p>
+    <h2 class="section-title">Ready to start?</h2>
+    <p>Get in touch to join a class, book a private session, or ask about workplace wellness.</p>
+    <a href="mailto:missiona@outlook.com?subject=Yoga%20Enquiry" class="btn" style="background:var(--white);color:var(--accent)">Get in Touch</a>
+    <div class="contact-links">
+      <a href="mailto:missiona@outlook.com">missiona@outlook.com</a>
+      <a href="tel:0210441042">021 044 1042</a>
+    </div>
+  </section>
+
+  <footer>Yoga for Every Body &mdash; Between Bethlehem & Te Puna, Tauranga</footer>
+  <div class="demo-strip">Demo site built by <strong><a href="https://kerehama.nz" target="_blank">Kerehama Andrews</a></strong></div>
+  <script>const o=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&e.target.classList.add('visible')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(e=>o.observe(e));</script>
+</body>
+</html>

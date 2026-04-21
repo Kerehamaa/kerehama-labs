@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="K's Beauty — Home-based beauty salon in Papamoa. Waxing, facials, massage, tinting, tanning, and gel polish. Over 10 years experience.">
+  <title>K's Beauty — Papamoa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#fdf8f5;--bg2:#f7eeea;--fg:#3a2a22;--fg2:#8a7068;--accent:#c48b6e;--accent2:#a87054;--white:#fff;--border:rgba(0,0,0,.07)}
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:Outfit,system-ui,sans-serif;background:var(--bg);color:var(--fg);line-height:1.7;-webkit-font-smoothing:antialiased}
+    img{display:block;width:100%;height:100%;object-fit:cover}
+    h1,h2,h3,blockquote{font-family:'Cormorant Garamond',serif}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.15rem 2.5rem;background:rgba(253,248,245,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .nav-brand{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--fg);text-decoration:none;font-style:italic}
+    .nav-links{display:flex;gap:2rem;align-items:center}
+    .nav-links a{color:var(--fg2);text-decoration:none;font-size:.8rem;font-weight:400;transition:color .2s}
+    .nav-links a:hover{color:var(--fg)}
+    .btn{display:inline-block;padding:.85rem 2.25rem;background:var(--accent);color:var(--white);text-decoration:none;font-weight:500;font-size:.8rem;border-radius:50px;transition:background .2s}
+    .btn:hover{background:var(--accent2)}
+
+    .hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:4rem}
+    .hero-text{display:flex;flex-direction:column;justify-content:center;padding:3rem 3rem 3rem 4rem}
+    .hero-label{font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:.18em;margin-bottom:1rem;font-weight:500}
+    .hero-text h1{font-size:clamp(2.5rem,5vw,4rem);font-weight:600;line-height:1.15;margin-bottom:1.25rem;font-style:italic}
+    .hero-sub{color:var(--fg2);font-weight:300;font-size:1rem;max-width:400px;margin-bottom:2.5rem;line-height:1.7}
+    .hero-img{overflow:hidden}
+    .hero-img img{min-height:600px;filter:saturate(.9)brightness(1.03)}
+
+    section{padding:5rem 2.5rem}.container{max-width:1000px;margin:0 auto}
+    .section-label{font-size:.65rem;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:.18em;margin-bottom:.75rem}
+    .section-title{font-size:clamp(1.75rem,3.5vw,2.5rem);font-weight:600;margin-bottom:.5rem;font-style:italic}
+    .section-sub{color:var(--fg2);max-width:480px;margin-bottom:3rem;font-weight:300}
+
+    .services-section{background:var(--bg2)}
+    .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+    .s-card{background:var(--white);border-radius:12px;padding:2rem;text-align:center;border:1px solid var(--border);transition:transform .2s}
+    .s-card:hover{transform:translateY(-4px)}
+    .s-card-icon{font-size:2rem;margin-bottom:1rem}
+    .s-card h3{font-size:1.1rem;font-weight:600;margin-bottom:.5rem}
+    .s-card p{color:var(--fg2);font-size:.85rem;font-weight:300;line-height:1.6}
+
+    .about-section{background:var(--white)}
+    .about-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+    .about-img{aspect-ratio:3/4;border-radius:12px;overflow:hidden}
+    .about-text blockquote{font-size:1.6rem;color:var(--fg);margin:1.5rem 0;line-height:1.4;font-style:italic}
+    .about-text p{color:var(--fg2);font-weight:300;line-height:1.8;margin-bottom:1rem}
+
+    .contact-section{text-align:center;background:var(--accent);color:var(--white);padding:6rem 2.5rem}
+    .contact-section .section-title{color:var(--white)}
+    .contact-section p{color:rgba(255,255,255,.8);margin-bottom:2rem;font-weight:300;max-width:400px;margin-left:auto;margin-right:auto}
+    .contact-details{display:flex;gap:2.5rem;justify-content:center;margin-top:2rem;font-size:.9rem;flex-wrap:wrap}
+    .contact-details a{color:var(--white);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.3);transition:border-color .2s}
+    .contact-details a:hover{border-color:var(--white)}
+
+    footer{padding:2rem;text-align:center;font-size:.8rem;color:var(--fg2)}
+    .demo-strip{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--fg);text-align:center;padding:.65rem;font-size:.8rem;color:rgba(255,255,255,.6)}
+    .demo-strip strong{color:var(--white)}.demo-strip a{color:var(--white);text-decoration:none}
+
+    @media(max-width:768px){
+      .hero{grid-template-columns:1fr}.hero-text{padding:6rem 1.5rem 3rem}.hero-img{max-height:350px}
+      .services-grid{grid-template-columns:1fr}.about-layout{grid-template-columns:1fr}.about-img{display:none}
+      nav{padding:1rem 1.25rem}.nav-links a:not(.btn){display:none}
+    }
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}.reveal.visible{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-brand">K's Beauty</a>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#about">About</a>
+      <a href="mailto:ksbeautysalonpapamoa@gmail.com" class="btn">Book Now</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-text">
+      <p class="hero-label">Papamoa Beauty Salon</p>
+      <h1>Your time to relax.</h1>
+      <p class="hero-sub">Home-based beauty salon in Papamoa with over 10 years of experience. Professional treatments in a warm, relaxing space.</p>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <a href="mailto:ksbeautysalonpapamoa@gmail.com" class="btn">Book an Appointment</a>
+        <a href="tel:0275256528" class="btn" style="background:transparent;color:var(--fg);border:1.5px solid var(--border);border-radius:50px">Call 027 525 6528</a>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img src="https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=800&q=80" alt="Beauty treatment" loading="eager">
+    </div>
+  </section>
+
+  <section id="services" class="services-section">
+    <div class="container reveal">
+      <p class="section-label">Services</p>
+      <h2 class="section-title">Treatments</h2>
+      <p class="section-sub">From a quick tidy-up to a full pamper session.</p>
+      <div class="services-grid">
+        <div class="s-card">
+          <div class="s-card-icon">&#10024;</div>
+          <h3>Waxing</h3>
+          <p>Full body waxing services — quick, professional, and always gentle.</p>
+        </div>
+        <div class="s-card">
+          <div class="s-card-icon">&#9733;</div>
+          <h3>Facials</h3>
+          <p>Deep cleansing and hydrating facials to keep your skin looking fresh.</p>
+        </div>
+        <div class="s-card">
+          <div class="s-card-icon">&#9752;</div>
+          <h3>Massage</h3>
+          <p>Relaxation massage to melt away stress and recharge your body.</p>
+        </div>
+        <div class="s-card">
+          <div class="s-card-icon">&#9673;</div>
+          <h3>Tinting</h3>
+          <p>Lash and brow tinting for a defined, put-together look without the daily effort.</p>
+        </div>
+        <div class="s-card">
+          <div class="s-card-icon">&#9788;</div>
+          <h3>Spray Tanning</h3>
+          <p>Natural-looking spray tan applied evenly for that sun-kissed glow.</p>
+        </div>
+        <div class="s-card">
+          <div class="s-card-icon">&#10070;</div>
+          <h3>Gel Polish</h3>
+          <p>Long-lasting gel nails in a wide range of colours — chip-free for weeks.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="about-section">
+    <div class="container reveal">
+      <div class="about-layout">
+        <div class="about-img">
+          <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80" alt="Relaxing beauty session" loading="lazy">
+        </div>
+        <div class="about-text">
+          <p class="section-label">About</p>
+          <h2 class="section-title">Meet K.</h2>
+          <blockquote>"Let me make your day better than yesterday."</blockquote>
+          <p>I'm a local mum set up at home doing beauty therapy with over 10 years of experience. My salon is hygienic and professional, but also warm and relaxing.</p>
+          <p>I know how busy life gets — as a mum, I understand that sometimes we forget to take care of ourselves. Whether it's a regular waxing appointment or a full pamper day, I'm here to make you feel good.</p>
+          <p>I love meeting new people and would love to welcome you into my home salon here in Papamoa.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-section">
+    <p class="section-label" style="color:rgba(255,255,255,.6)">Book</p>
+    <h2 class="section-title">Ready for some you-time?</h2>
+    <p>Get in touch to book your next appointment.</p>
+    <a href="mailto:ksbeautysalonpapamoa@gmail.com?subject=Booking%20Enquiry" class="btn" style="background:var(--white);color:var(--accent)">Book Now</a>
+    <div class="contact-details">
+      <a href="mailto:ksbeautysalonpapamoa@gmail.com">ksbeautysalonpapamoa@gmail.com</a>
+      <a href="tel:0275256528">027 525 6528</a>
+      <span>Papamoa, Tauranga</span>
+    </div>
+  </section>
+
+  <footer>K's Beauty &mdash; Papamoa, Tauranga</footer>
+  <div class="demo-strip">Demo site built by <strong><a href="https://kerehama.nz" target="_blank">Kerehama Andrews</a></strong></div>
+  <script>const o=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&e.target.classList.add('visible')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(e=>o.observe(e));</script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CROP Hair Design — Passionate stylists in Mt Maunganui and Otumoetai. Colour experts, blonde specialists, and product knowledge you can trust.">
+  <title>CROP Hair Design</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f9f6f2;--bg2:#f0ebe3;--fg:#2a2521;--fg2:#7a6e63;--accent:#9c7e5e;--accent2:#846745;--white:#fff;--border:rgba(0,0,0,.06)}
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:'Work Sans',system-ui,sans-serif;background:var(--bg);color:var(--fg);line-height:1.7;-webkit-font-smoothing:antialiased}
+    img{display:block;width:100%;height:100%;object-fit:cover}
+    h1,h2,.nav-brand{font-family:'Libre Caslon Display',serif}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.15rem 2.5rem;background:rgba(249,246,242,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .nav-brand{font-size:1.3rem;color:var(--fg);text-decoration:none}
+    .nav-links{display:flex;gap:2rem;align-items:center}
+    .nav-links a{color:var(--fg2);text-decoration:none;font-size:.8rem;font-weight:400;transition:color .2s}
+    .nav-links a:hover{color:var(--fg)}
+    .btn{display:inline-block;padding:.85rem 2.25rem;background:var(--accent);color:var(--white);text-decoration:none;font-weight:600;font-size:.8rem;transition:background .2s}
+    .btn:hover{background:var(--accent2)}
+
+    .hero{min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;padding-top:4rem}
+    .hero-img{overflow:hidden}
+    .hero-img img{min-height:600px;filter:saturate(.9)brightness(1.02)}
+    .hero-text{display:flex;flex-direction:column;justify-content:center;padding:3rem 4rem}
+    .hero-locations{font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:.18em;margin-bottom:1.5rem;font-weight:500}
+    .hero-text h1{font-size:clamp(2.5rem,5vw,4rem);line-height:1.1;margin-bottom:1.25rem}
+    .hero-sub{color:var(--fg2);font-weight:300;font-size:1rem;max-width:400px;margin-bottom:2.5rem;line-height:1.7}
+
+    section{padding:5rem 2.5rem}.container{max-width:1000px;margin:0 auto}
+    .section-label{font-size:.65rem;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:.18em;margin-bottom:.75rem}
+    .section-title{font-size:clamp(1.75rem,3.5vw,2.5rem);margin-bottom:.5rem}
+    .section-sub{color:var(--fg2);max-width:480px;margin-bottom:3rem;font-weight:300}
+
+    .what-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+    .what-card{text-align:center;padding:2rem}
+    .what-card h3{font-family:'Libre Caslon Display',serif;font-size:1.1rem;margin-bottom:.5rem}
+    .what-card p{color:var(--fg2);font-size:.85rem;font-weight:300;line-height:1.6}
+    .what-card .divider{width:40px;height:2px;background:var(--accent);margin:1rem auto}
+
+    .gallery-section{background:var(--bg2);padding:0}
+    .gallery-row{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+    .gallery-row img{aspect-ratio:3/4;transition:transform .4s;filter:saturate(.85)}
+    .gallery-row img:hover{transform:scale(1.03);filter:saturate(1)}
+
+    .locations-section{background:var(--white)}
+    .loc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2rem}
+    .loc-card{padding:2.5rem;border:1px solid var(--border);text-align:center}
+    .loc-card h3{font-family:'Libre Caslon Display',serif;font-size:1.25rem;margin-bottom:.5rem}
+    .loc-card p{color:var(--fg2);font-size:.85rem;font-weight:300;margin-bottom:1.5rem}
+
+    .cta-section{text-align:center;padding:6rem 2.5rem}
+    .cta-section p{color:var(--fg2);font-weight:300;margin-bottom:2rem;max-width:400px;margin-left:auto;margin-right:auto}
+
+    footer{padding:2rem;text-align:center;font-size:.8rem;color:var(--fg2)}
+    .demo-strip{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--fg);text-align:center;padding:.65rem;font-size:.8rem;color:rgba(255,255,255,.6)}
+    .demo-strip strong{color:var(--white)}.demo-strip a{color:var(--white);text-decoration:none}
+
+    @media(max-width:768px){
+      .hero{grid-template-columns:1fr}.hero-text{padding:6rem 1.5rem 3rem}.hero-img{max-height:350px;order:-1}
+      .what-grid,.loc-grid{grid-template-columns:1fr}.gallery-row{grid-template-columns:1fr}
+      nav{padding:1rem 1.25rem}.nav-links a:not(.btn){display:none}
+    }
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}.reveal.visible{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-brand">CROP</a>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#locations">Locations</a>
+      <a href="mailto:Info@crophairdesign.co.nz" class="btn">Book</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-img">
+      <img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?w=900&q=80" alt="Hair styling" loading="eager">
+    </div>
+    <div class="hero-text">
+      <p class="hero-locations">Mt Maunganui & Otumoetai</p>
+      <h1>CROP Hair Design</h1>
+      <p class="hero-sub">An amazing team of qualified stylists who are passionate about hairdressing. Colour experts, blonde specialists, and product knowledge you can trust.</p>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <a href="mailto:Info@crophairdesign.co.nz" class="btn">Book an Appointment</a>
+        <a href="tel:075769039" class="btn" style="background:transparent;color:var(--fg);border:1px solid var(--border)">Call 07 576 9039</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="container reveal">
+      <p class="section-label">Services</p>
+      <h2 class="section-title">What we do best.</h2>
+      <p class="section-sub">Whether it's a fresh colour, a precision cut, or expert product advice, our team has you covered.</p>
+      <div class="what-grid">
+        <div class="what-card">
+          <h3>Colour</h3>
+          <div class="divider"></div>
+          <p>Experts in permanent colour, highlights, balayage, and all things blonde. Colour that looks natural and lasts.</p>
+        </div>
+        <div class="what-card">
+          <h3>Cut & Style</h3>
+          <div class="divider"></div>
+          <p>Precision cutting and styling from our team of qualified professionals. Your hair, your way.</p>
+        </div>
+        <div class="what-card">
+          <h3>Product</h3>
+          <div class="divider"></div>
+          <p>In-salon shampoo store with staff highly trained in product knowledge. Get the right products for your hair type.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery-section">
+    <div class="gallery-row">
+      <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80" alt="Hair colour" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80" alt="Salon" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=600&q=80" alt="Styling" loading="lazy">
+    </div>
+  </section>
+
+  <section id="locations" class="locations-section">
+    <div class="container reveal">
+      <p class="section-label">Locations</p>
+      <h2 class="section-title">Two salons. One standard.</h2>
+      <p class="section-sub">Find us in Mt Maunganui and Otumoetai.</p>
+      <div class="loc-grid">
+        <div class="loc-card">
+          <h3>Mt Maunganui</h3>
+          <p>Our flagship salon at the Mount. Drop in or book ahead.</p>
+          <a href="tel:075769039" class="btn">Call to Book</a>
+        </div>
+        <div class="loc-card">
+          <h3>Otumoetai</h3>
+          <p>Same team, same quality, closer to home for Otumoetai locals.</p>
+          <a href="mailto:Info@crophairdesign.co.nz" class="btn">Email to Book</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section reveal">
+    <p class="section-label">Ready?</p>
+    <h2 class="section-title">Book your next visit.</h2>
+    <p>Call us, email, or just walk in. We're ready when you are.</p>
+    <a href="mailto:Info@crophairdesign.co.nz?subject=Booking" class="btn">Book Now</a>
+  </section>
+
+  <footer>CROP Hair Design &mdash; Mt Maunganui & Otumoetai</footer>
+  <div class="demo-strip">Demo site built by <strong><a href="https://kerehama.nz" target="_blank">Kerehama Andrews</a></strong></div>
+  <script>const o=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&e.target.classList.add('visible')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(e=>o.observe(e));</script>
+</body>
+</html>

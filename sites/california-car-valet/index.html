@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="California Car Valet — 24+ years of professional vehicle valet services in Tauranga. Interior, exterior, cut and polish, full valet. 90 2nd Avenue.">
+  <title>California Car Valet — Tauranga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f8f9fa;--bg2:#eef1f5;--fg:#0f1923;--fg2:#5c6b7a;--accent:#1a56db;--accent2:#1347b5;--white:#fff;--border:rgba(0,0,0,.06)}
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+    body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--fg);line-height:1.65;-webkit-font-smoothing:antialiased}
+    img{display:block;width:100%;height:100%;object-fit:cover}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.15rem 2.5rem;background:rgba(248,249,250,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .nav-brand{font-size:1rem;font-weight:800;color:var(--fg);text-decoration:none}
+    .nav-brand span{color:var(--accent)}
+    .nav-links{display:flex;gap:1.75rem;align-items:center}
+    .nav-links a{color:var(--fg2);text-decoration:none;font-size:.8rem;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:var(--fg)}
+    .btn{display:inline-block;padding:.85rem 2rem;background:var(--accent);color:var(--white);text-decoration:none;font-weight:700;font-size:.8rem;border-radius:8px;transition:background .2s,transform .15s}
+    .btn:hover{background:var(--accent2);transform:translateY(-1px)}
+
+    .hero{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;padding-top:4rem}
+    .hero-text{display:flex;flex-direction:column;justify-content:center;padding:4rem 3rem 4rem 4rem}
+    .hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;background:var(--bg2);border-radius:50px;font-size:.7rem;font-weight:600;color:var(--accent);margin-bottom:1.5rem;width:fit-content}
+    .hero-text h1{font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1.15;margin-bottom:1.25rem}
+    .hero-sub{color:var(--fg2);font-size:1rem;max-width:440px;margin-bottom:2.5rem;line-height:1.7}
+    .hero-actions{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+    .hero-note{font-size:.75rem;color:var(--fg2)}
+    .hero-img{overflow:hidden;position:relative}
+    .hero-img img{min-height:600px}
+
+    section{padding:5rem 2.5rem}.container{max-width:1050px;margin:0 auto}
+    .section-label{font-size:.65rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.75rem}
+    .section-title{font-size:clamp(1.5rem,3vw,2.25rem);font-weight:800;margin-bottom:.5rem}
+    .section-sub{color:var(--fg2);max-width:480px;margin-bottom:3rem}
+
+    .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;padding:3rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+    .stat{text-align:center}
+    .stat-num{font-size:2rem;font-weight:800;color:var(--accent)}
+    .stat-label{font-size:.7rem;color:var(--fg2);font-weight:500;margin-top:.25rem}
+
+    .services-section{background:var(--white)}
+    .pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+    .pkg{border:2px solid var(--border);border-radius:12px;padding:2.25rem;transition:border-color .2s,transform .2s}
+    .pkg:hover{border-color:var(--accent);transform:translateY(-4px)}
+    .pkg.featured{border-color:var(--accent);background:var(--accent);color:var(--white)}
+    .pkg.featured .pkg-tag{color:rgba(255,255,255,.7)}
+    .pkg.featured .pkg-desc{color:rgba(255,255,255,.7)}
+    .pkg-tag{font-size:.65rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.75rem}
+    .pkg h3{font-size:1.25rem;font-weight:800;margin-bottom:.75rem}
+    .pkg-desc{color:var(--fg2);font-size:.85rem;line-height:1.6;margin-bottom:1.25rem}
+    .pkg-list{list-style:none;font-size:.8rem;color:var(--fg2);line-height:2}
+    .pkg.featured .pkg-list{color:rgba(255,255,255,.8)}
+    .pkg-list li::before{content:"+ ";font-weight:700;color:var(--accent)}
+    .pkg.featured .pkg-list li::before{color:rgba(255,255,255,.5)}
+
+    .location-section{background:var(--bg2)}
+    .loc-card{background:var(--white);border-radius:12px;padding:3rem;max-width:600px;margin:0 auto;text-align:center;border:1px solid var(--border)}
+    .loc-card h3{font-size:1.25rem;font-weight:800;margin-bottom:.75rem}
+    .loc-card p{color:var(--fg2);margin-bottom:1.5rem;line-height:1.7}
+
+    .cta-section{text-align:center;padding:6rem 2.5rem;background:var(--accent);color:var(--white)}
+    .cta-section .section-title{color:var(--white)}
+    .cta-section p{color:rgba(255,255,255,.75);margin-bottom:2rem;max-width:400px;margin-left:auto;margin-right:auto}
+    .btn-white{background:var(--white);color:var(--accent)}.btn-white:hover{background:rgba(255,255,255,.9)}
+
+    footer{padding:2rem;text-align:center;font-size:.8rem;color:var(--fg2)}
+    .demo-strip{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--fg);text-align:center;padding:.65rem;font-size:.8rem;color:rgba(255,255,255,.6)}
+    .demo-strip strong{color:var(--white)}.demo-strip a{color:var(--white);text-decoration:none}
+
+    @media(max-width:768px){
+      .hero{grid-template-columns:1fr}.hero-text{padding:6rem 1.5rem 3rem}.hero-img{max-height:300px}
+      .stats-bar{grid-template-columns:repeat(2,1fr)}.pkg-grid{grid-template-columns:1fr}
+      nav{padding:1rem 1.25rem}.nav-links a:not(.btn){display:none}
+    }
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}.reveal.visible{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-brand"><span>California</span> Car Valet</a>
+    <div class="nav-links">
+      <a href="#packages">Packages</a>
+      <a href="#location">Location</a>
+      <a href="tel:075783821" class="btn">Call Us</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-text">
+      <div class="hero-badge">24+ years in business</div>
+      <h1>Your car, looking its best.</h1>
+      <p class="hero-sub">Professional vehicle valet services for dealerships, corporate clients, and private owners. Centrally located in Tauranga.</p>
+      <div class="hero-actions">
+        <a href="tel:075783821" class="btn">Call 07 578 3821</a>
+        <a href="mailto:info@ccv.nz" class="btn" style="background:transparent;color:var(--fg);border:1.5px solid var(--border);border-radius:8px">Email Us</a>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=800&q=80" alt="Car detailing" loading="eager">
+    </div>
+  </section>
+
+  <section>
+    <div class="container reveal">
+      <div class="stats-bar">
+        <div class="stat"><div class="stat-num">24+</div><div class="stat-label">Years Operating</div></div>
+        <div class="stat"><div class="stat-num">90</div><div class="stat-label">2nd Avenue</div></div>
+        <div class="stat"><div class="stat-num">Central</div><div class="stat-label">Tauranga CBD</div></div>
+        <div class="stat"><div class="stat-num">P/U</div><div class="stat-label">Collection & Drop</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="packages" class="services-section">
+    <div class="container reveal">
+      <p class="section-label">Packages</p>
+      <h2 class="section-title">What we offer.</h2>
+      <p class="section-sub">From a quick interior groom to a full top-to-bottom valet.</p>
+      <div class="pkg-grid">
+        <div class="pkg">
+          <p class="pkg-tag">Interior</p>
+          <h3>Interior Valet</h3>
+          <p class="pkg-desc">Full interior deep clean — carpets, seats, dash, and every surface.</p>
+          <ul class="pkg-list">
+            <li>Full shampoo</li>
+            <li>Interior groom</li>
+            <li>Dash & console detail</li>
+            <li>Windows cleaned</li>
+          </ul>
+        </div>
+        <div class="pkg featured">
+          <p class="pkg-tag">Most Popular</p>
+          <h3>Full Valet</h3>
+          <p class="pkg-desc">The complete package — inside and out, top to bottom.</p>
+          <ul class="pkg-list">
+            <li>Interior shampoo & groom</li>
+            <li>Exterior cut & polish</li>
+            <li>Rims cleaned</li>
+            <li>Engine steam clean</li>
+          </ul>
+        </div>
+        <div class="pkg">
+          <p class="pkg-tag">Exterior</p>
+          <h3>Cut & Polish</h3>
+          <p class="pkg-desc">Restore the exterior shine with a professional cut and polish.</p>
+          <ul class="pkg-list">
+            <li>Machine cut</li>
+            <li>Hand polish</li>
+            <li>Paint correction</li>
+            <li>Showroom finish</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="location" class="location-section">
+    <div class="container reveal">
+      <p class="section-label">Find Us</p>
+      <h2 class="section-title">Centrally located.</h2>
+      <p class="section-sub">Drop off your car, or if you're within a 20-minute drive, we'll collect and return it for you.</p>
+      <div class="loc-card">
+        <h3>90 2nd Avenue, Tauranga</h3>
+        <p>Central Tauranga — 5 minutes from the CBD. Drop off your car and we'll take care of the rest.</p>
+        <a href="tel:075783821" class="btn">Call to Book</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <h2 class="section-title">Get your car looking new.</h2>
+    <p>Call, email, or drop in for a quote.</p>
+    <a href="mailto:info@ccv.nz?subject=Valet%20Quote" class="btn btn-white">Get a Quote</a>
+  </section>
+
+  <footer>California Car Valet &mdash; 90 2nd Avenue, Tauranga</footer>
+  <div class="demo-strip">Demo site built by <strong><a href="https://kerehama.nz" target="_blank">Kerehama Andrews</a></strong></div>
+  <script>const o=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&e.target.classList.add('visible')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(e=>o.observe(e));</script>
+</body>
+</html>
