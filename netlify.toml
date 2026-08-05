@@ -23,6 +23,13 @@
   status = 200
   force = false
 
+# Old myspeech link — file was renamed to index.html
+[[redirects]]
+  from = "/sites/myspeech/myspeech.html"
+  to = "/sites/myspeech/"
+  status = 301
+  force = true
+
 # SPA-style fallback for sites
 [[redirects]]
   from = "/sites/*"

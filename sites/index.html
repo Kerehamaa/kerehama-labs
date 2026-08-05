@@ -263,8 +263,8 @@
         return;
       }
 
-      // Navigate to the site
-      window.location.href = '/sites/' + encodeURIComponent(siteName) + '/';
+      // Open the site in the client preview wrapper (toolbar + device views)
+      window.location.href = '/sites/preview/?site=' + encodeURIComponent(siteName);
     });
 
     // Clear error on input
