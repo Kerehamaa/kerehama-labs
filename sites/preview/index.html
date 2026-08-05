@@ -269,7 +269,23 @@
     };
 
     const params = new URLSearchParams(location.search);
-    const slug = (params.get('site') || '').trim().toLowerCase().replace(/[^a-z0-9\-]/g, '');
+    const raw = (params.get('site') || '').trim().toLowerCase()
+      .replace(/[\s_]+/g, '-')
+      .replace(/[^a-z0-9\-]/g, '');
+
+    // Forgiving lookup: exact slug, then hyphen-insensitive, then unique prefix
+    function resolveSlug(name) {
+      if (SITES[name]) return name;
+      const bare = name.replace(/-/g, '');
+      if (!bare) return '';
+      const keys = Object.keys(SITES);
+      const loose = keys.filter(k => k.replace(/-/g, '') === bare);
+      if (loose.length === 1) return loose[0];
+      const prefix = keys.filter(k => k.replace(/-/g, '').startsWith(bare));
+      if (prefix.length === 1) return prefix[0];
+      return '';
+    }
+    const slug = resolveSlug(raw);
 
     const shell     = document.getElementById('frame-shell');
     const frame     = document.getElementById('site-frame');
@@ -283,9 +299,9 @@
 
     if (!SITES[slug]) {
       document.getElementById('error-card').hidden = false;
-      if (slug) {
+      if (raw) {
         document.getElementById('error-text').textContent =
-          'No demo called "' + slug + '" here. Check the name and try again from the Labs portal.';
+          'No demo called "' + raw + '" here. Check the name and try again from the Labs portal.';
       }
       document.getElementById('toolbar').querySelectorAll('.group, .dims').forEach(el => el.style.display = 'none');
     } else {
