@@ -4,7 +4,7 @@
 // arbitrary markup from one client would endanger every other client.
 import {
   json, requireEnv, getUser, canManage, ghGetFile, ghPutFile,
-  patchText, patchImage, patchSeo, SLUG_RE
+  patchText, patchImage, patchSeo, SLUG_RE, PAGE_RE
 } from '../lib/cms.mjs';
 
 const MAX_KEYS = 200;
@@ -23,6 +23,8 @@ export default async (req) => {
     try { body = await req.json(); } catch { return json({ error: 'bad json' }, 400); }
     const site = String(body.site || '');
     if (!SLUG_RE.test(site)) return json({ error: 'bad site' }, 400);
+    const page = String(body.page || 'index.html');
+    if (!PAGE_RE.test(page) || page.includes('..')) return json({ error: 'bad page' }, 400);
 
     const access = await canManage(user.id, site);
     if (!access.ok) return json({ error: 'forbidden' }, 403);
@@ -35,8 +37,8 @@ export default async (req) => {
     if (keys.length === 0) return json({ error: 'empty patch' }, 400);
     if (keys.length > MAX_KEYS) return json({ error: 'too many keys' }, 400);
 
-    const file = await ghGetFile(`sites/${site}/index.html`);
-    if (!file) return json({ error: 'site file not found' }, 404);
+    const file = await ghGetFile(`sites/${site}/${page}`);
+    if (!file) return json({ error: 'page not found' }, 404);
 
     let html = file.content;
     let applied = 0;
@@ -63,9 +65,9 @@ export default async (req) => {
     if (applied === 0) return json({ error: 'nothing matched', skipped }, 400);
 
     const commit = await ghPutFile(
-      `sites/${site}/index.html`,
+      `sites/${site}/${page}`,
       html,
-      `cms: publish ${site} (${applied} change${applied === 1 ? '' : 's'}) by ${user.email || user.id}`,
+      `cms: publish ${site}/${page} (${applied} change${applied === 1 ? '' : 's'}) by ${user.email || user.id}`,
       file.sha
     );
     return json({ ok: true, commit, applied, skipped });

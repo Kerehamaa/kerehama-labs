@@ -57,6 +57,7 @@
       <span class="word" style="font-size:13px">KITSET</span>
     </span>
     <span id="site-name" class="muted" style="font-size:13.5px"></span>
+    <select id="page-sel" title="Page" style="border:1px solid var(--line-strong);border-radius:7px;padding:6px 9px;font:600 13px var(--font-body);background:var(--panel);color:var(--text);max-width:170px"></select>
     <span class="spacer"></span>
     <span id="save-state" class="muted"><span class="dot"></span><span id="save-text">Loading…</span></span>
     <div class="devicebtns">
@@ -83,9 +84,10 @@
 (function () {
   var $ = cms.$, sb = cms.sb;
   var slug = new URLSearchParams(location.search).get('site') || '';
-  var draft = {};
+  var page = 'index.html';
+  var pages = ['index.html'];
+  var drafts = { pages: {} };   // { pages: { 'index.html': { key: {kind, value} } } }
   var dirty = false;
-  var unpublished = false;
   var saveTimer = null;
   var pickKey = null;
   var toastTimer;
@@ -110,6 +112,37 @@
     if (ms) setTimeout(function () { el.classList.remove('show'); }, ms);
   }
 
+  function pagePatch() {
+    if (!drafts.pages[page]) drafts.pages[page] = {};
+    return drafts.pages[page];
+  }
+  function pageLabel(p) {
+    if (p === 'index.html') return 'Home';
+    return p.replace(/\.html$/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+  }
+  function pageUrl() {
+    return '/sites/' + slug + '/' + (page === 'index.html' ? '' : page) + '?cms-edit=1';
+  }
+  function renderPageSel() {
+    $('#page-sel').innerHTML = pages.map(function (p) {
+      var pending = drafts.pages[p] && Object.keys(drafts.pages[p]).length;
+      return '<option value="' + p + '"' + (p === page ? ' selected' : '') + '>' +
+        pageLabel(p) + (pending ? ' •' : '') + '</option>';
+    }).join('');
+    $('#page-sel').hidden = pages.length < 2;
+  }
+  function updateButtons() {
+    var pending = Object.keys(pagePatch()).length > 0;
+    $('#publish').disabled = !pending;
+    $('#discard').hidden = !pending;
+    renderPageSel();
+  }
+  function loadFrame() {
+    $('#loading-overlay').hidden = false;
+    $('#loading-overlay').style.opacity = '1';
+    $('#frame').src = pageUrl();
+  }
+
   async function boot() {
     var s = await cms.requireAuth();
     if (!s) return;
@@ -118,22 +151,34 @@
     if (!found && !me.isAdmin) { location.href = '/cms/'; return; }
     $('#site-name').textContent = '/ ' + ((found && found.name) || slug);
 
-    var r = await sb.from('drafts').select('content').eq('site_slug', slug).maybeSingle();
-    draft = (r.data && r.data.content) || {};
-    unpublished = Object.keys(draft).length > 0;
-    updateButtons();
+    try {
+      var pr = await cms.api('cms-pages', { site: slug });
+      if (pr.pages && pr.pages.length) pages = pr.pages;
+    } catch (e) { /* fall back to index.html only */ }
 
-    $('#frame').src = '/sites/' + slug + '/?cms-edit=1';
+    var r = await sb.from('drafts').select('content').eq('site_slug', slug).maybeSingle();
+    var content = (r.data && r.data.content) || {};
+    drafts = content.pages ? content : { pages: (Object.keys(content).length ? { 'index.html': content } : {}) };
+    updateButtons();
+    loadFrame();
   }
 
+  $('#page-sel').addEventListener('change', function () {
+    page = this.value;
+    updateButtons();
+    loadFrame();
+  });
+
+  // ---- messages from the iframe runtime ----
   window.addEventListener('message', function (e) {
     if (e.origin !== location.origin || !e.data || !e.data.type) return;
     var msg = e.data;
     if (msg.type === 'cms-ready') {
       $('#loading-overlay').style.opacity = '0';
       setTimeout(function () { $('#loading-overlay').hidden = true; }, 260);
-      if (Object.keys(draft).length) {
-        $('#frame').contentWindow.postMessage({ type: 'cms-apply', patch: draft }, location.origin);
+      var patch = pagePatch();
+      if (Object.keys(patch).length) {
+        $('#frame').contentWindow.postMessage({ type: 'cms-apply', patch: patch }, location.origin);
         setState('muted', 'Draft restored');
         hint('Your unpublished draft was restored — press Publish when ready', 4200);
       } else {
@@ -141,7 +186,7 @@
         hint('Click any text or photo on the page to edit it', 4200);
       }
     } else if (msg.type === 'cms-patch') {
-      draft[msg.key] = { kind: msg.kind, value: msg.value };
+      pagePatch()[msg.key] = { kind: msg.kind, value: msg.value };
       scheduleSave();
     } else if (msg.type === 'cms-pick-image') {
       pickKey = msg.key;
@@ -149,9 +194,9 @@
     }
   });
 
+  // ---- draft autosave ----
   function scheduleSave() {
     dirty = true;
-    unpublished = true;
     updateButtons();
     setState('saving', 'Saving…');
     clearTimeout(saveTimer);
@@ -161,19 +206,14 @@
   async function saveDraft() {
     var r = await sb.from('drafts').upsert({
       site_slug: slug,
-      content: draft,
+      content: drafts,
       updated_at: new Date().toISOString()
     });
     if (r.error) setState('error', 'Draft not saved: ' + r.error.message);
     else { dirty = false; setState('saved', 'Draft saved'); }
   }
 
-  function updateButtons() {
-    $('#publish').disabled = !unpublished;
-    $('#discard').hidden = !unpublished;
-  }
-
-  // ---- images ----
+  // ---- image replacement ----
   $('#file-input').addEventListener('change', async function () {
     var file = this.files[0];
     this.value = '';
@@ -185,7 +225,7 @@
       var resized = await cms.downscale(file, 1920);
       var res = await cms.api('cms-upload', { site: slug, ext: resized.ext, data: resized.base64 });
       $('#frame').contentWindow.postMessage({ type: 'cms-set-image', key: key, src: res.path }, location.origin);
-      draft[key] = { kind: 'img', value: res.path };
+      pagePatch()[key] = { kind: 'img', value: res.path };
       scheduleSave();
       toast('Photo updated — press Publish to make it live');
     } catch (e) {
@@ -193,32 +233,30 @@
     }
   });
 
-  // ---- publish: commit, then wait until the change is actually live ----
+  // ---- publish this page, then wait until the change is actually live ----
   $('#publish').addEventListener('click', async function () {
-    var keys = Object.keys(draft);
+    var patch = pagePatch();
+    var keys = Object.keys(patch);
     if (!keys.length) return;
     $('#publish').disabled = true;
     $('#discard').hidden = true;
     setState('saving', 'Publishing…');
     try {
-      if (dirty) await saveDraft();
-      await cms.api('cms-publish', { site: slug, patch: draft });
+      var payload = JSON.parse(JSON.stringify(patch));
+      await cms.api('cms-publish', { site: slug, page: page, patch: payload });
       setState('saving', 'Deploying — usually under a minute…');
       var probe = null;
       for (var i = 0; i < keys.length; i++) {
-        var p = draft[keys[i]];
-        if (p.kind === 'text' && p.value && p.value.length > 3 && p.value.indexOf('\n') === -1) { probe = p.value; break; }
+        var p = payload[keys[i]];
+        if (p.kind === 'text' && p.value && p.value.length > 3 && p.value.indexOf('<') === -1) { probe = p.value; break; }
         if (p.kind === 'img') { probe = p.value; break; }
       }
       var live = await waitForLive(probe);
-      unpublished = false;
+      delete drafts.pages[page];
+      await saveDraft();
       updateButtons();
-      if (live) {
-        setState('saved', 'Published — your changes are live');
-        toast('Your changes are live');
-      } else {
-        setState('saved', 'Published — going live shortly');
-      }
+      setState('saved', live ? 'Published — your changes are live' : 'Published — going live shortly');
+      if (live) toast('Your changes are live');
     } catch (e) {
       setState('error', 'Publish failed: ' + e.message);
       updateButtons();
@@ -229,10 +267,11 @@
     if (!probe) return Promise.resolve(false);
     var esc = probe.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     var until = Date.now() + 150000;
+    var path = '/sites/' + slug + '/' + page;
     return new Promise(function (resolve) {
       (function check() {
         if (Date.now() > until) { resolve(false); return; }
-        fetch('/sites/' + slug + '/index.html', { cache: 'no-store' })
+        fetch(path, { cache: 'no-store' })
           .then(function (r) { return r.text(); })
           .then(function (html) {
             if (html.indexOf(probe) !== -1 || html.indexOf(esc) !== -1) resolve(true);
@@ -243,14 +282,13 @@
     });
   }
 
-  // ---- discard ----
+  // ---- discard this page's changes ----
   $('#discard').addEventListener('click', async function () {
-    if (!confirm('Throw away all unpublished changes and go back to the live version?')) return;
-    await sb.from('drafts').delete().eq('site_slug', slug);
-    draft = {};
-    dirty = false;
-    unpublished = false;
-    location.reload();
+    if (!confirm('Throw away the unpublished changes on this page and go back to the live version?')) return;
+    delete drafts.pages[page];
+    await saveDraft();
+    updateButtons();
+    loadFrame();
   });
 
   // ---- device toggle ----

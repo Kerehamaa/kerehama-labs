@@ -107,6 +107,49 @@ export async function ghPutFile(path, contentUtf8OrBuffer, message, sha) {
   return data.commit && data.commit.sha;
 }
 
+export const PAGE_RE = /^[a-z0-9][a-z0-9._-]*\.html$/;
+
+// List a site's pages (*.html files in its folder).
+export async function ghListPages(site) {
+  const res = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/sites/${site}?ref=main`,
+    { headers: ghHeaders() }
+  );
+  if (!res.ok) return [];
+  const items = await res.json();
+  return items
+    .filter((i) => i.type === 'file' && i.name.endsWith('.html'))
+    .map((i) => i.name)
+    .sort((a, b) => (a === 'index.html' ? -1 : b === 'index.html' ? 1 : a.localeCompare(b)));
+}
+
+// Commits touching a path, newest first.
+export async function ghCommits(path, n = 15) {
+  const res = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/commits?path=${encodeURIComponent(path)}&sha=main&per_page=${n}`,
+    { headers: ghHeaders() }
+  );
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.map((c) => ({
+    sha: c.sha,
+    date: c.commit.author.date,
+    message: c.commit.message.split('\n')[0],
+    author: c.commit.author.name
+  }));
+}
+
+// A file's content at a specific commit; null when it did not exist there.
+export async function ghGetFileAt(path, ref) {
+  const res = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}?ref=${ref}`,
+    { headers: ghHeaders() }
+  );
+  if (!res.ok) return null;
+  const data = await res.json();
+  return Buffer.from(data.content, 'base64').toString('utf-8');
+}
+
 // ---- HTML patching -------------------------------------------------------
 export function escapeHtml(s) {
   return String(s)

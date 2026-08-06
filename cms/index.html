@@ -76,6 +76,10 @@
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
         <span>Feedback</span>
       </button>
+      <button class="navlink" data-tab="history">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.3L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3.5 2"/></svg>
+        <span>History</span>
+      </button>
       <button class="navlink" data-tab="settings">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.01a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.01a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z"/></svg>
         <span>Settings</span>
@@ -124,6 +128,7 @@
     <div id="tab-seo" hidden>
       <div class="page-head">
         <h2>SEO &amp; sharing</h2>
+        <select id="seo-page" hidden style="border:1px solid var(--line-strong);border-radius:7px;padding:6px 9px;font:600 13px var(--font-body);background:var(--panel);color:var(--text)"></select>
         <span class="spacer"></span>
         <button id="seo-recheck" class="btn small">Run checkup again</button>
       </div>
@@ -142,6 +147,16 @@
           </div>
         </div>
         <div id="seo-checklist" style="margin-top:18px"></div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <h3 style="margin-bottom:6px">Beyond your website</h3>
+        <p class="muted" style="margin-bottom:12px">These matter as much as anything on the page for showing up locally on Google.</p>
+        <div style="display:grid;gap:10px">
+          <div><b>Claim your Google Business Profile</b> — free at <a href="https://business.google.com" target="_blank" rel="noopener">business.google.com</a>. It's the map listing people see first when they search your name.</div>
+          <div><b>Ask happy customers for Google reviews</b> — a steady trickle of reviews moves you up the map results more than almost anything else.</div>
+          <div><b>Keep your name, address and phone identical everywhere</b> — website, Google, Facebook, directories. Mismatches confuse Google.</div>
+          <div><b>Link your socials to your site</b> — put your website link in your Facebook and Instagram bios, and post occasionally with it.</div>
+        </div>
       </div>
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start">
         <div class="card">
@@ -228,6 +243,15 @@
       <div style="margin-top:16px" id="fb-list"></div>
     </div>
 
+    <!-- history -->
+    <div id="tab-history" hidden>
+      <div class="page-head"><h2>Version history</h2></div>
+      <div class="card">
+        <p class="muted" style="margin-bottom:14px">Every publish is saved. Restore puts your whole site back to how it was at that moment — nothing is ever lost, you can restore forward again too.</p>
+        <div id="hist-list"><div class="skeleton" style="height:100px"></div></div>
+      </div>
+    </div>
+
     <!-- settings -->
     <div id="tab-settings" hidden>
       <div class="page-head"><h2>Settings</h2></div>
@@ -257,6 +281,18 @@
     <!-- admin -->
     <div id="tab-admin" hidden>
       <div class="page-head"><h2>Admin</h2></div>
+      <div class="card" style="margin-bottom:16px;padding:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 0;gap:12px;flex-wrap:wrap">
+          <h3>All sites at a glance</h3>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button id="send-reports" class="btn small">Send weekly reports now</button>
+            <span id="send-reports-out" class="hint" style="margin:0"></span>
+          </div>
+        </div>
+        <div style="padding:8px 20px 16px;overflow-x:auto">
+          <table class="list" id="status-table"><tr><td class="muted">Loading…</td></tr></table>
+        </div>
+      </div>
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start">
         <div class="card">
           <h3 style="margin-bottom:14px">Invite a client</h3>
@@ -385,19 +421,21 @@
 
   function selectTab(name) {
     cms.$$('#side-nav .navlink').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === name); });
-    ['overview', 'seo', 'analytics', 'feedback', 'clients', 'settings', 'admin'].forEach(function (t) {
+    ['overview', 'seo', 'analytics', 'feedback', 'history', 'clients', 'settings', 'admin'].forEach(function (t) {
       $('#tab-' + t).hidden = t !== name;
     });
     if (name === 'overview') loadOverview();
     if (name === 'analytics') loadAnalytics();
-    if (name === 'seo') loadSeo();
+    if (name === 'seo') initSeoTab();
     if (name === 'feedback') loadFeedback();
+    if (name === 'history') loadHistory();
     if (name === 'clients') loadClients();
     if (name === 'admin') loadAdmin();
   }
 
   function openSite(s, tab) {
     site = s;
+    seoPage = 'index.html';
     $('#ov-title').textContent = s.name;
     $('#open-live').href = '/sites/' + s.slug + '/';
     renderSidebar();
@@ -423,9 +461,44 @@
 
   // ---------- SEO ----------
   var ogImagePath = '';
+  var seoPage = 'index.html';
+  var pagesCache = {};
+
+  async function sitePages() {
+    if (pagesCache[site.slug]) return pagesCache[site.slug];
+    try {
+      var r = await cms.api('cms-pages', { site: site.slug });
+      pagesCache[site.slug] = (r.pages && r.pages.length) ? r.pages : ['index.html'];
+    } catch (e) {
+      pagesCache[site.slug] = ['index.html'];
+    }
+    return pagesCache[site.slug];
+  }
+  function pageLabel(p) {
+    return p === 'index.html' ? 'Home'
+      : p.replace(/\.html$/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+  }
+  function seoPagePath() {
+    return '/sites/' + site.slug + '/' + (seoPage === 'index.html' ? 'index.html' : seoPage);
+  }
+
+  async function initSeoTab() {
+    var pages = await sitePages();
+    var sel = $('#seo-page');
+    sel.hidden = pages.length < 2;
+    sel.innerHTML = pages.map(function (p) {
+      return '<option value="' + p + '"' + (p === seoPage ? ' selected' : '') + '>' + pageLabel(p) + '</option>';
+    }).join('');
+    if (pages.indexOf(seoPage) === -1) seoPage = 'index.html';
+    loadSeo();
+  }
+  $('#seo-page').addEventListener('change', function () {
+    seoPage = this.value;
+    loadSeo();
+  });
   function bindPreview() {
     var upd = function () {
-      $('#gp-url').textContent = location.origin + '/sites/' + (site ? site.slug : '') + '/';
+      $('#gp-url').textContent = location.origin + '/sites/' + (site ? site.slug : '') + '/' + (seoPage === 'index.html' ? '' : seoPage);
       $('#gp-title').textContent = $('#seo-title').value || 'Page title';
       $('#gp-desc').textContent = $('#seo-description').value || 'Page description appears here.';
       $('#seo-title-count').textContent = $('#seo-title').value.length + '/70';
@@ -440,7 +513,7 @@
   async function loadSeo() {
     $('#seo-status').textContent = 'Loading…';
     try {
-      var res = await fetch('/sites/' + site.slug + '/index.html', { cache: 'no-store' });
+      var res = await fetch(seoPagePath(), { cache: 'no-store' });
       var doc = new DOMParser().parseFromString(await res.text(), 'text/html');
       var get = function (sel, attr) { var el = doc.querySelector(sel); return el ? (attr ? el.getAttribute(attr) : el.textContent) : ''; };
       $('#seo-title').value = get('title');
@@ -497,7 +570,7 @@
     $('#seo-save').disabled = true;
     $('#seo-status').textContent = 'Publishing…';
     try {
-      await cms.api('cms-publish', { site: site.slug, patch: patch });
+      await cms.api('cms-publish', { site: site.slug, page: seoPage, patch: patch });
       $('#seo-status').textContent = '';
       toast('Published — live in about a minute');
       setTimeout(runSeoCheckup, 75000); // re-score once the deploy lands
@@ -614,7 +687,7 @@
 
   async function runSeoCheckup() {
     try {
-      var res = await fetch('/sites/' + site.slug + '/index.html', { cache: 'no-store' });
+      var res = await fetch(seoPagePath(), { cache: 'no-store' });
       var raw = await res.text();
       var doc = new DOMParser().parseFromString(raw, 'text/html');
       renderSeoCheckup(seoAnalyze(doc, raw));
@@ -739,6 +812,45 @@
     toast('Nice one — your request is with the team');
     loadFeedback();
   });
+
+  // ---------- version history ----------
+  async function loadHistory() {
+    $('#hist-list').innerHTML = '<div class="skeleton" style="height:100px"></div>';
+    try {
+      var r = await cms.api('cms-history', { site: site.slug });
+      var versions = r.versions || [];
+      if (!versions.length) {
+        $('#hist-list').innerHTML = '<p class="muted">No published versions yet.</p>';
+        return;
+      }
+      $('#hist-list').innerHTML = '<table class="list"><tr><th>When</th><th>What</th><th></th></tr>' +
+        versions.map(function (v, i) {
+          var msg = v.message.replace(/^cms:\s*/, '').replace(/ by \S+@\S+$/, '');
+          var when = new Date(v.date).toLocaleString('en-NZ', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+          return '<tr><td style="white-space:nowrap;font-family:var(--font-mono);font-size:12.5px">' + when + '</td>' +
+            '<td>' + cms.esc(msg) + (i === 0 ? ' <span class="pill live" style="margin-left:6px">Current</span>' : '') + '</td>' +
+            '<td style="text-align:right">' + (i === 0 ? '' : '<button class="btn small" data-restore="' + v.sha + '">Restore</button>') + '</td></tr>';
+        }).join('') + '</table>';
+      cms.$$('[data-restore]').forEach(function (b) {
+        b.addEventListener('click', async function () {
+          if (!confirm('Put the whole site back to how it was at this point? The current version stays in history, so you can undo this too.')) return;
+          b.disabled = true;
+          b.textContent = 'Restoring…';
+          try {
+            var res = await cms.api('cms-history', { site: site.slug, restore: b.dataset.restore });
+            toast(res.restored ? 'Restored — live in about a minute' : 'Already identical to that version');
+            loadHistory();
+          } catch (e) {
+            toast('Restore failed: ' + e.message);
+            b.disabled = false;
+            b.textContent = 'Restore';
+          }
+        });
+      });
+    } catch (e) {
+      $('#hist-list').innerHTML = '<p class="error-text">Could not load history: ' + cms.esc(e.message) + '</p>';
+    }
+  }
 
   // ---------- clients (admin CRM) ----------
   var clientRows = [];
@@ -882,7 +994,46 @@
     }).join('');
     $('#inv-site').innerHTML = opts;
     $('#up-site').innerHTML = opts;
+    loadStatus();
   }
+
+  async function loadStatus() {
+    try {
+      var r = await cms.api('cms-status', {});
+      var rel = function (iso) {
+        if (!iso) return '—';
+        var mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+        if (mins < 60) return mins + 'm ago';
+        if (mins < 1440) return Math.round(mins / 60) + 'h ago';
+        return Math.round(mins / 1440) + 'd ago';
+      };
+      $('#status-table').innerHTML =
+        '<tr><th>Site</th><th>Last publish</th><th>Views 24h</th><th>Views 7d</th><th>Open requests</th><th>Draft</th></tr>' +
+        (r.sites || []).map(function (s) {
+          return '<tr><td><b>' + cms.esc(s.name) + '</b></td>' +
+            '<td title="' + cms.esc(s.lastMessage || '') + '">' + rel(s.lastPublish) + '</td>' +
+            '<td>' + s.views24h + '</td><td>' + s.views7d + '</td>' +
+            '<td>' + (s.openFeedback ? '<span class="pill" style="color:var(--danger);background:var(--danger-soft)">' + s.openFeedback + '</span>' : '0') + '</td>' +
+            '<td>' + (s.draftAt ? '<span class="pill">pending</span>' : '—') + '</td></tr>';
+        }).join('');
+    } catch (e) {
+      $('#status-table').innerHTML = '<tr><td class="error-text">Status failed: ' + cms.esc(e.message) + '</td></tr>';
+    }
+  }
+
+  $('#send-reports').addEventListener('click', async function () {
+    if (!confirm('Email every client their weekly numbers right now?')) return;
+    this.disabled = true;
+    $('#send-reports-out').textContent = 'Sending…';
+    try {
+      var r = await cms.api('cms-send-reports', {});
+      $('#send-reports-out').textContent = 'Sent ' + r.sent + ' email' + (r.sent === 1 ? '' : 's') +
+        (r.errors && r.errors.length ? ' (' + r.errors.length + ' failed)' : '');
+    } catch (e) {
+      $('#send-reports-out').textContent = 'Failed: ' + e.message;
+    }
+    this.disabled = false;
+  });
 
   $('#dl-html-go').addEventListener('click', async function () {
     var slug = $('#up-site').value;
