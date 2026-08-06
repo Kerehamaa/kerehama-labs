@@ -640,6 +640,8 @@
             '<textarea data-f="notes" rows="3" placeholder="Paid setup fee, wants new gallery section in spring…">' + cms.esc(c.note.notes || '') + '</textarea></div>' +
           '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">' +
             '<button class="btn primary small" data-save-client="' + c.id + '">Save details</button>' +
+            '<button class="btn small" data-reset-pw="' + c.id + '">Reset password</button>' +
+            '<span class="hint" data-pw-out style="margin:0"></span>' +
             c.sites.map(function (s) {
               return '<button class="btn small danger" data-revoke="' + c.id + '|' + cms.esc(s) + '">Remove from ' + cms.esc(s) + '</button>';
             }).join('') +
@@ -672,6 +674,30 @@
         b.disabled = false;
         if (r.error) toast('Save failed: ' + r.error.message);
         else { toast('Saved'); loadClients(); }
+      });
+    });
+    cms.$$('[data-reset-pw]').forEach(function (b) {
+      b.addEventListener('click', async function () {
+        if (!confirm('Give this client a new password? Their old one stops working immediately.')) return;
+        b.disabled = true;
+        try {
+          var r = await cms.api('cms-reset-password', { userId: b.dataset.resetPw });
+          var details = 'Your new website dashboard password\n' +
+            'Sign in: ' + location.origin + '/cms/\n' +
+            'Email: ' + r.email + '\n' +
+            'Password: ' + r.password + '\n' +
+            'You can change it in Settings after signing in.';
+          var out = b.parentElement.querySelector('[data-pw-out]');
+          out.innerHTML = 'New password: <code style="user-select:all;background:var(--panel-2);padding:2px 7px;border-radius:6px">' + cms.esc(r.password) + '</code>';
+          navigator.clipboard.writeText(details).then(function () {
+            toast('New password set — login details copied to clipboard');
+          }, function () {
+            toast('New password set');
+          });
+        } catch (e) {
+          toast('Reset failed: ' + e.message);
+        }
+        b.disabled = false;
       });
     });
     cms.$$('[data-revoke]').forEach(function (b) {
