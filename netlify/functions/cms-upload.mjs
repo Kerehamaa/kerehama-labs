@@ -1,6 +1,6 @@
 // Image upload: commits a client image into their site's assets/ folder.
 // The editor downscales images client-side before sending (base64 JSON).
-import { json, requireEnv, getUser, canManage, ghPutFile, SLUG_RE } from '../lib/cms.mjs';
+import { json, requireEnv, getUser, canManage, ghPutFile, SLUG_RE, audit } from '../lib/cms.mjs';
 
 const MAX_BYTES = 4 * 1024 * 1024;
 const TYPES = {
@@ -41,6 +41,7 @@ export default async (req) => {
       buf,
       `cms: upload image for ${site} by ${user.email || user.id}`
     );
+    audit(user.email, 'upload-image', site, name);
     return json({ ok: true, path: `assets/${name}` });
   } catch (e) {
     console.error('cms-upload', e);

@@ -68,8 +68,19 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
       </button>
     </div>
+    <button id="share-preview" class="btn small ghost" title="Copy a link that shows this draft to anyone">Share preview</button>
     <button id="discard" class="btn small ghost danger" hidden>Discard changes</button>
+    <button id="schedule-btn" class="btn small" disabled title="Publish this page later">Schedule</button>
     <button id="publish" class="btn primary" disabled>Publish</button>
+  </div>
+  <div id="sched-pop" hidden style="position:absolute;right:16px;top:56px;z-index:60;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow-lg);padding:16px;width:280px">
+    <div style="font-weight:600;margin-bottom:8px">Publish this page at…</div>
+    <input id="sched-time" type="datetime-local" style="width:100%;border:1px solid var(--line-strong);border-radius:7px;padding:8px;font:inherit;margin-bottom:10px">
+    <div style="display:flex;gap:8px">
+      <button id="sched-set" class="btn primary small">Schedule</button>
+      <button id="sched-close" class="btn small ghost">Cancel</button>
+    </div>
+    <div id="sched-current" class="hint" style="margin-top:10px"></div>
   </div>
   <div class="stage" id="stage">
     <div id="loading-overlay"><div class="spinner"></div></div>
@@ -134,9 +145,80 @@
   function updateButtons() {
     var pending = Object.keys(pagePatch()).length > 0;
     $('#publish').disabled = !pending;
+    $('#schedule-btn').disabled = !pending && !schedRow;
     $('#discard').hidden = !pending;
     renderPageSel();
   }
+  var schedRow = null;
+  async function loadSchedule() {
+    var r = await sb.from('scheduled_publishes').select('id,run_at')
+      .eq('site_slug', slug).eq('page', page).eq('status', 'open')
+      .order('run_at').limit(1).maybeSingle();
+    schedRow = r.data || null;
+    renderSchedule();
+  }
+  function renderSchedule() {
+    var el = $('#sched-current');
+    if (schedRow) {
+      var when = new Date(schedRow.run_at).toLocaleString('en-NZ', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+      el.innerHTML = 'Scheduled for <b>' + when + '</b> <button id="sched-cancel" class="btn small ghost danger" style="margin-left:6px">Cancel it</button>';
+      var cb = document.getElementById('sched-cancel');
+      if (cb) cb.addEventListener('click', async function () {
+        await sb.from('scheduled_publishes').update({ status: 'canceled' }).eq('id', schedRow.id);
+        schedRow = null;
+        renderSchedule();
+        toast('Scheduled publish canceled');
+      });
+      $('#schedule-btn').textContent = 'Scheduled';
+    } else {
+      el.textContent = '';
+      $('#schedule-btn').textContent = 'Schedule';
+    }
+  }
+
+  $('#schedule-btn').addEventListener('click', function () {
+    var pop = $('#sched-pop');
+    pop.hidden = !pop.hidden;
+    if (!pop.hidden) {
+      var d = new Date(Date.now() + 3600e3);
+      d.setMinutes(0, 0, 0);
+      var pad = function (n) { return String(n).padStart(2, '0'); };
+      $('#sched-time').value = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+      renderSchedule();
+    }
+  });
+  $('#sched-close').addEventListener('click', function () { $('#sched-pop').hidden = true; });
+  $('#sched-set').addEventListener('click', async function () {
+    var v = $('#sched-time').value;
+    var when = v ? new Date(v) : null;
+    if (!when || isNaN(when) || when.getTime() < Date.now() + 60e3) { toast('Pick a time in the future'); return; }
+    if (!Object.keys(pagePatch()).length) { toast('Make some changes first — the draft is what gets published'); return; }
+    if (dirty) await saveDraft();
+    var session = await cms.session();
+    var r = await sb.from('scheduled_publishes').insert({
+      site_slug: slug, page: page, run_at: when.toISOString(), created_by: session.user.id
+    });
+    if (r.error) { toast('Could not schedule: ' + r.error.message); return; }
+    $('#sched-pop').hidden = true;
+    toast('Scheduled — your draft goes live automatically');
+    loadSchedule();
+  });
+
+  $('#share-preview').addEventListener('click', async function () {
+    if (!drafts._preview || !drafts._preview.token) {
+      var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      var tok = Array.from(crypto.getRandomValues(new Uint8Array(24)), function (b) { return chars[b % chars.length]; }).join('');
+      drafts._preview = { token: tok };
+      await saveDraft();
+    }
+    var url = location.origin + '/api/cms-preview?site=' + encodeURIComponent(slug) + '&page=' + encodeURIComponent(page) + '&t=' + drafts._preview.token;
+    navigator.clipboard.writeText(url).then(function () {
+      toast('Preview link copied — anyone with it can see this draft');
+    }, function () {
+      window.prompt('Copy the preview link:', url);
+    });
+  });
+
   function loadFrame() {
     $('#loading-overlay').hidden = false;
     $('#loading-overlay').style.opacity = '1';
@@ -161,12 +243,14 @@
     drafts = content.pages ? content : { pages: (Object.keys(content).length ? { 'index.html': content } : {}) };
     updateButtons();
     loadFrame();
+    loadSchedule();
   }
 
   $('#page-sel').addEventListener('change', function () {
     page = this.value;
     updateButtons();
     loadFrame();
+    loadSchedule();
   });
 
   // ---- messages from the iframe runtime ----

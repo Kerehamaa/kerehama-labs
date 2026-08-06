@@ -119,6 +119,7 @@
   bar.innerHTML =
     '<button type="button" data-cmd="bold" title="Bold"><b>B</b></button>' +
     '<button type="button" data-cmd="italic" title="Italic"><i>I</i></button>' +
+    '<button type="button" data-act="link" id="cms-linkbtn" title="Change where this link goes" style="width:auto;padding:0 9px;font-size:10.5px;letter-spacing:.05em" hidden>LINK</button>' +
     '<span class="cms-sep"></span>' +
     SWATCHES.map(function (c) {
       return '<button type="button" class="cms-swatch" data-color="' + c + '" title="' + c + '" style="background:' + c + '"></button>';
@@ -143,6 +144,8 @@
   var barTarget = null;
   function showBar(el) {
     barTarget = el;
+    var lb = bar.querySelector('#cms-linkbtn');
+    if (lb) lb.hidden = el.tagName !== 'A';
     bar.style.display = 'flex';
     var r = el.getBoundingClientRect();
     var top = r.top - 46;
@@ -165,6 +168,19 @@
     if (!b) return;
     if (b.dataset.cmd) applyCmd(b.dataset.cmd);
     else if (b.dataset.color) applyCmd('foreColor', b.dataset.color);
+    else if (b.dataset.act === 'link' && barTarget && barTarget.tagName === 'A') {
+      var current = barTarget.getAttribute('href') || '';
+      var next = window.prompt('Link to (web address, email like mailto:you@x.co.nz, or phone like tel:075551234):', current);
+      if (next == null) return;
+      next = next.trim();
+      if (!next) return;
+      if (/^www\./i.test(next)) next = 'https://' + next;
+      var key = barTarget.getAttribute('data-cms');
+      textEls.forEach(function (other) {
+        if (other.tagName === 'A' && other.getAttribute('data-cms') === key) other.setAttribute('href', next);
+      });
+      send({ type: 'cms-patch', key: key + '.href', kind: 'link', value: next, dirty: true });
+    }
   });
   bar.querySelector('input[type=color]').addEventListener('input', function () {
     applyCmd('foreColor', this.value);
@@ -215,6 +231,13 @@
       Object.keys(patch).forEach(function (key) {
         var p = patch[key];
         if (p.kind === 'img') { setImage(key, p.value); return; }
+        if (p.kind === 'link') {
+          var base = key.replace(/\.href$/, '');
+          textEls.forEach(function (el) {
+            if (el.tagName === 'A' && el.getAttribute('data-cms') === base) el.setAttribute('href', p.value);
+          });
+          return;
+        }
         if (p.kind !== 'text') return;
         textEls.forEach(function (el) {
           if (el.getAttribute('data-cms') === key) setRich(el, p.value);

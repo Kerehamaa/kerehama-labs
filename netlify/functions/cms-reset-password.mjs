@@ -1,6 +1,6 @@
 // Admin-only: set a fresh random password on a client account and hand it
 // back to the admin to share. Used from the Clients page.
-import { json, requireEnv, getUser, sbRest } from '../lib/cms.mjs';
+import { json, requireEnv, getUser, sbRest, audit } from '../lib/cms.mjs';
 
 export default async (req) => {
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
@@ -42,6 +42,7 @@ export default async (req) => {
       console.error('password reset failed', res.status, await res.text());
       return json({ error: 'reset failed' }, 500);
     }
+    audit(user.email, 'reset-password', null, trows[0].email);
     return json({ ok: true, password, email: trows[0].email || '' });
   } catch (e) {
     console.error('cms-reset-password', e);

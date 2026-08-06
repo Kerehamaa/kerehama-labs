@@ -18,10 +18,12 @@ export default async (req, context) => {
     const ua = (req.headers.get('user-agent') || '').slice(0, 200);
     const day = new Date().toISOString().slice(0, 10);
     const visitor_hash = createHash('sha256').update(`${ip}|${ua}|${site}|${day}`).digest('hex').slice(0, 24);
+    const country = (context && context.geo && context.geo.country && context.geo.country.code) || null;
+    const device = /Mobi|Android|iPhone|iPad/i.test(ua) ? 'mobile' : 'desktop';
 
     const res = await sbRest('page_views', {
       method: 'POST',
-      body: JSON.stringify({ site_slug: site, path, referrer, visitor_hash }),
+      body: JSON.stringify({ site_slug: site, path, referrer, visitor_hash, country, device }),
       headers: { Prefer: 'return=minimal' }
     });
     if (!res.ok) {

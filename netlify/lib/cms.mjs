@@ -236,6 +236,42 @@ export function patchImage(html, key, value) {
   return { html: out, count };
 }
 
+// Swap the href on every tag carrying data-cms="key" (link editing).
+// Scheme whitelist: web, mailto, tel, same-site paths and anchors only.
+const SAFE_HREF = /^(https?:\/\/[^\s"'<>]{1,300}|mailto:[^\s"'<>]{1,200}|tel:[+0-9 ()-]{3,30}|\/[^\s"'<>]{0,200}|#[A-Za-z0-9_-]{0,80}|[a-z0-9._/-]{1,120}\.html(#[A-Za-z0-9_-]{0,80})?)$/i;
+
+export function patchLink(html, key, value) {
+  if (!SAFE_HREF.test(value)) throw new Error(`invalid link for ${key}`);
+  const re = new RegExp(
+    '(<a\\s[^>]*?data-cms="' + escRe(key) + '"[^>]*?\\shref=")[^"]*(")|' +
+    '(<a\\s[^>]*?href=")[^"]*("[^>]*?\\sdata-cms="' + escRe(key) + '")',
+    'g'
+  );
+  let count = 0;
+  const safe = escapeHtml(value);
+  const out = html.replace(re, (m, pre1, post1, pre2, post2) => {
+    count++;
+    return pre1 != null ? pre1 + safe + post1 : pre2 + safe + post2;
+  });
+  return { html: out, count };
+}
+
+// Fire-and-forget audit trail (service role).
+export async function audit(email, action, site_slug, detail) {
+  try {
+    await sbRest('audit_log', {
+      method: 'POST',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({
+        email: email || null,
+        action,
+        site_slug: site_slug || null,
+        detail: detail ? String(detail).slice(0, 300) : null
+      })
+    });
+  } catch (e) { /* auditing must never break the action */ }
+}
+
 // SEO fields land in specific head tags; created if missing.
 export function patchSeo(html, key, value) {
   const safeAttr = escapeHtml(value).replace(/\r?\n/g, ' ');

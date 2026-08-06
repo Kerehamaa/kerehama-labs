@@ -1,6 +1,6 @@
 // Admin-only: upload/replace a whole site's index.html from the dashboard.
 // Clients never get this — raw HTML is admin-trusted content only.
-import { json, requireEnv, getUser, sbRest, ghGetFile, ghPutFile, SLUG_RE } from '../lib/cms.mjs';
+import { json, requireEnv, getUser, sbRest, ghGetFile, ghPutFile, SLUG_RE, audit } from '../lib/cms.mjs';
 
 const MAX_BYTES = 2 * 1024 * 1024;
 
@@ -32,6 +32,7 @@ export default async (req) => {
       `cms: ${existing ? 'replace' : 'create'} ${site} site HTML by ${user.email || user.id}`,
       existing ? existing.sha : undefined
     );
+    audit(user.email, existing ? 'replace-site-html' : 'create-site-html', site);
     return json({ ok: true, commit, replaced: !!existing });
   } catch (e) {
     console.error('cms-site-html', e);

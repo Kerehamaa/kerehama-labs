@@ -47,6 +47,7 @@ export default async (req) => {
       );
       restored++;
     }
+    audit(user.email, 'restore', site, sha.slice(0, 7) + ' (' + restored + ' pages)');
     return json({ ok: true, restored });
   } catch (e) {
     console.error('cms-history', e);

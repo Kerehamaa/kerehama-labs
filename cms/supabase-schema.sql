@@ -127,6 +127,52 @@ create policy client_notes_admin_update on public.client_notes for update using 
 drop policy if exists client_notes_admin_delete on public.client_notes;
 create policy client_notes_admin_delete on public.client_notes for delete using (public.cms_is_admin());
 
+-- richer analytics dimensions (safe to re-run)
+alter table public.page_views add column if not exists country text;
+alter table public.page_views add column if not exists device text;
+
+-- scheduled publishing: a page's saved draft goes live at run_at
+create table if not exists public.scheduled_publishes (
+  id bigint generated always as identity primary key,
+  site_slug text not null references public.sites (slug) on delete cascade,
+  page text not null default 'index.html',
+  run_at timestamptz not null,
+  status text not null default 'open' check (status in ('open', 'done', 'failed', 'canceled')),
+  created_by uuid,
+  created_at timestamptz not null default now()
+);
+alter table public.scheduled_publishes enable row level security;
+drop policy if exists sched_select on public.scheduled_publishes;
+create policy sched_select on public.scheduled_publishes for select
+  using (public.cms_is_admin() or public.cms_is_member(site_slug));
+drop policy if exists sched_insert on public.scheduled_publishes;
+create policy sched_insert on public.scheduled_publishes for insert
+  with check (created_by = auth.uid() and (public.cms_is_admin() or public.cms_is_member(site_slug)));
+drop policy if exists sched_update on public.scheduled_publishes;
+create policy sched_update on public.scheduled_publishes for update
+  using (public.cms_is_admin() or public.cms_is_member(site_slug));
+
+-- uptime monitor state (service role only; no client policies)
+create table if not exists public.uptime_state (
+  site_slug text primary key references public.sites (slug) on delete cascade,
+  down_since timestamptz,
+  last_alert timestamptz
+);
+alter table public.uptime_state enable row level security;
+
+-- audit trail (service role writes; admins read)
+create table if not exists public.audit_log (
+  id bigint generated always as identity primary key,
+  ts timestamptz not null default now(),
+  email text,
+  action text not null,
+  site_slug text,
+  detail text
+);
+alter table public.audit_log enable row level security;
+drop policy if exists audit_admin_select on public.audit_log;
+create policy audit_admin_select on public.audit_log for select using (public.cms_is_admin());
+
 -- seed sites
 insert into public.sites (slug, name) values
   ('myspeech', 'MySpeech'),

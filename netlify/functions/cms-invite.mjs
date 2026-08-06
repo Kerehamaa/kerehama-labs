@@ -1,7 +1,7 @@
 // Admin-only: create (or find) a client user, grant site access, and hand the
 // generated password back to the admin to share. Optionally emails the client
 // via Resend when RESEND_API_KEY is configured.
-import { json, requireEnv, getUser, sbRest, SLUG_RE } from '../lib/cms.mjs';
+import { json, requireEnv, getUser, sbRest, SLUG_RE, audit } from '../lib/cms.mjs';
 
 export default async (req) => {
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
@@ -86,6 +86,7 @@ export default async (req) => {
       emailed = r.ok;
     }
 
+    audit(user.email, created ? 'invite-client' : 'grant-access', site, email);
     return json({ ok: true, created, userId, password: created ? password : null, emailed });
   } catch (e) {
     console.error('cms-invite', e);

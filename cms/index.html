@@ -223,6 +223,14 @@
           <h3 style="margin-bottom:10px">Where visitors came from</h3>
           <table class="list" id="an-refs"></table>
         </div>
+        <div class="card">
+          <h3 style="margin-bottom:10px">Countries</h3>
+          <table class="list" id="an-countries"></table>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:10px">Phones vs computers</h3>
+          <div id="an-devices" style="padding-top:6px"></div>
+        </div>
       </div>
     </div>
 
@@ -293,6 +301,12 @@
           <table class="list" id="status-table"><tr><td class="muted">Loading…</td></tr></table>
         </div>
       </div>
+      <div class="card" style="margin-bottom:16px;padding:0">
+        <h3 style="padding:16px 20px 0">Recent activity</h3>
+        <div style="padding:8px 20px 16px;overflow-x:auto">
+          <table class="list" id="audit-table"><tr><td class="muted">Loading…</td></tr></table>
+        </div>
+      </div>
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start">
         <div class="card">
           <h3 style="margin-bottom:14px">Invite a client</h3>
@@ -335,6 +349,7 @@
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button id="up-html-go" class="btn primary">Choose HTML file…</button>
             <button id="dl-html-go" class="btn">Download current HTML</button>
+            <button id="dl-zip-go" class="btn">Full backup (zip)</button>
           </div>
           <p id="up-html-result" class="hint"></p>
         </div>
@@ -696,17 +711,65 @@
       var res = await fetch(seoPagePath(), { cache: 'no-store' });
       var raw = await res.text();
       var doc = new DOMParser().parseFromString(raw, 'text/html');
-      renderSeoCheckup(seoAnalyze(doc, raw));
+      var result = seoAnalyze(doc, raw);
+      renderSeoCheckup(result);
+      checkLinks(doc, result);
     } catch (e) {
       $('#seo-verdict').textContent = 'Could not run the checkup.';
     }
+  }
+
+  async function checkLinks(doc, result) {
+    var anchors = Array.prototype.slice.call(doc.querySelectorAll('a[href]'));
+    var broken = [];
+    var external = [];
+    var seen = {};
+    for (var i = 0; i < anchors.length; i++) {
+      var href = anchors[i].getAttribute('href') || '';
+      if (seen[href]) continue;
+      seen[href] = 1;
+      if (href.charAt(0) === '#') {
+        if (href.length > 1 && !doc.getElementById(href.slice(1))) broken.push(href + ' (goes nowhere on the page)');
+        else if (href === '#') broken.push('# (placeholder link)');
+      } else if (/^https?:/i.test(href)) {
+        if (external.length < 20) external.push(href);
+      } else if (/[.]html$/i.test(href.split('#')[0]) || href.charAt(0) === '/') {
+        try {
+          var base = href.charAt(0) === '/' ? href : '/sites/' + site.slug + '/' + href;
+          var r = await fetch(base.split('#')[0], { method: 'HEAD', cache: 'no-store' });
+          if (!r.ok) broken.push(href + ' (page not found)');
+        } catch (e) { broken.push(href + ' (unreachable)'); }
+      }
+    }
+    if (external.length) {
+      try {
+        var lr = await cms.api('cms-linkcheck', { site: site.slug, urls: external });
+        (lr.results || []).forEach(function (x) {
+          if (!x.ok) broken.push(x.url.slice(0, 60) + ' (' + (x.note || x.status) + ')');
+        });
+      } catch (e) { /* external check unavailable */ }
+    }
+    var status = broken.length === 0 ? 'pass' : (broken.length > 2 ? 'fail' : 'warn');
+    result.checks.push({
+      label: broken.length ? 'Broken links (' + broken.length + ')' : 'All links working',
+      status: status, weight: 8,
+      advice: broken.length ? 'Fix or remove: ' + broken.slice(0, 3).join('; ') + (broken.length > 3 ? ' and more' : '') + '. Send a change request if Kitset needs to fix these.' : ''
+    });
+    var total = 0, got = 0;
+    result.checks.forEach(function (c) {
+      total += c.weight;
+      if (c.status === 'pass') got += c.weight;
+      else if (c.status === 'warn') got += c.weight / 2;
+    });
+    result.score = Math.round((got / total) * 100);
+    renderSeoCheckup(result);
   }
   $('#seo-recheck').addEventListener('click', runSeoCheckup);
 
   // ---------- analytics ----------
   async function loadAnalytics() {
     var since = new Date(Date.now() - 30 * 864e5).toISOString();
-    var r = await sb.from('page_views').select('path,referrer,visitor_hash,ts')
+    var r = await sb.from('page_views').select('path,referrer,visitor_hash,ts,country,device')
       .eq('site_slug', site.slug).gte('ts', since).order('ts', { ascending: false }).limit(10000);
     var rows = r.data || [];
 
@@ -760,6 +823,24 @@
       if (!v.referrer) return 'Direct / typed in';
       try { var h = new URL(v.referrer).hostname; return h === location.hostname ? '' : h; } catch (e) { return ''; }
     }, 'Source', 'No visits yet');
+
+    var names;
+    try { names = new Intl.DisplayNames(['en'], { type: 'region' }); } catch (e) { names = null; }
+    topTable('#an-countries', function (v) {
+      if (!v.country) return '';
+      try { return names ? names.of(v.country) : v.country; } catch (e) { return v.country; }
+    }, 'Country', 'No data yet');
+
+    var withDevice = rows.filter(function (v) { return v.device; });
+    var mob = withDevice.filter(function (v) { return v.device === 'mobile'; }).length;
+    if (!withDevice.length) {
+      $('#an-devices').innerHTML = '<p class="muted">No data yet.</p>';
+    } else {
+      var pct = Math.round((mob / withDevice.length) * 100);
+      $('#an-devices').innerHTML =
+        '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span><b>' + pct + '%</b> phones</span><span><b>' + (100 - pct) + '%</b> computers</span></div>' +
+        '<div style="height:10px;border-radius:999px;background:var(--kit-navy-tint);overflow:hidden"><div style="height:100%;width:' + pct + '%;background:var(--kit-navy)"></div></div>';
+    }
   }
 
   function timeAgo(ts) {
@@ -1001,6 +1082,7 @@
     $('#inv-site').innerHTML = opts;
     $('#up-site').innerHTML = opts;
     loadStatus();
+    loadAudit();
   }
 
   async function loadStatus() {
@@ -1058,6 +1140,53 @@
       toast('Could not download: ' + e.message);
     }
   });
+
+  $('#dl-zip-go').addEventListener('click', async function () {
+    var slug = $('#up-site').value;
+    if (!slug) return;
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = 'Building zip…';
+    try {
+      if (!window.JSZip) {
+        await new Promise(function (res, rej) {
+          var sc = document.createElement('script');
+          sc.src = 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js';
+          sc.onload = res; sc.onerror = rej;
+          document.head.appendChild(sc);
+        });
+      }
+      var r = await cms.api('cms-export', { site: slug });
+      var zip = new JSZip();
+      (r.files || []).forEach(function (f) { zip.file(f.path, f.base64, { base64: true }); });
+      var blob = await zip.generateAsync({ type: 'blob' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = slug + '-site-backup.zip';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast('Backup downloaded (' + (r.files || []).length + ' files)');
+    } catch (e) {
+      toast('Backup failed: ' + e.message);
+    }
+    btn.disabled = false;
+    btn.textContent = 'Full backup (zip)';
+  });
+
+  async function loadAudit() {
+    var r = await sb.from('audit_log').select('ts,email,action,site_slug,detail')
+      .order('ts', { ascending: false }).limit(30);
+    var rows = r.data || [];
+    $('#audit-table').innerHTML = '<tr><th>When</th><th>Who</th><th>Action</th><th>Site</th><th>Detail</th></tr>' +
+      (rows.length ? rows.map(function (a) {
+        var when = new Date(a.ts).toLocaleString('en-NZ', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+        return '<tr><td style="white-space:nowrap;font-family:var(--font-mono);font-size:12px">' + when + '</td>' +
+          '<td>' + cms.esc((a.email || 'system').split('@')[0]) + '</td>' +
+          '<td><span class="pill">' + cms.esc(a.action) + '</span></td>' +
+          '<td>' + cms.esc(a.site_slug || '—') + '</td>' +
+          '<td class="muted" style="font-size:12.5px">' + cms.esc(a.detail || '') + '</td></tr>';
+      }).join('') : '<tr><td class="muted">Nothing yet.</td></tr>');
+  }
 
   var htmlInput = document.createElement('input');
   htmlInput.type = 'file';
