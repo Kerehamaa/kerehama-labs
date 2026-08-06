@@ -121,7 +121,27 @@
 
     <!-- seo -->
     <div id="tab-seo" hidden>
-      <div class="page-head"><h2>SEO &amp; sharing</h2></div>
+      <div class="page-head">
+        <h2>SEO &amp; sharing</h2>
+        <span class="spacer"></span>
+        <button id="seo-recheck" class="btn small">Run checkup again</button>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+          <div style="text-align:center;min-width:110px">
+            <div id="seo-score" style="font:500 44px/1 var(--font-mono);color:var(--heading)">–</div>
+            <div class="muted" style="font-size:12px;margin-top:2px">SEO score / 100</div>
+          </div>
+          <div style="flex:1;min-width:220px">
+            <div id="seo-verdict" style="font-weight:600;margin-bottom:8px">Running checkup…</div>
+            <div style="height:8px;border-radius:999px;background:var(--kit-navy-tint);overflow:hidden">
+              <div id="seo-bar" style="height:100%;width:0%;background:var(--kit-navy);border-radius:999px;transition:width .4s ease-out"></div>
+            </div>
+            <div id="seo-summary" class="hint" style="margin-top:8px"></div>
+          </div>
+        </div>
+        <div id="seo-checklist" style="margin-top:18px"></div>
+      </div>
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start">
         <div class="card">
           <div class="field">
@@ -435,6 +455,7 @@
       $('#seo-status').textContent = 'Could not load current values.';
     }
     bindPreview();
+    runSeoCheckup();
   }
 
   var ogInput = document.createElement('input');
@@ -475,11 +496,129 @@
       await cms.api('cms-publish', { site: site.slug, patch: patch });
       $('#seo-status').textContent = '';
       toast('Published — live in about a minute');
+      setTimeout(runSeoCheckup, 75000); // re-score once the deploy lands
     } catch (e) {
       $('#seo-status').textContent = 'Failed: ' + e.message;
     }
     $('#seo-save').disabled = false;
   });
+
+  // ---------- SEO checkup ----------
+  function seoAnalyze(doc, rawHtml) {
+    var checks = [];
+    var add = function (label, status, weight, advice) {
+      checks.push({ label: label, status: status, weight: weight, advice: advice });
+    };
+    var text = function (sel) { var el = doc.querySelector(sel); return el ? el.textContent.trim() : ''; };
+    var attr = function (sel, a) { var el = doc.querySelector(sel); return (el && el.getAttribute(a)) || ''; };
+
+    var title = text('title');
+    if (!title) add('Page title', 'fail', 12, 'Fill in the Page title field below — it is the headline Google shows.');
+    else if (title.length < 10 || title.length > 60) add('Page title length', 'warn', 12, 'Your title is ' + title.length + ' characters. Aim for 10–60 so Google shows all of it.');
+    else add('Page title', 'pass', 12);
+
+    var desc = attr('meta[name="description"]', 'content');
+    if (!desc) add('Meta description', 'fail', 12, 'Fill in the Description field below — it is the text under your headline in Google.');
+    else if (desc.length < 50 || desc.length > 160) add('Description length', 'warn', 12, 'Your description is ' + desc.length + ' characters. Aim for 50–160.');
+    else add('Meta description', 'pass', 12);
+
+    var h1s = doc.querySelectorAll('h1').length;
+    if (h1s === 1) add('One main heading (H1)', 'pass', 10);
+    else if (h1s === 0) add('Main heading (H1)', 'fail', 10, 'The page has no main heading. Send a change request and Kitset will add one.');
+    else add('Main heading (H1)', 'warn', 10, 'The page has ' + h1s + ' H1 headings — Google prefers exactly one.');
+
+    if (attr('meta[name="viewport"]', 'content')) add('Mobile-friendly setup', 'pass', 10);
+    else add('Mobile-friendly setup', 'fail', 10, 'Missing the mobile viewport tag — send a change request to get this fixed.');
+
+    var ogT = attr('meta[property="og:title"]', 'content');
+    var ogD = attr('meta[property="og:description"]', 'content');
+    if (ogT && ogD) add('Social share text', 'pass', 8);
+    else if (ogT || ogD) add('Social share text', 'warn', 8, 'Fill in both social share fields below so links look right on Facebook and WhatsApp.');
+    else add('Social share text', 'fail', 8, 'Fill in the social share fields below — without them, shared links look bare.');
+
+    if (attr('meta[property="og:image"]', 'content')) add('Social share image', 'pass', 6);
+    else add('Social share image', 'warn', 6, 'Upload a social share image below — links with a photo get far more clicks.');
+
+    var imgs = Array.prototype.slice.call(doc.querySelectorAll('img'));
+    if (imgs.length === 0) add('Image descriptions', 'pass', 8);
+    else {
+      var withAlt = imgs.filter(function (i) { return (i.getAttribute('alt') || '').trim(); }).length;
+      var ratio = withAlt / imgs.length;
+      if (ratio >= 0.8) add('Image descriptions (alt text)', 'pass', 8);
+      else if (ratio >= 0.5) add('Image descriptions (alt text)', 'warn', 8, withAlt + ' of ' + imgs.length + ' photos have a description. Send a change request to describe the rest — it helps Google and screen readers.');
+      else add('Image descriptions (alt text)', 'fail', 8, 'Most photos have no description. Send a change request and Kitset will add them.');
+    }
+
+    if (doc.querySelectorAll('h2, h3').length >= 2) add('Section headings', 'pass', 6);
+    else add('Section headings', 'warn', 6, 'The page has few subheadings — breaking content into sections helps Google understand it.');
+
+    var words = (doc.body ? doc.body.textContent : '').trim().split(/\s+/).filter(Boolean).length;
+    if (words >= 250) add('Enough content (' + words + ' words)', 'pass', 8);
+    else if (words >= 120) add('Content amount', 'warn', 8, 'The page has ' + words + ' words. More genuine detail about your services and area helps you rank.');
+    else add('Content amount', 'fail', 8, 'Only ' + words + ' words on the page — Google struggles to rank very thin pages.');
+
+    if (doc.querySelector('link[rel~="icon"]')) add('Browser tab icon (favicon)', 'pass', 4);
+    else add('Browser tab icon (favicon)', 'warn', 4, 'No favicon — send a change request and Kitset will add your logo to the browser tab.');
+
+    var hasContact = !!doc.querySelector('a[href^="tel:"], a[href^="mailto:"]') ||
+      /\b0\d{1,2}[\s-]?\d{3}[\s-]?\d{3,4}\b|0800[\s-]?\w+/.test(doc.body ? doc.body.textContent : '');
+    if (hasContact) add('Contact details visible', 'pass', 6);
+    else add('Contact details', 'warn', 6, 'No phone number or email found on the page — local customers (and Google) want to see them.');
+
+    if ((doc.documentElement.getAttribute('lang') || '')) add('Language declared', 'pass', 4);
+    else add('Language declared', 'warn', 4, 'The page does not declare its language — a minor fix Kitset can do.');
+
+    add('Secure connection (HTTPS)', 'pass', 6);
+
+    var total = 0, got = 0;
+    checks.forEach(function (c) {
+      total += c.weight;
+      if (c.status === 'pass') got += c.weight;
+      else if (c.status === 'warn') got += c.weight / 2;
+    });
+    return { score: Math.round((got / total) * 100), checks: checks };
+  }
+
+  function renderSeoCheckup(result) {
+    var s = result.score;
+    var verdict = s >= 90 ? ['Excellent — Google will like this.', 'var(--kit-success)'] :
+      s >= 75 ? ['Good — a few small things to tidy up.', 'var(--kit-navy)'] :
+      s >= 50 ? ['Needs work — the fixes below will make a real difference.', '#b7791f'] :
+      ['Poor — sort the items below as a priority.', 'var(--danger)'];
+    $('#seo-score').textContent = s;
+    $('#seo-verdict').textContent = verdict[0];
+    $('#seo-bar').style.width = s + '%';
+    $('#seo-bar').style.background = verdict[1];
+
+    var issues = result.checks.filter(function (c) { return c.status !== 'pass'; });
+    var passed = result.checks.length - issues.length;
+    $('#seo-summary').textContent = passed + ' of ' + result.checks.length + ' checks passed.';
+
+    var DOT = { fail: 'var(--danger)', warn: '#b7791f', pass: 'var(--kit-success)' };
+    var order = { fail: 0, warn: 1 };
+    issues.sort(function (a, b) { return order[a.status] - order[b.status] || b.weight - a.weight; });
+    $('#seo-checklist').innerHTML = issues.length
+      ? '<div style="font-weight:600;margin-bottom:10px">What to fix, most important first</div>' +
+        issues.map(function (c) {
+          return '<div style="display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--line)">' +
+            '<span style="flex:none;width:9px;height:9px;border-radius:50%;background:' + DOT[c.status] + ';margin-top:6px"></span>' +
+            '<div><div style="font-weight:600;font-size:13.5px">' + cms.esc(c.label) + '</div>' +
+            '<div class="hint" style="margin-top:2px">' + cms.esc(c.advice || '') + '</div></div></div>';
+        }).join('')
+      : '<div class="ok-text" style="border-top:1px solid var(--line);padding-top:12px">Everything we check is in order. Nice work.</div>';
+  }
+
+  async function runSeoCheckup() {
+    try {
+      var res = await fetch('/sites/' + site.slug + '/index.html', { cache: 'no-store' });
+      var raw = await res.text();
+      var doc = new DOMParser().parseFromString(raw, 'text/html');
+      renderSeoCheckup(seoAnalyze(doc, raw));
+    } catch (e) {
+      $('#seo-verdict').textContent = 'Could not run the checkup.';
+    }
+  }
+  $('#seo-recheck').addEventListener('click', runSeoCheckup);
 
   // ---------- analytics ----------
   async function loadAnalytics() {
