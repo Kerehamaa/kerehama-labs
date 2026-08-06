@@ -296,7 +296,10 @@
             <label for="up-site">Site</label>
             <select id="up-site"></select>
           </div>
-          <button id="up-html-go" class="btn primary">Choose HTML file…</button>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button id="up-html-go" class="btn primary">Choose HTML file…</button>
+            <button id="dl-html-go" class="btn">Download current HTML</button>
+          </div>
           <p id="up-html-result" class="hint"></p>
         </div>
       </div>
@@ -880,6 +883,24 @@
     $('#inv-site').innerHTML = opts;
     $('#up-site').innerHTML = opts;
   }
+
+  $('#dl-html-go').addEventListener('click', async function () {
+    var slug = $('#up-site').value;
+    if (!slug) return;
+    try {
+      var res = await fetch('/sites/' + slug + '/index.html', { cache: 'no-store' });
+      if (!res.ok) throw new Error('not found');
+      var blob = new Blob([await res.text()], { type: 'text/html' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = slug + '-index.html';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast('Downloaded ' + slug + '-index.html');
+    } catch (e) {
+      toast('Could not download: ' + e.message);
+    }
+  });
 
   var htmlInput = document.createElement('input');
   htmlInput.type = 'file';
