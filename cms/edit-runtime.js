@@ -34,19 +34,44 @@
 
   function send(msg) { window.parent.postMessage(msg, ORIGIN); }
 
-  // ---- text regions ----------------------------------------------------
-  // Serialize keeping only <br>; everything else becomes escaped text. The
-  // publish function sanitizes again server-side — this is just for fidelity.
-  function serialize(el) {
-    var out = '';
-    el.childNodes.forEach(function walk(node) {
-      if (node.nodeType === 3) out += node.textContent;
-      else if (node.nodeType === 1) {
-        if (node.tagName === 'BR') out += '\n';
-        else node.childNodes.forEach(walk);
+  // ---- rich text sanitizer --------------------------------------------
+  // Mirrors the server whitelist: <br>, <b>/<i>/<strong>/<em>, and
+  // <span style="color:…">. Everything else is unwrapped to its text.
+  // excludeTag stops same-tag nesting (span-in-span breaks publishing).
+  var ALLOWED = { BR: 1, SPAN: 1, B: 1, I: 1, STRONG: 1, EM: 1 };
+  function sanitizeInto(srcNode, out, excludeTag) {
+    Array.prototype.slice.call(srcNode.childNodes).forEach(function (child) {
+      if (child.nodeType === 3) { out.appendChild(document.createTextNode(child.textContent)); return; }
+      if (child.nodeType !== 1) return;
+      var tag = child.tagName;
+      if (tag === 'BR') { out.appendChild(document.createElement('br')); return; }
+      var keep = ALLOWED[tag] && tag !== excludeTag;
+      var color = '';
+      if (tag === 'SPAN') {
+        color = child.style ? child.style.color : '';
+        keep = keep && !!color;
+      }
+      if (keep) {
+        var el = document.createElement(tag);
+        if (tag === 'SPAN') el.style.color = color;
+        out.appendChild(el);
+        sanitizeInto(child, el, excludeTag);
+      } else {
+        sanitizeInto(child, out, excludeTag);
       }
     });
-    return out;
+  }
+  function serialize(el) {
+    var tmp = document.createElement('div');
+    sanitizeInto(el, tmp, el.tagName);
+    return tmp.innerHTML;
+  }
+  function setRich(el, value) {
+    var parsed = document.createElement('div');
+    parsed.innerHTML = String(value).replace(/\n/g, '<br>');
+    var clean = document.createElement('div');
+    sanitizeInto(parsed, clean, el.tagName);
+    el.innerHTML = clean.innerHTML;
   }
 
   // Regions whose markup matters (nested styled spans, e.g. the hero heading)
@@ -80,14 +105,83 @@
       // mirror to every element sharing this key (e.g. repeated CTA buttons)
       var key = el.getAttribute('data-cms');
       textEls.forEach(function (other) {
-        if (other !== el && other.getAttribute('data-cms') === key) {
-          other.textContent = value;
-          other.innerHTML = other.innerHTML.replace(/\n/g, '<br>');
-        }
+        if (other !== el && other.getAttribute('data-cms') === key) setRich(other, value);
       });
       send({ type: 'cms-patch', key: key, kind: 'text', value: value, dirty: value !== original });
     });
   });
+
+  // ---- formatting toolbar (bold / italic / text color) -----------------
+  try { document.execCommand('styleWithCSS', false, true); } catch (err) {}
+  var SWATCHES = ['#191c26', '#ffffff', '#5b4dbe', '#0e7c74', '#8b6fc0', '#2e7fa3', '#c4557e', '#d99a2b'];
+  var bar = document.createElement('div');
+  bar.id = 'cms-toolbar';
+  bar.innerHTML =
+    '<button type="button" data-cmd="bold" title="Bold"><b>B</b></button>' +
+    '<button type="button" data-cmd="italic" title="Italic"><i>I</i></button>' +
+    '<span class="cms-sep"></span>' +
+    SWATCHES.map(function (c) {
+      return '<button type="button" class="cms-swatch" data-color="' + c + '" title="' + c + '" style="background:' + c + '"></button>';
+    }).join('') +
+    '<label class="cms-custom" title="Custom colour">+<input type="color"></label>';
+  var barCss = document.createElement('style');
+  barCss.textContent =
+    '#cms-toolbar{position:fixed;z-index:2147483646;display:none;align-items:center;gap:5px;' +
+    'background:#191c26;border-radius:10px;padding:7px 9px;box-shadow:0 6px 24px rgba(0,0,0,.3);}' +
+    '#cms-toolbar button{border:none;cursor:pointer;background:#2a2e3d;color:#fff;border-radius:6px;' +
+    'width:26px;height:26px;font:600 13px/1 Inter,system-ui,sans-serif;display:inline-flex;align-items:center;justify-content:center;}' +
+    '#cms-toolbar button:hover{background:#3a3f52;}' +
+    '#cms-toolbar .cms-swatch{border:1.5px solid rgba(255,255,255,.35);}' +
+    '#cms-toolbar .cms-sep{width:1px;height:18px;background:#3a3f52;margin:0 2px;}' +
+    '#cms-toolbar .cms-custom{position:relative;width:26px;height:26px;border-radius:6px;background:' +
+    'conic-gradient(red,yellow,lime,cyan,blue,magenta,red);display:inline-flex;align-items:center;justify-content:center;' +
+    'color:#fff;font:700 14px/1 Inter,sans-serif;cursor:pointer;text-shadow:0 1px 2px rgba(0,0,0,.6);}' +
+    '#cms-toolbar .cms-custom input{position:absolute;inset:0;opacity:0;cursor:pointer;}';
+  document.head.appendChild(barCss);
+  document.body.appendChild(bar);
+
+  var barTarget = null;
+  function showBar(el) {
+    barTarget = el;
+    bar.style.display = 'flex';
+    var r = el.getBoundingClientRect();
+    var top = r.top - 46;
+    if (top < 8) top = r.bottom + 10;
+    bar.style.top = top + 'px';
+    bar.style.left = Math.max(8, Math.min(window.innerWidth - 330, r.left)) + 'px';
+  }
+  function hideBar() { bar.style.display = 'none'; barTarget = null; }
+
+  function applyCmd(cmd, arg) {
+    if (!barTarget) return;
+    barTarget.focus();
+    document.execCommand(cmd, false, arg || null);
+    // execCommand fires input in most browsers; fire manually to be safe
+    barTarget.dispatchEvent(new Event('input', { bubbles: false }));
+  }
+  bar.addEventListener('mousedown', function (e) { e.preventDefault(); }); // keep the text selection
+  bar.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.cmd) applyCmd(b.dataset.cmd);
+    else if (b.dataset.color) applyCmd('foreColor', b.dataset.color);
+  });
+  bar.querySelector('input[type=color]').addEventListener('input', function () {
+    applyCmd('foreColor', this.value);
+  });
+
+  document.addEventListener('focusin', function (e) {
+    var el = e.target.closest && e.target.closest('[data-cms]');
+    if (el) showBar(el);
+    else if (!bar.contains(e.target)) hideBar();
+  });
+  document.addEventListener('focusout', function (e) {
+    setTimeout(function () {
+      var a = document.activeElement;
+      if (!a || (!bar.contains(a) && !(a.closest && a.closest('[data-cms]')))) hideBar();
+    }, 60);
+  });
+  window.addEventListener('scroll', function () { if (barTarget) showBar(barTarget); }, true);
 
   // block link navigation while editing
   document.addEventListener('click', function (e) {
@@ -123,10 +217,7 @@
         if (p.kind === 'img') { setImage(key, p.value); return; }
         if (p.kind !== 'text') return;
         textEls.forEach(function (el) {
-          if (el.getAttribute('data-cms') === key) {
-            el.textContent = p.value;
-            el.innerHTML = el.innerHTML.replace(/\n/g, '<br>');
-          }
+          if (el.getAttribute('data-cms') === key) setRich(el, p.value);
         });
       });
     } else if (e.data.type === 'cms-set-image') {

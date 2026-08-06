@@ -116,19 +116,61 @@ export function escapeHtml(s) {
 
 const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+// Sanitize client-supplied "rich" text down to a strict whitelist:
+// <br>, <b>/<i>/<strong>/<em>, and <span style="color: …"> with a literal
+// color value only. Everything else — tags, attributes, event handlers —
+// is escaped to text or unwrapped. excludeTag prevents nesting an element
+// inside itself (e.g. span-in-span), which would break later patch matches.
+const COLOR_RE = /^\s*color:\s*(#[0-9a-fA-F]{3,8}|rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\))\s*;?\s*$/;
+
+export function sanitizeRich(input, excludeTag) {
+  const s = String(input);
+  const ex = (excludeTag || '').toLowerCase();
+  const tagRe = /<(\/?)(br|span|strong|em|b|i)((?:\s[^<>]*)?)\s*\/?>/gi;
+  let out = '';
+  let last = 0;
+  let m;
+  const stack = [];
+  while ((m = tagRe.exec(s))) {
+    out += escapeHtml(s.slice(last, m.index));
+    last = tagRe.lastIndex;
+    const closing = m[1] === '/';
+    const tag = m[2].toLowerCase();
+    const attrs = m[3] || '';
+    if (tag === 'br') { if (!closing) out += '<br>'; continue; }
+    if (closing) {
+      const idx = stack.lastIndexOf(tag);
+      if (idx !== -1) while (stack.length > idx) out += '</' + stack.pop() + '>';
+      continue;
+    }
+    if (tag === ex) continue; // unwrap: keep contents, drop the tag
+    if (tag === 'span') {
+      const style = /style\s*=\s*"([^"]*)"/i.exec(attrs);
+      const color = style && COLOR_RE.exec(style[1]);
+      if (color) { out += '<span style="color:' + color[1] + '">'; stack.push('span'); }
+      continue; // spans without a clean color are unwrapped
+    }
+    out += '<' + tag + '>';
+    stack.push(tag);
+  }
+  out += escapeHtml(s.slice(last));
+  while (stack.length) out += '</' + stack.pop() + '>';
+  return out.replace(/\r?\n/g, '<br>');
+}
+
 // Replace the inner content of every element carrying data-cms="key".
-// Elements never nest another element of their own tag name, so a lazy match
-// to the first matching close tag is correct here.
+// Elements never nest another element of their own tag name (sanitizeRich
+// guarantees it for published values), so a lazy match to the first matching
+// close tag is correct here.
 export function patchText(html, key, value) {
-  const safe = escapeHtml(value).replace(/\r?\n/g, '<br>');
   const re = new RegExp(
     '(<([a-zA-Z0-9-]+)([^>]*?)\\sdata-cms="' + escRe(key) + '"([^>]*)>)[\\s\\S]*?(</\\2>)',
     'g'
   );
   let count = 0;
-  const out = html.replace(re, (_, open, _tag, _pre, _post, close) => {
+  const out = html.replace(re, (_, open, tag, _pre, _post, close) => {
     count++;
-    return open + safe + close;
+    return open + sanitizeRich(value, tag) + close;
   });
   return { html: out, count };
 }
