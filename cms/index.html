@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kerehama Labs — Dashboard</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="/cms/cms.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/cms/cms.js"></script>
+</head>
+<body>
+
+<div id="view-login" class="login-wrap" hidden>
+  <div class="card login-card">
+    <div class="wordmark">kerehama<span>labs</span></div>
+    <h1>Site dashboard</h1>
+    <p class="sub">Sign in to manage your website.</p>
+    <form id="login-form">
+      <div class="field">
+        <label for="login-email">Email</label>
+        <input id="login-email" type="email" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="btn primary" style="width:100%" type="submit">Sign in</button>
+      <p id="login-error" class="error-text" style="margin-top:10px" hidden></p>
+    </form>
+  </div>
+</div>
+
+<div id="view-app" hidden>
+  <div class="topbar">
+    <span class="wordmark">kerehama<span>labs</span></span>
+    <span id="crumb" class="muted"></span>
+    <span class="spacer"></span>
+    <span id="user-email" class="muted" style="font-size:13px"></span>
+    <button id="signout" class="btn small">Sign out</button>
+  </div>
+
+  <div class="shell">
+    <!-- site picker -->
+    <div id="view-sites" hidden>
+      <h2 style="margin-bottom:14px">Your sites</h2>
+      <div id="site-list" class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))"></div>
+      <p id="no-sites" class="muted" hidden>No sites are linked to your account yet. Contact Kerehama Labs.</p>
+    </div>
+
+    <!-- one site -->
+    <div id="view-site" hidden>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <h2 id="site-title"></h2>
+        <span class="pill live">LIVE</span>
+        <span class="spacer" style="flex:1"></span>
+        <a id="open-live" class="btn small" target="_blank" rel="noopener">View live site</a>
+        <a id="open-editor" class="btn primary small">Edit site</a>
+      </div>
+
+      <div class="tabs" id="tabs">
+        <button data-tab="overview" class="active">Overview</button>
+        <button data-tab="seo">SEO</button>
+        <button data-tab="analytics">Analytics</button>
+        <button data-tab="settings">Settings</button>
+        <button data-tab="admin" id="tab-admin-btn" hidden>Admin</button>
+      </div>
+
+      <div id="tab-overview">
+        <div class="grid cols-3" id="ov-stats"></div>
+        <div class="card" style="margin-top:16px">
+          <h3 style="margin-bottom:8px">Edit your website</h3>
+          <p class="muted" style="margin-bottom:14px">Click any text or photo on your site and change it directly. Your edits are saved as you go, and nothing goes live until you press Publish.</p>
+          <a id="open-editor-2" class="btn primary">Open the editor</a>
+        </div>
+      </div>
+
+      <div id="tab-seo" hidden>
+        <div class="card" style="max-width:640px">
+          <h3 style="margin-bottom:4px">Search &amp; social settings</h3>
+          <p class="muted" style="margin-bottom:18px">How your site appears on Google and when shared on social media.</p>
+          <div class="field">
+            <label for="seo-title">Page title</label>
+            <input id="seo-title" maxlength="70">
+            <p class="hint">Shown as the headline in Google results. Aim for under 60 characters.</p>
+          </div>
+          <div class="field">
+            <label for="seo-description">Description</label>
+            <textarea id="seo-description" rows="3" maxlength="170"></textarea>
+            <p class="hint">The snippet under your headline in Google. Aim for 120–160 characters.</p>
+          </div>
+          <div class="field">
+            <label for="seo-og-title">Social share title</label>
+            <input id="seo-og-title" maxlength="90">
+          </div>
+          <div class="field">
+            <label for="seo-og-description">Social share description</label>
+            <textarea id="seo-og-description" rows="2" maxlength="200"></textarea>
+          </div>
+          <button id="seo-save" class="btn primary">Save &amp; publish</button>
+          <span id="seo-status" class="muted" style="margin-left:10px"></span>
+        </div>
+      </div>
+
+      <div id="tab-analytics" hidden>
+        <div class="grid cols-3" id="an-stats"></div>
+        <div class="card" style="margin-top:16px">
+          <h3 style="margin-bottom:12px">Visits — last 30 days</h3>
+          <div id="an-chart" style="overflow-x:auto"></div>
+        </div>
+        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:16px">
+          <div class="card">
+            <h3 style="margin-bottom:10px">Top pages</h3>
+            <table class="list" id="an-pages"></table>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:10px">Where visitors came from</h3>
+            <table class="list" id="an-refs"></table>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-settings" hidden>
+        <div class="card" style="max-width:480px">
+          <h3 style="margin-bottom:14px">Change password</h3>
+          <div class="field">
+            <label for="new-password">New password</label>
+            <input id="new-password" type="password" autocomplete="new-password" minlength="8">
+          </div>
+          <button id="save-password" class="btn primary">Update password</button>
+          <span id="pw-status" class="muted" style="margin-left:10px"></span>
+        </div>
+      </div>
+
+      <div id="tab-admin" hidden>
+        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+          <div class="card">
+            <h3 style="margin-bottom:14px">Invite a client</h3>
+            <div class="field">
+              <label for="inv-email">Client email</label>
+              <input id="inv-email" type="email">
+            </div>
+            <div class="field">
+              <label for="inv-site">Site</label>
+              <select id="inv-site"></select>
+            </div>
+            <div class="field">
+              <label style="display:flex;gap:8px;align-items:center;font-size:14px;color:var(--text)">
+                <input id="inv-send" type="checkbox" style="width:auto"> Email them their login details
+              </label>
+            </div>
+            <button id="inv-go" class="btn primary">Create login</button>
+            <p id="inv-result" class="hint" style="user-select:all"></p>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:14px">Add a site</h3>
+            <div class="field">
+              <label for="new-slug">Slug (folder under /sites/)</label>
+              <input id="new-slug" placeholder="new-hong-kong" pattern="[a-z0-9-]+">
+            </div>
+            <div class="field">
+              <label for="new-name">Display name</label>
+              <input id="new-name" placeholder="New Hong Kong Takeaways">
+            </div>
+            <button id="new-site-go" class="btn primary">Add site</button>
+            <p id="new-site-result" class="hint"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var $ = cms.$, sb = cms.sb;
+  var me = null;          // { user, isAdmin, sites }
+  var site = null;        // { slug, name }
+
+  function show(id) {
+    ['view-login', 'view-app'].forEach(function (v) { $('#' + v).hidden = v !== id; });
+  }
+
+  // ---------- login ----------
+  $('#login-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    $('#login-error').hidden = true;
+    var r = await sb.auth.signInWithPassword({
+      email: $('#login-email').value.trim(),
+      password: $('#login-password').value
+    });
+    if (r.error) {
+      $('#login-error').textContent = 'Sign in failed: ' + r.error.message;
+      $('#login-error').hidden = false;
+      return;
+    }
+    boot();
+  });
+
+  $('#signout').addEventListener('click', async function () {
+    await sb.auth.signOut();
+    location.reload();
+  });
+
+  // ---------- site list ----------
+  function renderSites() {
+    $('#view-sites').hidden = false;
+    $('#view-site').hidden = true;
+    $('#crumb').textContent = '';
+    var wrap = $('#site-list');
+    wrap.innerHTML = '';
+    me.sites.forEach(function (s) {
+      var a = document.createElement('a');
+      a.className = 'card site-tile';
+      a.innerHTML = '<div class="name">' + cms.esc(s.name) + '</div><div class="slug">/sites/' + cms.esc(s.slug) + '/</div>';
+      a.addEventListener('click', function () { openSite(s); });
+      wrap.appendChild(a);
+    });
+    $('#no-sites').hidden = me.sites.length > 0;
+  }
+
+  // ---------- one site ----------
+  function openSite(s) {
+    site = s;
+    $('#view-sites').hidden = true;
+    $('#view-site').hidden = false;
+    $('#crumb').textContent = '/ ' + s.name;
+    $('#site-title').textContent = s.name;
+    $('#open-live').href = '/sites/' + s.slug + '/';
+    $('#open-editor').href = '/cms/editor.html?site=' + encodeURIComponent(s.slug);
+    $('#open-editor-2').href = $('#open-editor').href;
+    $('#tab-admin-btn').hidden = !me.isAdmin;
+    selectTab('overview');
+    loadOverview();
+  }
+
+  cms.$$('#tabs button').forEach(function (b) {
+    b.addEventListener('click', function () { selectTab(b.dataset.tab); });
+  });
+  function selectTab(name) {
+    cms.$$('#tabs button').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === name); });
+    ['overview', 'seo', 'analytics', 'settings', 'admin'].forEach(function (t) {
+      $('#tab-' + t).hidden = t !== name;
+    });
+    if (name === 'analytics') loadAnalytics();
+    if (name === 'seo') loadSeo();
+    if (name === 'admin') loadAdmin();
+  }
+
+  // ---------- overview ----------
+  async function loadOverview() {
+    var since = new Date(Date.now() - 30 * 864e5).toISOString();
+    var r = await sb.from('page_views').select('visitor_hash,ts').eq('site_slug', site.slug).gte('ts', since).limit(10000);
+    var rows = r.data || [];
+    var today = new Date().toISOString().slice(0, 10);
+    var week = new Date(Date.now() - 7 * 864e5).toISOString();
+    var stats = [
+      ['Views today', rows.filter(function (v) { return v.ts.slice(0, 10) === today; }).length],
+      ['Views — 7 days', rows.filter(function (v) { return v.ts >= week; }).length],
+      ['Visitors — 30 days', new Set(rows.map(function (v) { return v.visitor_hash; })).size]
+    ];
+    $('#ov-stats').innerHTML = stats.map(function (s) {
+      return '<div class="card stat"><div class="n">' + s[1] + '</div><div class="l">' + s[0] + '</div></div>';
+    }).join('');
+  }
+
+  // ---------- SEO ----------
+  async function loadSeo() {
+    $('#seo-status').textContent = 'Loading current values…';
+    try {
+      var res = await fetch('/sites/' + site.slug + '/index.html', { cache: 'no-store' });
+      var doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+      var get = function (sel, attr) { var el = doc.querySelector(sel); return el ? (attr ? el.getAttribute(attr) : el.textContent) : ''; };
+      $('#seo-title').value = get('title');
+      $('#seo-description').value = get('meta[name="description"]', 'content') || '';
+      $('#seo-og-title').value = get('meta[property="og:title"]', 'content') || '';
+      $('#seo-og-description').value = get('meta[property="og:description"]', 'content') || '';
+      $('#seo-status').textContent = '';
+    } catch (e) {
+      $('#seo-status').textContent = 'Could not load current values.';
+    }
+  }
+
+  $('#seo-save').addEventListener('click', async function () {
+    var patch = {
+      'seo.title': { kind: 'text', value: $('#seo-title').value.trim() },
+      'seo.description': { kind: 'text', value: $('#seo-description').value.trim() },
+      'seo.og_title': { kind: 'text', value: $('#seo-og-title').value.trim() },
+      'seo.og_description': { kind: 'text', value: $('#seo-og-description').value.trim() }
+    };
+    $('#seo-save').disabled = true;
+    $('#seo-status').textContent = 'Publishing…';
+    try {
+      await cms.api('cms-publish', { site: site.slug, patch: patch });
+      $('#seo-status').textContent = 'Published — live in about a minute.';
+    } catch (e) {
+      $('#seo-status').textContent = 'Failed: ' + e.message;
+    }
+    $('#seo-save').disabled = false;
+  });
+
+  // ---------- analytics ----------
+  async function loadAnalytics() {
+    var since = new Date(Date.now() - 30 * 864e5).toISOString();
+    var r = await sb.from('page_views').select('path,referrer,visitor_hash,ts')
+      .eq('site_slug', site.slug).gte('ts', since).order('ts', { ascending: false }).limit(10000);
+    var rows = r.data || [];
+
+    var uniques = new Set(rows.map(function (v) { return v.visitor_hash; })).size;
+    $('#an-stats').innerHTML =
+      '<div class="card stat"><div class="n">' + rows.length + '</div><div class="l">Page views — 30 days</div></div>' +
+      '<div class="card stat"><div class="n">' + uniques + '</div><div class="l">Unique visitors — 30 days</div></div>' +
+      '<div class="card stat"><div class="n">' + (rows[0] ? new Date(rows[0].ts).toLocaleDateString() : '—') + '</div><div class="l">Most recent visit</div></div>';
+
+    // daily buckets
+    var days = [];
+    for (var i = 29; i >= 0; i--) {
+      var d = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10);
+      days.push([d, 0]);
+    }
+    var byDay = {};
+    days.forEach(function (d) { byDay[d[0]] = 0; });
+    rows.forEach(function (v) { var d = v.ts.slice(0, 10); if (d in byDay) byDay[d]++; });
+    var max = Math.max(1, Math.max.apply(null, Object.keys(byDay).map(function (k) { return byDay[k]; })));
+
+    var W = 900, H = 180, bw = W / 30;
+    var svg = '<svg class="chart" viewBox="0 0 ' + W + ' ' + (H + 24) + '" style="min-width:640px;width:100%">';
+    days.forEach(function (d, idx) {
+      var n = byDay[d[0]];
+      var h = Math.round((n / max) * (H - 10));
+      var x = idx * bw + 2;
+      svg += '<rect class="bar" x="' + x + '" y="' + (H - h) + '" width="' + (bw - 4) + '" height="' + h + '" rx="3"><title>' + d[0] + ': ' + n + ' views</title></rect>';
+      if (idx % 5 === 0) svg += '<text x="' + (x + bw / 2) + '" y="' + (H + 16) + '" text-anchor="middle">' + d[0].slice(5) + '</text>';
+    });
+    svg += '</svg>';
+    $('#an-chart').innerHTML = svg;
+
+    function topTable(sel, keyFn, label, emptyLabel) {
+      var counts = {};
+      rows.forEach(function (v) {
+        var k = keyFn(v);
+        if (!k) return;
+        counts[k] = (counts[k] || 0) + 1;
+      });
+      var top = Object.keys(counts).map(function (k) { return [k, counts[k]]; })
+        .sort(function (a, b) { return b[1] - a[1]; }).slice(0, 8);
+      $(sel).innerHTML = '<tr><th>' + label + '</th><th style="text-align:right">Views</th></tr>' +
+        (top.length ? top.map(function (t) {
+          return '<tr><td>' + cms.esc(t[0]) + '</td><td style="text-align:right">' + t[1] + '</td></tr>';
+        }).join('') : '<tr><td class="muted">' + emptyLabel + '</td><td></td></tr>');
+    }
+    topTable('#an-pages', function (v) { return v.path; }, 'Page', 'No visits yet');
+    topTable('#an-refs', function (v) {
+      if (!v.referrer) return 'Direct / typed in';
+      try { var h = new URL(v.referrer).hostname; return h === location.hostname ? '' : h; } catch (e) { return ''; }
+    }, 'Source', 'No visits yet');
+  }
+
+  // ---------- settings ----------
+  $('#save-password').addEventListener('click', async function () {
+    var pw = $('#new-password').value;
+    if (pw.length < 8) { $('#pw-status').textContent = 'Use at least 8 characters.'; return; }
+    var r = await sb.auth.updateUser({ password: pw });
+    $('#pw-status').textContent = r.error ? ('Failed: ' + r.error.message) : 'Password updated.';
+    if (!r.error) $('#new-password').value = '';
+  });
+
+  // ---------- admin ----------
+  function loadAdmin() {
+    var sel = $('#inv-site');
+    sel.innerHTML = me.sites.map(function (s) {
+      return '<option value="' + cms.esc(s.slug) + '"' + (site && s.slug === site.slug ? ' selected' : '') + '>' + cms.esc(s.name) + '</option>';
+    }).join('');
+  }
+
+  $('#inv-go').addEventListener('click', async function () {
+    var email = $('#inv-email').value.trim();
+    if (!email) return;
+    $('#inv-go').disabled = true;
+    $('#inv-result').textContent = 'Working…';
+    try {
+      var r = await cms.api('cms-invite', {
+        email: email,
+        site: $('#inv-site').value,
+        sendEmail: $('#inv-send').checked
+      });
+      $('#inv-result').textContent = r.created
+        ? ('Login created. Password: ' + r.password + (r.emailed ? ' (emailed to them)' : ' — share it with them, they can change it later.'))
+        : 'That user already existed — site access granted.';
+    } catch (e) {
+      $('#inv-result').textContent = 'Failed: ' + e.message;
+    }
+    $('#inv-go').disabled = false;
+  });
+
+  $('#new-site-go').addEventListener('click', async function () {
+    var slug = $('#new-slug').value.trim();
+    var name = $('#new-name').value.trim();
+    if (!/^[a-z0-9-]+$/.test(slug) || !name) {
+      $('#new-site-result').textContent = 'Slug must be lowercase letters, numbers and dashes.';
+      return;
+    }
+    var r = await sb.from('sites').insert({ slug: slug, name: name });
+    $('#new-site-result').textContent = r.error ? ('Failed: ' + r.error.message) : 'Added. Put the site files in /sites/' + slug + '/.';
+    if (!r.error) { me = await cms.whoami(); }
+  });
+
+  // ---------- boot ----------
+  async function boot() {
+    var s = await cms.session();
+    if (!s) { show('view-login'); return; }
+    me = await cms.whoami();
+    $('#user-email').textContent = s.user.email || '';
+    show('view-app');
+    if (me.sites.length === 1 && !me.isAdmin) openSite(me.sites[0]);
+    else renderSites();
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

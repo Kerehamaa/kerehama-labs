@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editor — Kerehama Labs</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="/cms/cms.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/cms/cms.js"></script>
+<style>
+  html, body { height: 100%; overflow: hidden; }
+  .editor-wrap { display: flex; flex-direction: column; height: 100vh; }
+  .stage { flex: 1; background: #05060a; display: flex; justify-content: center; overflow: auto; }
+  .stage iframe {
+    border: none; background: #fff; width: 100%; height: 100%;
+    transition: width .2s;
+  }
+  .stage.mobile iframe { width: 390px; margin: 16px auto; height: calc(100% - 32px); border-radius: 14px; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+  #save-state { font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="editor-wrap">
+  <div class="topbar">
+    <a href="/cms/" class="btn small">Back</a>
+    <span class="wordmark">kerehama<span>labs</span></span>
+    <span id="site-name" class="muted"></span>
+    <span class="spacer"></span>
+    <span id="save-state" class="muted"></span>
+    <button id="device" class="btn small">Mobile view</button>
+    <button id="publish" class="btn primary">Publish</button>
+  </div>
+  <div class="stage" id="stage">
+    <iframe id="frame" title="Site editor"></iframe>
+  </div>
+</div>
+<input id="file-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+
+<script>
+(function () {
+  var $ = cms.$, sb = cms.sb;
+  var slug = new URLSearchParams(location.search).get('site') || '';
+  var draft = {};            // { key: {kind, value} }
+  var dirty = false;         // unsaved-to-supabase changes
+  var unpublished = false;   // draft differs from live
+  var saveTimer = null;
+  var pickKey = null;        // image key being replaced
+
+  if (!/^[a-z0-9-]+$/.test(slug)) { location.href = '/cms/'; return; }
+
+  function setState(text, cls) {
+    var el = $('#save-state');
+    el.textContent = text;
+    el.className = cls || 'muted';
+  }
+
+  async function boot() {
+    var s = await cms.requireAuth();
+    if (!s) return;
+    var me = await cms.whoami();
+    var mine = me.sites.some(function (x) { return x.slug === slug; });
+    if (!mine && !me.isAdmin) { location.href = '/cms/'; return; }
+    var found = me.sites.filter(function (x) { return x.slug === slug; })[0];
+    $('#site-name').textContent = '/ ' + ((found && found.name) || slug);
+
+    var r = await sb.from('drafts').select('content').eq('site_slug', slug).maybeSingle();
+    draft = (r.data && r.data.content) || {};
+    unpublished = Object.keys(draft).length > 0;
+    updatePublishButton();
+
+    $('#frame').src = '/sites/' + slug + '/?cms-edit=1';
+  }
+
+  // ---- messages from the iframe runtime ----
+  window.addEventListener('message', function (e) {
+    if (e.origin !== location.origin || !e.data || !e.data.type) return;
+    var msg = e.data;
+    if (msg.type === 'cms-ready') {
+      if (Object.keys(draft).length) {
+        $('#frame').contentWindow.postMessage({ type: 'cms-apply', patch: draft }, location.origin);
+      }
+      setState(unpublished ? 'Draft restored — not published yet' : 'Click any text or image to edit');
+    } else if (msg.type === 'cms-patch') {
+      draft[msg.key] = { kind: msg.kind, value: msg.value };
+      scheduleSave();
+    } else if (msg.type === 'cms-pick-image') {
+      pickKey = msg.key;
+      $('#file-input').click();
+    }
+  });
+
+  // ---- draft autosave ----
+  function scheduleSave() {
+    dirty = true;
+    unpublished = true;
+    updatePublishButton();
+    setState('Saving…');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveDraft, 900);
+  }
+
+  async function saveDraft() {
+    var r = await sb.from('drafts').upsert({
+      site_slug: slug,
+      content: draft,
+      updated_at: new Date().toISOString()
+    });
+    if (r.error) setState('Draft could not be saved: ' + r.error.message, 'error-text');
+    else { dirty = false; setState('Draft saved — press Publish to go live'); }
+  }
+
+  function updatePublishButton() {
+    $('#publish').disabled = !unpublished;
+  }
+
+  // ---- image replacement ----
+  $('#file-input').addEventListener('change', async function () {
+    var file = this.files[0];
+    this.value = '';
+    if (!file || !pickKey) return;
+    var key = pickKey;
+    pickKey = null;
+    setState('Uploading photo…');
+    try {
+      var resized = await downscale(file);
+      var res = await cms.api('cms-upload', {
+        site: slug,
+        ext: resized.ext,
+        data: resized.base64
+      });
+      $('#frame').contentWindow.postMessage({ type: 'cms-set-image', key: key, src: res.path }, location.origin);
+      draft[key] = { kind: 'img', value: res.path };
+      scheduleSave();
+    } catch (e) {
+      setState('Upload failed: ' + e.message, 'error-text');
+    }
+  });
+
+  // Downscale to max 1920px and re-encode so uploads stay small.
+  function downscale(file) {
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      var url = URL.createObjectURL(file);
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        var MAX = 1920;
+        var scale = Math.min(1, MAX / Math.max(img.width, img.height));
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        var isPng = file.type === 'image/png';
+        var mime = isPng ? 'image/png' : 'image/jpeg';
+        canvas.toBlob(function (blob) {
+          if (!blob) { reject(new Error('could not process image')); return; }
+          var fr = new FileReader();
+          fr.onload = function () {
+            resolve({ ext: isPng ? 'png' : 'jpg', base64: String(fr.result).split(',')[1] });
+          };
+          fr.onerror = function () { reject(new Error('could not read image')); };
+          fr.readAsDataURL(blob);
+        }, mime, 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('not a valid image')); };
+      img.src = url;
+    });
+  }
+
+  // ---- publish ----
+  $('#publish').addEventListener('click', async function () {
+    if (!Object.keys(draft).length) return;
+    $('#publish').disabled = true;
+    setState('Publishing…');
+    try {
+      if (dirty) await saveDraft();
+      var r = await cms.api('cms-publish', { site: slug, patch: draft });
+      unpublished = false;
+      updatePublishButton();
+      setState('Published — changes are live in about a minute (' + r.applied + ' updated)', 'ok-text');
+    } catch (e) {
+      setState('Publish failed: ' + e.message, 'error-text');
+      $('#publish').disabled = false;
+    }
+  });
+
+  // ---- device toggle ----
+  $('#device').addEventListener('click', function () {
+    var mobile = $('#stage').classList.toggle('mobile');
+    $('#device').textContent = mobile ? 'Desktop view' : 'Mobile view';
+  });
+
+  window.addEventListener('beforeunload', function (e) {
+    if (dirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  boot();
+})();
+</script>
+</body>
+</html>

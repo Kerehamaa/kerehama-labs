@@ -3,6 +3,13 @@
   functions = "netlify/functions"
 
 
+# CMS API — short paths for functions (beacon + publish endpoints)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
 # Chat routes — order matters (admin before wildcard)
 [[redirects]]
   from = "/chat/admin"

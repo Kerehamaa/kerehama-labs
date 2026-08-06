@@ -82,6 +82,7 @@ Total to start: $300 + $15/month ongoing.
 - Approach: family-owned discount angle
 
 ## Infrastructure
+- CMS: labs site has a client CMS at /cms/ (login, visual editor, SEO, analytics). Docs: cms/README-SETUP.md. Sites are made editable by tagging data-cms attributes and including /cms/site.js - myspeech is the reference. Do NOT hand-edit sites/myspeech/index.html structure without keeping the data-cms tags intact.
 - Repo: Kerehamaa/kerehama-labs (GitHub)
 - SSH key alias: github.com-kerehama-labs
 - Hosted: Netlify (labs.kerehama.nz)
