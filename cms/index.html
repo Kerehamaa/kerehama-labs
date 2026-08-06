@@ -228,7 +228,7 @@
             </label>
           </div>
           <button id="inv-go" class="btn primary">Create login</button>
-          <p id="inv-result" class="hint" style="user-select:all"></p>
+          <div id="inv-result" class="hint"></div>
         </div>
         <div class="card">
           <h3 style="margin-bottom:14px">Add a site</h3>
@@ -623,9 +623,26 @@
         site: $('#inv-site').value,
         sendEmail: $('#inv-send').checked
       });
-      $('#inv-result').textContent = r.created
-        ? ('Login created. Password: ' + r.password + (r.emailed ? ' (emailed to them)' : ' — share it with them; they can change it in Settings.'))
-        : 'That user already existed — site access granted.';
+      if (r.created) {
+        var details = 'Your website dashboard\n' +
+          'Sign in: ' + location.origin + '/cms/\n' +
+          'Email: ' + email + '\n' +
+          'Password: ' + r.password + '\n' +
+          'You can change your password in Settings after signing in.';
+        $('#inv-result').innerHTML =
+          'Login created' + (r.emailed ? ' and emailed to them.' : '.') +
+          ' Password: <code style="user-select:all;background:var(--panel-2);padding:2px 7px;border-radius:6px">' + cms.esc(r.password) + '</code><br>' +
+          '<button class="btn small" id="inv-copy" style="margin-top:9px">Copy login details</button>';
+        $('#inv-copy').addEventListener('click', function () {
+          navigator.clipboard.writeText(details).then(function () {
+            toast('Login details copied — paste them into an email or text');
+          }, function () {
+            prompt('Copy the login details:', details);
+          });
+        });
+      } else {
+        $('#inv-result').textContent = 'That user already existed — site access granted.';
+      }
     } catch (e) {
       $('#inv-result').textContent = 'Failed: ' + e.message;
     }
