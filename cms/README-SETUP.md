@@ -9,24 +9,30 @@ domain at this Netlify site changes nothing.
 
 ## One-time setup (do these in order)
 
-1. **Supabase schema** — open the Supabase project (`ewlufiwgnnnfwdjoafcu`) SQL editor
-   and run `cms/supabase-schema.sql`. Safe to re-run any time.
+The CMS uses its own dedicated Supabase project (the old chat-app project is retired).
 
-2. **Your admin account** — Supabase dashboard -> Authentication -> Users -> Add user:
+1. **Create the project** — supabase.com -> New project (any name, e.g. `kerehama-labs-cms`,
+   region Sydney). Wait for it to provision.
+
+2. **Schema** — SQL Editor -> paste all of `cms/supabase-schema.sql` -> Run.
+   Safe to re-run any time.
+
+3. **Your admin account** — Authentication -> Users -> Add user:
    `kerehama@andrewstribe.co.nz` with a password, "Auto confirm" on. Then re-run the
    last statement of the schema file (it flags that user as admin).
 
-3. **Recommended** — Supabase dashboard -> Authentication -> Sign In / Up:
-   turn OFF "Allow new users to sign up" (accounts are created via the CMS invite flow,
-   which uses the service key and is not affected).
+4. **Recommended** — Authentication -> Sign In / Up: turn OFF "Allow new users to sign up"
+   (accounts are created via the CMS invite flow, which uses the service key and is not affected).
 
-4. **GitHub token** — github.com -> Settings -> Developer settings -> Fine-grained tokens:
+5. **Point the CMS at it** — Project Settings -> Data API: copy the Project URL and the
+   anon/publishable key into `cms/cms.js`. Copy the service_role/secret key into Netlify ->
+   Environment variables as `CMS_SUPABASE_SERVICE_KEY`, and the Project URL as `CMS_SUPABASE_URL`.
+
+6. **GitHub token** — github.com -> Settings -> Developer settings -> Fine-grained tokens:
    new token, Repository access = only `kerehama-labs`, Permissions = Contents: Read and write.
-   Add it in Netlify -> Site configuration -> Environment variables as `GITHUB_TOKEN`.
-   (Publishing and image upload return 500 until this exists.)
+   Add it in Netlify as `GITHUB_TOKEN`. (Publishing and image upload return 500 until this exists.)
 
-5. Already in place from the chat app: `SUPABASE_SERVICE_KEY`, `RESEND_API_KEY` (optional,
-   for emailing login details to clients).
+7. Optional: `RESEND_API_KEY` in Netlify for emailing login details to invited clients.
 
 ## Managing clients
 

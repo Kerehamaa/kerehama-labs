@@ -1,7 +1,8 @@
 // Shared helpers for the CMS functions. Not a function endpoint itself.
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ewlufiwgnnnfwdjoafcu.supabase.co';
-const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY1 || process.env.SUPABASE_SERVICE_KEY;
+// CMS-specific vars so the old chat app's Supabase project is untouched.
+const SUPABASE_URL = process.env.CMS_SUPABASE_URL;
+const SERVICE_KEY = process.env.CMS_SUPABASE_SERVICE_KEY;
 const GITHUB_REPO = process.env.GITHUB_REPO || 'Kerehamaa/kerehama-labs';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
@@ -15,7 +16,8 @@ export function json(body, status = 200) {
 }
 
 export function requireEnv() {
-  if (!SERVICE_KEY) throw new Error('SUPABASE_SERVICE_KEY missing');
+  if (!SUPABASE_URL) throw new Error('CMS_SUPABASE_URL missing');
+  if (!SERVICE_KEY) throw new Error('CMS_SUPABASE_SERVICE_KEY missing');
   return { SUPABASE_URL, SERVICE_KEY, GITHUB_REPO, GITHUB_TOKEN };
 }
 
