@@ -1,8 +1,8 @@
 // Shared CMS client: Supabase session + small helpers.
 // Requires the supabase-js UMD bundle to be loaded first.
 (function () {
-  var SUPABASE_URL = 'https://ewlufiwgnnnfwdjoafcu.supabase.co';
-  var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3bHVmaXdnbm5uZndkam9hZmN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MTI3MTMsImV4cCI6MjA5MDQ4ODcxM30.C8XNhInLONhDYtt0twygGFg0M4sufZI3oyCTeFjoP-Y';
+  var SUPABASE_URL = 'https://gcrcfyudxqbxizleokbn.supabase.co';
+  var SUPABASE_ANON = 'sb_publishable_9uE9KXPH8PBQdmJHiyeERw_qsIDhN1h'; // publishable key — safe to be public
 
   window.cms = {
     sb: window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON),
