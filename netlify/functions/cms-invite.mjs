@@ -77,10 +77,10 @@ export default async (req) => {
         method: 'POST',
         headers: { Authorization: `Bearer ${RESEND}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: process.env.CMS_MAIL_FROM || 'Kerehama Labs <onboarding@resend.dev>',
+          from: process.env.CMS_MAIL_FROM || 'Kitset <onboarding@resend.dev>',
           to: email,
           subject: 'Your website dashboard login',
-          text: `Hi,\n\nYou can now manage your website yourself.\n\nDashboard: ${origin}/cms/\nEmail: ${email}\nPassword: ${password}\n\nPlease change your password after signing in (Settings tab).\n\nKerehama Andrews\nKerehama Labs`
+          text: `Hi,\n\nYou can now manage your website yourself.\n\nDashboard: ${origin}/cms/\nEmail: ${email}\nPassword: ${password}\n\nPlease change your password after signing in (Settings tab).\n\nKerehama Andrews\nKitset`
         })
       });
       emailed = r.ok;

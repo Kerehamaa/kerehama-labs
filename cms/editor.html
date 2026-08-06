@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Editor — Kerehama Labs</title>
+<title>Editor — Kitset</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/cms/cms.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="/cms/cms.js"></script>
 <style>
   html, body { height: 100%; overflow: hidden; }
   .editor-wrap { display: flex; flex-direction: column; height: 100vh; }
-  .stage { flex: 1; background: #e9ebf2; display: flex; justify-content: center; overflow: auto; position: relative; }
+  .stage { flex: 1; background: #dfe7f2; display: flex; justify-content: center; overflow: auto; position: relative; }
   .stage iframe { border: none; background: #fff; width: 100%; height: 100%; }
   .stage.mobile { padding: 18px 0; }
   .stage.mobile iframe {
@@ -51,7 +51,10 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       Dashboard
     </a>
-    <span class="wordmark">kerehama<span>labs</span></span>
+    <span class="logo-kitset" style="color:#14315c">
+      <svg class="mark" width="17" height="17" viewBox="0 0 20 20" fill="none"><rect x="1.5" y="1.5" width="17" height="17" stroke="currentColor" stroke-width="2" stroke-dasharray="3.4 2.6"/><rect x="6" y="6" width="8" height="8" fill="currentColor"/></svg>
+      <span class="word" style="font-size:13px">KITSET</span>
+    </span>
     <span id="site-name" class="muted" style="font-size:13.5px"></span>
     <span class="spacer"></span>
     <span id="save-state" class="muted"><span class="dot"></span><span id="save-text">Loading…</span></span>
