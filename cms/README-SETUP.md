@@ -13,7 +13,7 @@ domain at this Netlify site changes nothing.
    and run `cms/supabase-schema.sql`. Safe to re-run any time.
 
 2. **Your admin account** — Supabase dashboard -> Authentication -> Users -> Add user:
-   `stephen@andrewstribe.co.nz` with a password, "Auto confirm" on. Then re-run the
+   `kerehama@andrewstribe.co.nz` with a password, "Auto confirm" on. Then re-run the
    last statement of the schema file (it flags that user as admin).
 
 3. **Recommended** — Supabase dashboard -> Authentication -> Sign In / Up:

@@ -98,5 +98,5 @@ on conflict (slug) do nothing;
 -- ONE-TIME: after creating your own user (Supabase dashboard -> Authentication -> Add user),
 -- run this to make yourself admin:
 insert into public.profiles (user_id, email, is_admin)
-select id, email, true from auth.users where email = 'stephen@andrewstribe.co.nz'
+select id, email, true from auth.users where email = 'kerehama@andrewstribe.co.nz'
 on conflict (user_id) do update set is_admin = true;
