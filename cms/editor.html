@@ -5,82 +5,137 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Editor — Kerehama Labs</title>
 <meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/cms/cms.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="/cms/cms.js"></script>
 <style>
   html, body { height: 100%; overflow: hidden; }
   .editor-wrap { display: flex; flex-direction: column; height: 100vh; }
-  .stage { flex: 1; background: #05060a; display: flex; justify-content: center; overflow: auto; }
-  .stage iframe {
-    border: none; background: #fff; width: 100%; height: 100%;
-    transition: width .2s;
+  .stage { flex: 1; background: #e9ebf2; display: flex; justify-content: center; overflow: auto; position: relative; }
+  .stage iframe { border: none; background: #fff; width: 100%; height: 100%; }
+  .stage.mobile { padding: 18px 0; }
+  .stage.mobile iframe {
+    width: 390px; height: calc(100% - 0px); margin: 0 auto;
+    border-radius: 18px; box-shadow: var(--shadow-lg); border: 1px solid var(--line-strong);
   }
-  .stage.mobile iframe { width: 390px; margin: 16px auto; height: calc(100% - 32px); border-radius: 14px; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
-  #save-state { font-size: 13px; }
+  #save-state { font-size: 13px; display: inline-flex; align-items: center; gap: 7px; }
+  #save-state .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); }
+  #save-state.saving .dot { background: #d99a2b; }
+  #save-state.saved .dot { background: var(--teal); }
+  #save-state.error .dot { background: var(--danger); }
+  .hintbar {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    background: rgba(25,28,38,.88); color: #fff; font-size: 13px; font-weight: 600;
+    padding: 8px 16px; border-radius: 999px; box-shadow: var(--shadow-md);
+    pointer-events: none; opacity: 0; transition: opacity .25s; z-index: 5;
+  }
+  .hintbar.show { opacity: 1; }
+  #loading-overlay {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: #e9ebf2; z-index: 4; transition: opacity .25s;
+  }
+  .spinner { width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--line-strong); border-top-color: var(--accent); animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .devicebtns { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 9px; overflow: hidden; }
+  .devicebtns button { border: none; background: var(--panel); padding: 7px 11px; cursor: pointer; color: var(--muted); display: flex; }
+  .devicebtns button.active { background: var(--accent-soft); color: var(--accent-strong); }
 </style>
 </head>
 <body>
 <div class="editor-wrap">
   <div class="topbar">
-    <a href="/cms/" class="btn small">Back</a>
+    <a href="/cms/" class="btn small ghost">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      Dashboard
+    </a>
     <span class="wordmark">kerehama<span>labs</span></span>
-    <span id="site-name" class="muted"></span>
+    <span id="site-name" class="muted" style="font-size:13.5px"></span>
     <span class="spacer"></span>
-    <span id="save-state" class="muted"></span>
-    <button id="device" class="btn small">Mobile view</button>
-    <button id="publish" class="btn primary">Publish</button>
+    <span id="save-state" class="muted"><span class="dot"></span><span id="save-text">Loading…</span></span>
+    <div class="devicebtns">
+      <button id="dev-desktop" class="active" title="Desktop view" aria-label="Desktop view">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </button>
+      <button id="dev-mobile" title="Mobile view" aria-label="Mobile view">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+      </button>
+    </div>
+    <button id="discard" class="btn small ghost danger" hidden>Discard changes</button>
+    <button id="publish" class="btn primary" disabled>Publish</button>
   </div>
   <div class="stage" id="stage">
+    <div id="loading-overlay"><div class="spinner"></div></div>
+    <div id="hintbar" class="hintbar"></div>
     <iframe id="frame" title="Site editor"></iframe>
   </div>
 </div>
 <input id="file-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+<div id="toast" class="toast"></div>
 
 <script>
 (function () {
   var $ = cms.$, sb = cms.sb;
   var slug = new URLSearchParams(location.search).get('site') || '';
-  var draft = {};            // { key: {kind, value} }
-  var dirty = false;         // unsaved-to-supabase changes
-  var unpublished = false;   // draft differs from live
+  var draft = {};
+  var dirty = false;
+  var unpublished = false;
   var saveTimer = null;
-  var pickKey = null;        // image key being replaced
+  var pickKey = null;
+  var toastTimer;
 
   if (!/^[a-z0-9-]+$/.test(slug)) { location.href = '/cms/'; return; }
 
-  function setState(text, cls) {
-    var el = $('#save-state');
+  function toast(msg) {
+    var el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 3200);
+  }
+  function setState(cls, text) {
+    $('#save-state').className = cls || 'muted';
+    $('#save-text').textContent = text;
+  }
+  function hint(text, ms) {
+    var el = $('#hintbar');
     el.textContent = text;
-    el.className = cls || 'muted';
+    el.classList.add('show');
+    if (ms) setTimeout(function () { el.classList.remove('show'); }, ms);
   }
 
   async function boot() {
     var s = await cms.requireAuth();
     if (!s) return;
     var me = await cms.whoami();
-    var mine = me.sites.some(function (x) { return x.slug === slug; });
-    if (!mine && !me.isAdmin) { location.href = '/cms/'; return; }
     var found = me.sites.filter(function (x) { return x.slug === slug; })[0];
+    if (!found && !me.isAdmin) { location.href = '/cms/'; return; }
     $('#site-name').textContent = '/ ' + ((found && found.name) || slug);
 
     var r = await sb.from('drafts').select('content').eq('site_slug', slug).maybeSingle();
     draft = (r.data && r.data.content) || {};
     unpublished = Object.keys(draft).length > 0;
-    updatePublishButton();
+    updateButtons();
 
     $('#frame').src = '/sites/' + slug + '/?cms-edit=1';
   }
 
-  // ---- messages from the iframe runtime ----
   window.addEventListener('message', function (e) {
     if (e.origin !== location.origin || !e.data || !e.data.type) return;
     var msg = e.data;
     if (msg.type === 'cms-ready') {
+      $('#loading-overlay').style.opacity = '0';
+      setTimeout(function () { $('#loading-overlay').hidden = true; }, 260);
       if (Object.keys(draft).length) {
         $('#frame').contentWindow.postMessage({ type: 'cms-apply', patch: draft }, location.origin);
+        setState('muted', 'Draft restored');
+        hint('Your unpublished draft was restored — press Publish when ready', 4200);
+      } else {
+        setState('muted', 'No changes yet');
+        hint('Click any text or photo on the page to edit it', 4200);
       }
-      setState(unpublished ? 'Draft restored — not published yet' : 'Click any text or image to edit');
     } else if (msg.type === 'cms-patch') {
       draft[msg.key] = { kind: msg.kind, value: msg.value };
       scheduleSave();
@@ -90,12 +145,11 @@
     }
   });
 
-  // ---- draft autosave ----
   function scheduleSave() {
     dirty = true;
     unpublished = true;
-    updatePublishButton();
-    setState('Saving…');
+    updateButtons();
+    setState('saving', 'Saving…');
     clearTimeout(saveTimer);
     saveTimer = setTimeout(saveDraft, 900);
   }
@@ -106,89 +160,103 @@
       content: draft,
       updated_at: new Date().toISOString()
     });
-    if (r.error) setState('Draft could not be saved: ' + r.error.message, 'error-text');
-    else { dirty = false; setState('Draft saved — press Publish to go live'); }
+    if (r.error) setState('error', 'Draft not saved: ' + r.error.message);
+    else { dirty = false; setState('saved', 'Draft saved'); }
   }
 
-  function updatePublishButton() {
+  function updateButtons() {
     $('#publish').disabled = !unpublished;
+    $('#discard').hidden = !unpublished;
   }
 
-  // ---- image replacement ----
+  // ---- images ----
   $('#file-input').addEventListener('change', async function () {
     var file = this.files[0];
     this.value = '';
     if (!file || !pickKey) return;
     var key = pickKey;
     pickKey = null;
-    setState('Uploading photo…');
+    setState('saving', 'Uploading photo…');
     try {
-      var resized = await downscale(file);
-      var res = await cms.api('cms-upload', {
-        site: slug,
-        ext: resized.ext,
-        data: resized.base64
-      });
+      var resized = await cms.downscale(file, 1920);
+      var res = await cms.api('cms-upload', { site: slug, ext: resized.ext, data: resized.base64 });
       $('#frame').contentWindow.postMessage({ type: 'cms-set-image', key: key, src: res.path }, location.origin);
       draft[key] = { kind: 'img', value: res.path };
       scheduleSave();
+      toast('Photo updated — press Publish to make it live');
     } catch (e) {
-      setState('Upload failed: ' + e.message, 'error-text');
+      setState('error', 'Upload failed: ' + e.message);
     }
   });
 
-  // Downscale to max 1920px and re-encode so uploads stay small.
-  function downscale(file) {
-    return new Promise(function (resolve, reject) {
-      var img = new Image();
-      var url = URL.createObjectURL(file);
-      img.onload = function () {
-        URL.revokeObjectURL(url);
-        var MAX = 1920;
-        var scale = Math.min(1, MAX / Math.max(img.width, img.height));
-        var canvas = document.createElement('canvas');
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
-        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        var isPng = file.type === 'image/png';
-        var mime = isPng ? 'image/png' : 'image/jpeg';
-        canvas.toBlob(function (blob) {
-          if (!blob) { reject(new Error('could not process image')); return; }
-          var fr = new FileReader();
-          fr.onload = function () {
-            resolve({ ext: isPng ? 'png' : 'jpg', base64: String(fr.result).split(',')[1] });
-          };
-          fr.onerror = function () { reject(new Error('could not read image')); };
-          fr.readAsDataURL(blob);
-        }, mime, 0.85);
-      };
-      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('not a valid image')); };
-      img.src = url;
+  // ---- publish: commit, then wait until the change is actually live ----
+  $('#publish').addEventListener('click', async function () {
+    var keys = Object.keys(draft);
+    if (!keys.length) return;
+    $('#publish').disabled = true;
+    $('#discard').hidden = true;
+    setState('saving', 'Publishing…');
+    try {
+      if (dirty) await saveDraft();
+      await cms.api('cms-publish', { site: slug, patch: draft });
+      setState('saving', 'Deploying — usually under a minute…');
+      var probe = null;
+      for (var i = 0; i < keys.length; i++) {
+        var p = draft[keys[i]];
+        if (p.kind === 'text' && p.value && p.value.length > 3 && p.value.indexOf('\n') === -1) { probe = p.value; break; }
+        if (p.kind === 'img') { probe = p.value; break; }
+      }
+      var live = await waitForLive(probe);
+      unpublished = false;
+      updateButtons();
+      if (live) {
+        setState('saved', 'Published — your changes are live');
+        toast('Your changes are live');
+      } else {
+        setState('saved', 'Published — going live shortly');
+      }
+    } catch (e) {
+      setState('error', 'Publish failed: ' + e.message);
+      updateButtons();
+    }
+  });
+
+  function waitForLive(probe) {
+    if (!probe) return Promise.resolve(false);
+    var esc = probe.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    var until = Date.now() + 150000;
+    return new Promise(function (resolve) {
+      (function check() {
+        if (Date.now() > until) { resolve(false); return; }
+        fetch('/sites/' + slug + '/index.html', { cache: 'no-store' })
+          .then(function (r) { return r.text(); })
+          .then(function (html) {
+            if (html.indexOf(probe) !== -1 || html.indexOf(esc) !== -1) resolve(true);
+            else setTimeout(check, 8000);
+          })
+          .catch(function () { setTimeout(check, 8000); });
+      })();
     });
   }
 
-  // ---- publish ----
-  $('#publish').addEventListener('click', async function () {
-    if (!Object.keys(draft).length) return;
-    $('#publish').disabled = true;
-    setState('Publishing…');
-    try {
-      if (dirty) await saveDraft();
-      var r = await cms.api('cms-publish', { site: slug, patch: draft });
-      unpublished = false;
-      updatePublishButton();
-      setState('Published — changes are live in about a minute (' + r.applied + ' updated)', 'ok-text');
-    } catch (e) {
-      setState('Publish failed: ' + e.message, 'error-text');
-      $('#publish').disabled = false;
-    }
+  // ---- discard ----
+  $('#discard').addEventListener('click', async function () {
+    if (!confirm('Throw away all unpublished changes and go back to the live version?')) return;
+    await sb.from('drafts').delete().eq('site_slug', slug);
+    draft = {};
+    dirty = false;
+    unpublished = false;
+    location.reload();
   });
 
   // ---- device toggle ----
-  $('#device').addEventListener('click', function () {
-    var mobile = $('#stage').classList.toggle('mobile');
-    $('#device').textContent = mobile ? 'Desktop view' : 'Mobile view';
-  });
+  $('#dev-desktop').addEventListener('click', function () { setDevice(false); });
+  $('#dev-mobile').addEventListener('click', function () { setDevice(true); });
+  function setDevice(mobile) {
+    $('#stage').classList.toggle('mobile', mobile);
+    $('#dev-desktop').classList.toggle('active', !mobile);
+    $('#dev-mobile').classList.toggle('active', mobile);
+  }
 
   window.addEventListener('beforeunload', function (e) {
     if (dirty) { e.preventDefault(); e.returnValue = ''; }

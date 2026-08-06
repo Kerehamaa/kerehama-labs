@@ -5,16 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kerehama Labs — Dashboard</title>
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#f6f7fb">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/cms/cms.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="/cms/cms.js"></script>
 </head>
 <body>
 
+<!-- ============ login ============ -->
 <div id="view-login" class="login-wrap" hidden>
   <div class="card login-card">
-    <div class="wordmark">kerehama<span>labs</span></div>
-    <h1>Site dashboard</h1>
+    <div class="wordmark" style="font-size:20px">kerehama<span>labs</span></div>
+    <h1>Welcome back</h1>
     <p class="sub">Sign in to manage your website.</p>
     <form id="login-form">
       <div class="field">
@@ -25,69 +30,94 @@
         <label for="login-password">Password</label>
         <input id="login-password" type="password" autocomplete="current-password" required>
       </div>
-      <button class="btn primary" style="width:100%" type="submit">Sign in</button>
-      <p id="login-error" class="error-text" style="margin-top:10px" hidden></p>
+      <button class="btn primary" style="width:100%;padding:11px" type="submit" id="login-btn">Sign in</button>
+      <p id="login-error" class="error-text" style="margin-top:12px" hidden></p>
     </form>
   </div>
 </div>
 
-<div id="view-app" hidden>
-  <div class="topbar">
-    <span class="wordmark">kerehama<span>labs</span></span>
-    <span id="crumb" class="muted"></span>
-    <span class="spacer"></span>
-    <span id="user-email" class="muted" style="font-size:13px"></span>
-    <button id="signout" class="btn small">Sign out</button>
-  </div>
+<!-- ============ app ============ -->
+<div id="view-app" class="app" hidden>
+  <aside class="sidebar">
+    <div class="wordmark">kerehama<span>labs</span></div>
+    <div class="section" id="sites-label">Sites</div>
+    <div id="side-sites"></div>
+    <div class="section">Manage</div>
+    <nav id="side-nav">
+      <button class="navlink" data-tab="overview">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span>Overview</span>
+      </button>
+      <button class="navlink" data-tab="editor">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        <span>Edit site</span>
+      </button>
+      <button class="navlink" data-tab="seo">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <span>SEO</span>
+      </button>
+      <button class="navlink" data-tab="analytics">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20h18"/><path d="M6 20V10"/><path d="M12 20V4"/><path d="M18 20v-7"/></svg>
+        <span>Analytics</span>
+      </button>
+      <button class="navlink" data-tab="feedback">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+        <span>Feedback</span>
+      </button>
+      <button class="navlink" data-tab="settings">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.01a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.01a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z"/></svg>
+        <span>Settings</span>
+      </button>
+      <button class="navlink" data-tab="admin" id="nav-admin" hidden>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Admin</span>
+      </button>
+    </nav>
+    <div class="foot">
+      <div id="user-email" style="margin-bottom:8px"></div>
+      <button id="signout" class="btn small ghost" style="padding-left:0">Sign out</button>
+    </div>
+  </aside>
 
-  <div class="shell">
-    <!-- site picker -->
-    <div id="view-sites" hidden>
-      <h2 style="margin-bottom:14px">Your sites</h2>
-      <div id="site-list" class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))"></div>
-      <p id="no-sites" class="muted" hidden>No sites are linked to your account yet. Contact Kerehama Labs.</p>
+  <main class="main">
+    <!-- overview -->
+    <div id="tab-overview" hidden>
+      <div class="page-head">
+        <h2 id="ov-title"></h2>
+        <span class="pill live">Live</span>
+        <span class="spacer"></span>
+        <a id="open-live" class="btn small" target="_blank" rel="noopener">View live site
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+        </a>
+      </div>
+      <div class="grid cols-3" id="ov-stats">
+        <div class="card stat"><div class="skeleton" style="height:30px;width:60px"></div><div class="skeleton" style="height:13px;width:110px;margin-top:8px"></div></div>
+        <div class="card stat"><div class="skeleton" style="height:30px;width:60px"></div><div class="skeleton" style="height:13px;width:110px;margin-top:8px"></div></div>
+        <div class="card stat"><div class="skeleton" style="height:30px;width:60px"></div><div class="skeleton" style="height:13px;width:110px;margin-top:8px"></div></div>
+      </div>
+      <div class="card" style="margin-top:16px;display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:240px">
+          <h3 style="margin-bottom:6px">Edit your website</h3>
+          <p class="muted" style="margin-bottom:0">Click any text or photo on your site and change it directly. Nothing goes live until you press Publish.</p>
+        </div>
+        <button class="btn primary" data-goto="editor">Open the editor</button>
+      </div>
     </div>
 
-    <!-- one site -->
-    <div id="view-site" hidden>
-      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-        <h2 id="site-title"></h2>
-        <span class="pill live">LIVE</span>
-        <span class="spacer" style="flex:1"></span>
-        <a id="open-live" class="btn small" target="_blank" rel="noopener">View live site</a>
-        <a id="open-editor" class="btn primary small">Edit site</a>
-      </div>
-
-      <div class="tabs" id="tabs">
-        <button data-tab="overview" class="active">Overview</button>
-        <button data-tab="seo">SEO</button>
-        <button data-tab="analytics">Analytics</button>
-        <button data-tab="settings">Settings</button>
-        <button data-tab="admin" id="tab-admin-btn" hidden>Admin</button>
-      </div>
-
-      <div id="tab-overview">
-        <div class="grid cols-3" id="ov-stats"></div>
-        <div class="card" style="margin-top:16px">
-          <h3 style="margin-bottom:8px">Edit your website</h3>
-          <p class="muted" style="margin-bottom:14px">Click any text or photo on your site and change it directly. Your edits are saved as you go, and nothing goes live until you press Publish.</p>
-          <a id="open-editor-2" class="btn primary">Open the editor</a>
-        </div>
-      </div>
-
-      <div id="tab-seo" hidden>
-        <div class="card" style="max-width:640px">
-          <h3 style="margin-bottom:4px">Search &amp; social settings</h3>
-          <p class="muted" style="margin-bottom:18px">How your site appears on Google and when shared on social media.</p>
+    <!-- seo -->
+    <div id="tab-seo" hidden>
+      <div class="page-head"><h2>SEO &amp; sharing</h2></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start">
+        <div class="card">
           <div class="field">
-            <label for="seo-title">Page title</label>
+            <label for="seo-title">Page title <span class="count" id="seo-title-count"></span></label>
             <input id="seo-title" maxlength="70">
-            <p class="hint">Shown as the headline in Google results. Aim for under 60 characters.</p>
+            <p class="hint">The headline in Google results. Keep it under 60 characters.</p>
           </div>
           <div class="field">
-            <label for="seo-description">Description</label>
+            <label for="seo-description">Description <span class="count" id="seo-description-count"></span></label>
             <textarea id="seo-description" rows="3" maxlength="170"></textarea>
-            <p class="hint">The snippet under your headline in Google. Aim for 120–160 characters.</p>
+            <p class="hint">The snippet under the headline. Aim for 120–160 characters.</p>
           </div>
           <div class="field">
             <label for="seo-og-title">Social share title</label>
@@ -97,86 +127,153 @@
             <label for="seo-og-description">Social share description</label>
             <textarea id="seo-og-description" rows="2" maxlength="200"></textarea>
           </div>
-          <button id="seo-save" class="btn primary">Save &amp; publish</button>
-          <span id="seo-status" class="muted" style="margin-left:10px"></span>
-        </div>
-      </div>
-
-      <div id="tab-analytics" hidden>
-        <div class="grid cols-3" id="an-stats"></div>
-        <div class="card" style="margin-top:16px">
-          <h3 style="margin-bottom:12px">Visits — last 30 days</h3>
-          <div id="an-chart" style="overflow-x:auto"></div>
-        </div>
-        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:16px">
-          <div class="card">
-            <h3 style="margin-bottom:10px">Top pages</h3>
-            <table class="list" id="an-pages"></table>
-          </div>
-          <div class="card">
-            <h3 style="margin-bottom:10px">Where visitors came from</h3>
-            <table class="list" id="an-refs"></table>
-          </div>
-        </div>
-      </div>
-
-      <div id="tab-settings" hidden>
-        <div class="card" style="max-width:480px">
-          <h3 style="margin-bottom:14px">Change password</h3>
           <div class="field">
-            <label for="new-password">New password</label>
-            <input id="new-password" type="password" autocomplete="new-password" minlength="8">
+            <label>Social share image</label>
+            <div style="display:flex;gap:12px;align-items:center">
+              <img id="seo-og-img" alt="" style="width:96px;height:54px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:var(--panel-2)" hidden>
+              <button class="btn small" id="seo-og-upload">Upload image</button>
+            </div>
+            <p class="hint">Shown when your site is shared on Facebook, Messenger, WhatsApp etc. 1200x630 works best.</p>
           </div>
-          <button id="save-password" class="btn primary">Update password</button>
-          <span id="pw-status" class="muted" style="margin-left:10px"></span>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
+            <button id="seo-save" class="btn primary">Save &amp; publish</button>
+            <span id="seo-status" class="muted"></span>
+          </div>
         </div>
-      </div>
-
-      <div id="tab-admin" hidden>
-        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
-          <div class="card">
-            <h3 style="margin-bottom:14px">Invite a client</h3>
-            <div class="field">
-              <label for="inv-email">Client email</label>
-              <input id="inv-email" type="email">
-            </div>
-            <div class="field">
-              <label for="inv-site">Site</label>
-              <select id="inv-site"></select>
-            </div>
-            <div class="field">
-              <label style="display:flex;gap:8px;align-items:center;font-size:14px;color:var(--text)">
-                <input id="inv-send" type="checkbox" style="width:auto"> Email them their login details
-              </label>
-            </div>
-            <button id="inv-go" class="btn primary">Create login</button>
-            <p id="inv-result" class="hint" style="user-select:all"></p>
-          </div>
-          <div class="card">
-            <h3 style="margin-bottom:14px">Add a site</h3>
-            <div class="field">
-              <label for="new-slug">Slug (folder under /sites/)</label>
-              <input id="new-slug" placeholder="new-hong-kong" pattern="[a-z0-9-]+">
-            </div>
-            <div class="field">
-              <label for="new-name">Display name</label>
-              <input id="new-name" placeholder="New Hong Kong Takeaways">
-            </div>
-            <button id="new-site-go" class="btn primary">Add site</button>
-            <p id="new-site-result" class="hint"></p>
+        <div>
+          <p class="hint" style="margin:0 0 8px 2px">How it looks on Google</p>
+          <div class="gpreview">
+            <div class="gurl" id="gp-url"></div>
+            <div class="gtitle" id="gp-title"></div>
+            <div class="gdesc" id="gp-desc"></div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- analytics -->
+    <div id="tab-analytics" hidden>
+      <div class="page-head"><h2>Analytics</h2><span class="muted">Last 30 days</span></div>
+      <div class="grid cols-3" id="an-stats">
+        <div class="card stat"><div class="skeleton" style="height:30px;width:60px"></div><div class="skeleton" style="height:13px;width:110px;margin-top:8px"></div></div>
+        <div class="card stat"><div class="skeleton" style="height:30px;width:60px"></div><div class="skeleton" style="height:13px;width:110px;margin-top:8px"></div></div>
+        <div class="card stat"><div class="skeleton" style="height:30px;width:60px"></div><div class="skeleton" style="height:13px;width:110px;margin-top:8px"></div></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3 style="margin-bottom:14px">Daily visits</h3>
+        <div id="an-chart" style="overflow-x:auto"><div class="skeleton" style="height:160px"></div></div>
+      </div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:16px">
+        <div class="card">
+          <h3 style="margin-bottom:10px">Top pages</h3>
+          <table class="list" id="an-pages"></table>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:10px">Where visitors came from</h3>
+          <table class="list" id="an-refs"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- feedback -->
+    <div id="tab-feedback" hidden>
+      <div class="page-head"><h2>Feedback</h2></div>
+      <div class="card" style="max-width:640px" id="fb-form-card">
+        <h3 style="margin-bottom:6px">Request a change or send feedback</h3>
+        <p class="muted" style="margin-bottom:14px">Want something changed on your site that the editor can't do — a new section, different layout, anything? Send it here and Kerehama Labs will sort it.</p>
+        <div class="field">
+          <textarea id="fb-message" rows="4" maxlength="4000" placeholder="What would you like changed?"></textarea>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <button id="fb-send" class="btn primary">Send</button>
+          <span id="fb-status" class="muted"></span>
+        </div>
+      </div>
+      <div style="margin-top:16px" id="fb-list"></div>
+    </div>
+
+    <!-- settings -->
+    <div id="tab-settings" hidden>
+      <div class="page-head"><h2>Settings</h2></div>
+      <div class="card" style="max-width:460px">
+        <h3 style="margin-bottom:14px">Change password</h3>
+        <div class="field">
+          <label for="new-password">New password</label>
+          <input id="new-password" type="password" autocomplete="new-password" minlength="8">
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <button id="save-password" class="btn primary">Update password</button>
+          <span id="pw-status" class="muted"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- admin -->
+    <div id="tab-admin" hidden>
+      <div class="page-head"><h2>Admin</h2></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start">
+        <div class="card">
+          <h3 style="margin-bottom:14px">Invite a client</h3>
+          <div class="field">
+            <label for="inv-email">Client email</label>
+            <input id="inv-email" type="email">
+          </div>
+          <div class="field">
+            <label for="inv-site">Site</label>
+            <select id="inv-site"></select>
+          </div>
+          <div class="field">
+            <label style="display:flex;gap:9px;align-items:center;font-size:14px">
+              <input id="inv-send" type="checkbox" style="width:auto"> Email them their login details
+            </label>
+          </div>
+          <button id="inv-go" class="btn primary">Create login</button>
+          <p id="inv-result" class="hint" style="user-select:all"></p>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:14px">Add a site</h3>
+          <div class="field">
+            <label for="new-slug">Slug (folder under /sites/)</label>
+            <input id="new-slug" placeholder="new-hong-kong" pattern="[a-z0-9-]+">
+          </div>
+          <div class="field">
+            <label for="new-name">Display name</label>
+            <input id="new-name" placeholder="New Hong Kong Takeaways">
+          </div>
+          <button id="new-site-go" class="btn primary">Add site</button>
+          <p id="new-site-result" class="hint"></p>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:6px">Upload site HTML</h3>
+          <p class="muted" style="margin-bottom:14px">Replace (or create) a site's index.html directly from here — no git needed. Images referenced as assets/… must be uploaded separately or committed to the repo.</p>
+          <div class="field">
+            <label for="up-site">Site</label>
+            <select id="up-site"></select>
+          </div>
+          <button id="up-html-go" class="btn primary">Choose HTML file…</button>
+          <p id="up-html-result" class="hint"></p>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
+
+<div id="toast" class="toast"></div>
 
 <script>
 (function () {
   var $ = cms.$, sb = cms.sb;
-  var me = null;          // { user, isAdmin, sites }
-  var site = null;        // { slug, name }
+  var me = null;      // { user, isAdmin, sites }
+  var site = null;    // { slug, name }
+  var toastTimer;
 
+  function toast(msg) {
+    var el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2600);
+  }
   function show(id) {
     ['view-login', 'view-app'].forEach(function (v) { $('#' + v).hidden = v !== id; });
   }
@@ -185,10 +282,14 @@
   $('#login-form').addEventListener('submit', async function (e) {
     e.preventDefault();
     $('#login-error').hidden = true;
+    $('#login-btn').disabled = true;
+    $('#login-btn').textContent = 'Signing in…';
     var r = await sb.auth.signInWithPassword({
       email: $('#login-email').value.trim(),
       password: $('#login-password').value
     });
+    $('#login-btn').disabled = false;
+    $('#login-btn').textContent = 'Sign in';
     if (r.error) {
       $('#login-error').textContent = 'Sign in failed: ' + r.error.message;
       $('#login-error').hidden = false;
@@ -202,49 +303,54 @@
     location.reload();
   });
 
-  // ---------- site list ----------
-  function renderSites() {
-    $('#view-sites').hidden = false;
-    $('#view-site').hidden = true;
-    $('#crumb').textContent = '';
-    var wrap = $('#site-list');
+  // ---------- sidebar ----------
+  function renderSidebar() {
+    var wrap = $('#side-sites');
     wrap.innerHTML = '';
     me.sites.forEach(function (s) {
-      var a = document.createElement('a');
-      a.className = 'card site-tile';
-      a.innerHTML = '<div class="name">' + cms.esc(s.name) + '</div><div class="slug">/sites/' + cms.esc(s.slug) + '/</div>';
-      a.addEventListener('click', function () { openSite(s); });
-      wrap.appendChild(a);
+      var b = document.createElement('button');
+      b.className = 'navlink' + (site && site.slug === s.slug ? ' active' : '');
+      b.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 3a15 15 0 0 1 0 18"/><path d="M12 3a15 15 0 0 0 0 18"/></svg><span>' + cms.esc(s.name) + '</span>';
+      b.addEventListener('click', function () { openSite(s, 'overview'); });
+      wrap.appendChild(b);
     });
-    $('#no-sites').hidden = me.sites.length > 0;
+    $('#sites-label').hidden = me.sites.length === 0;
+    $('#nav-admin').hidden = !me.isAdmin;
   }
 
-  // ---------- one site ----------
-  function openSite(s) {
-    site = s;
-    $('#view-sites').hidden = true;
-    $('#view-site').hidden = false;
-    $('#crumb').textContent = '/ ' + s.name;
-    $('#site-title').textContent = s.name;
-    $('#open-live').href = '/sites/' + s.slug + '/';
-    $('#open-editor').href = '/cms/editor.html?site=' + encodeURIComponent(s.slug);
-    $('#open-editor-2').href = $('#open-editor').href;
-    $('#tab-admin-btn').hidden = !me.isAdmin;
-    selectTab('overview');
-    loadOverview();
-  }
-
-  cms.$$('#tabs button').forEach(function (b) {
-    b.addEventListener('click', function () { selectTab(b.dataset.tab); });
+  cms.$$('#side-nav .navlink').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (!site) return;
+      if (b.dataset.tab === 'editor') {
+        location.href = '/cms/editor.html?site=' + encodeURIComponent(site.slug);
+        return;
+      }
+      selectTab(b.dataset.tab);
+    });
   });
+  document.addEventListener('click', function (e) {
+    var go = e.target.closest && e.target.closest('[data-goto="editor"]');
+    if (go && site) location.href = '/cms/editor.html?site=' + encodeURIComponent(site.slug);
+  });
+
   function selectTab(name) {
-    cms.$$('#tabs button').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === name); });
-    ['overview', 'seo', 'analytics', 'settings', 'admin'].forEach(function (t) {
+    cms.$$('#side-nav .navlink').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === name); });
+    ['overview', 'seo', 'analytics', 'feedback', 'settings', 'admin'].forEach(function (t) {
       $('#tab-' + t).hidden = t !== name;
     });
+    if (name === 'overview') loadOverview();
     if (name === 'analytics') loadAnalytics();
     if (name === 'seo') loadSeo();
+    if (name === 'feedback') loadFeedback();
     if (name === 'admin') loadAdmin();
+  }
+
+  function openSite(s, tab) {
+    site = s;
+    $('#ov-title').textContent = s.name;
+    $('#open-live').href = '/sites/' + s.slug + '/';
+    renderSidebar();
+    selectTab(tab || 'overview');
   }
 
   // ---------- overview ----------
@@ -255,18 +361,33 @@
     var today = new Date().toISOString().slice(0, 10);
     var week = new Date(Date.now() - 7 * 864e5).toISOString();
     var stats = [
-      ['Views today', rows.filter(function (v) { return v.ts.slice(0, 10) === today; }).length],
-      ['Views — 7 days', rows.filter(function (v) { return v.ts >= week; }).length],
-      ['Visitors — 30 days', new Set(rows.map(function (v) { return v.visitor_hash; })).size]
+      [rows.filter(function (v) { return v.ts.slice(0, 10) === today; }).length, 'Views today'],
+      [rows.filter(function (v) { return v.ts >= week; }).length, 'Views this week'],
+      [new Set(rows.map(function (v) { return v.visitor_hash; })).size, 'Visitors this month']
     ];
     $('#ov-stats').innerHTML = stats.map(function (s) {
-      return '<div class="card stat"><div class="n">' + s[1] + '</div><div class="l">' + s[0] + '</div></div>';
+      return '<div class="card stat"><div class="n">' + s[0] + '</div><div class="l">' + s[1] + '</div></div>';
     }).join('');
   }
 
   // ---------- SEO ----------
+  var ogImagePath = '';
+  function bindPreview() {
+    var upd = function () {
+      $('#gp-url').textContent = location.origin + '/sites/' + (site ? site.slug : '') + '/';
+      $('#gp-title').textContent = $('#seo-title').value || 'Page title';
+      $('#gp-desc').textContent = $('#seo-description').value || 'Page description appears here.';
+      $('#seo-title-count').textContent = $('#seo-title').value.length + '/70';
+      $('#seo-description-count').textContent = $('#seo-description').value.length + '/170';
+    };
+    ['seo-title', 'seo-description'].forEach(function (id) {
+      $('#' + id).addEventListener('input', upd);
+    });
+    upd();
+  }
+
   async function loadSeo() {
-    $('#seo-status').textContent = 'Loading current values…';
+    $('#seo-status').textContent = 'Loading…';
     try {
       var res = await fetch('/sites/' + site.slug + '/index.html', { cache: 'no-store' });
       var doc = new DOMParser().parseFromString(await res.text(), 'text/html');
@@ -275,11 +396,43 @@
       $('#seo-description').value = get('meta[name="description"]', 'content') || '';
       $('#seo-og-title').value = get('meta[property="og:title"]', 'content') || '';
       $('#seo-og-description').value = get('meta[property="og:description"]', 'content') || '';
+      ogImagePath = get('meta[property="og:image"]', 'content') || '';
+      if (ogImagePath) {
+        $('#seo-og-img').src = '/sites/' + site.slug + '/' + ogImagePath;
+        $('#seo-og-img').hidden = false;
+      } else {
+        $('#seo-og-img').hidden = true;
+      }
       $('#seo-status').textContent = '';
     } catch (e) {
       $('#seo-status').textContent = 'Could not load current values.';
     }
+    bindPreview();
   }
+
+  var ogInput = document.createElement('input');
+  ogInput.type = 'file';
+  ogInput.accept = 'image/jpeg,image/png,image/webp';
+  $('#seo-og-upload').addEventListener('click', function () { ogInput.click(); });
+  ogInput.addEventListener('change', async function () {
+    var file = this.files[0];
+    this.value = '';
+    if (!file) return;
+    $('#seo-og-upload').disabled = true;
+    $('#seo-og-upload').textContent = 'Uploading…';
+    try {
+      var small = await cms.downscale(file, 1200);
+      var res = await cms.api('cms-upload', { site: site.slug, ext: small.ext, data: small.base64 });
+      ogImagePath = res.path;
+      $('#seo-og-img').src = '/sites/' + site.slug + '/' + res.path;
+      $('#seo-og-img').hidden = false;
+      toast('Image uploaded — press Save & publish to apply');
+    } catch (e) {
+      toast('Upload failed: ' + e.message);
+    }
+    $('#seo-og-upload').disabled = false;
+    $('#seo-og-upload').textContent = 'Upload image';
+  });
 
   $('#seo-save').addEventListener('click', async function () {
     var patch = {
@@ -288,11 +441,13 @@
       'seo.og_title': { kind: 'text', value: $('#seo-og-title').value.trim() },
       'seo.og_description': { kind: 'text', value: $('#seo-og-description').value.trim() }
     };
+    if (ogImagePath) patch['seo.og_image'] = { kind: 'text', value: ogImagePath };
     $('#seo-save').disabled = true;
     $('#seo-status').textContent = 'Publishing…';
     try {
       await cms.api('cms-publish', { site: site.slug, patch: patch });
-      $('#seo-status').textContent = 'Published — live in about a minute.';
+      $('#seo-status').textContent = '';
+      toast('Published — live in about a minute');
     } catch (e) {
       $('#seo-status').textContent = 'Failed: ' + e.message;
     }
@@ -308,29 +463,31 @@
 
     var uniques = new Set(rows.map(function (v) { return v.visitor_hash; })).size;
     $('#an-stats').innerHTML =
-      '<div class="card stat"><div class="n">' + rows.length + '</div><div class="l">Page views — 30 days</div></div>' +
-      '<div class="card stat"><div class="n">' + uniques + '</div><div class="l">Unique visitors — 30 days</div></div>' +
-      '<div class="card stat"><div class="n">' + (rows[0] ? new Date(rows[0].ts).toLocaleDateString() : '—') + '</div><div class="l">Most recent visit</div></div>';
+      '<div class="card stat"><div class="n">' + rows.length + '</div><div class="l">Page views</div></div>' +
+      '<div class="card stat"><div class="n">' + uniques + '</div><div class="l">Unique visitors</div></div>' +
+      '<div class="card stat"><div class="n">' + (rows[0] ? timeAgo(rows[0].ts) : '—') + '</div><div class="l">Last visit</div></div>';
 
-    // daily buckets
+    var byDay = {};
     var days = [];
     for (var i = 29; i >= 0; i--) {
       var d = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10);
-      days.push([d, 0]);
+      days.push(d);
+      byDay[d] = 0;
     }
-    var byDay = {};
-    days.forEach(function (d) { byDay[d[0]] = 0; });
     rows.forEach(function (v) { var d = v.ts.slice(0, 10); if (d in byDay) byDay[d]++; });
-    var max = Math.max(1, Math.max.apply(null, Object.keys(byDay).map(function (k) { return byDay[k]; })));
+    var max = Math.max(1, Math.max.apply(null, days.map(function (d) { return byDay[d]; })));
 
-    var W = 900, H = 180, bw = W / 30;
-    var svg = '<svg class="chart" viewBox="0 0 ' + W + ' ' + (H + 24) + '" style="min-width:640px;width:100%">';
+    var W = 900, H = 170, bw = W / 30;
+    var svg = '<svg class="chart" viewBox="0 0 ' + W + ' ' + (H + 26) + '" style="min-width:640px;width:100%">';
+    [0.25, 0.5, 0.75].forEach(function (f) {
+      svg += '<line class="grid" x1="0" x2="' + W + '" y1="' + (H * f) + '" y2="' + (H * f) + '"/>';
+    });
     days.forEach(function (d, idx) {
-      var n = byDay[d[0]];
-      var h = Math.round((n / max) * (H - 10));
-      var x = idx * bw + 2;
-      svg += '<rect class="bar" x="' + x + '" y="' + (H - h) + '" width="' + (bw - 4) + '" height="' + h + '" rx="3"><title>' + d[0] + ': ' + n + ' views</title></rect>';
-      if (idx % 5 === 0) svg += '<text x="' + (x + bw / 2) + '" y="' + (H + 16) + '" text-anchor="middle">' + d[0].slice(5) + '</text>';
+      var n = byDay[d];
+      var h = Math.max(n > 0 ? 4 : 2, Math.round((n / max) * (H - 12)));
+      var x = idx * bw + 3;
+      svg += '<rect class="bar" x="' + x + '" y="' + (H - h) + '" width="' + (bw - 6) + '" height="' + h + '" rx="3"' + (n === 0 ? ' opacity=".15"' : '') + '><title>' + d + ': ' + n + ' view' + (n === 1 ? '' : 's') + '</title></rect>';
+      if (idx % 5 === 0) svg += '<text x="' + (x + bw / 2 - 3) + '" y="' + (H + 18) + '" text-anchor="middle">' + d.slice(8) + '/' + d.slice(5, 7) + '</text>';
     });
     svg += '</svg>';
     $('#an-chart').innerHTML = svg;
@@ -356,22 +513,104 @@
     }, 'Source', 'No visits yet');
   }
 
+  function timeAgo(ts) {
+    var mins = Math.round((Date.now() - new Date(ts).getTime()) / 60000);
+    if (mins < 1) return 'now';
+    if (mins < 60) return mins + 'm ago';
+    if (mins < 1440) return Math.round(mins / 60) + 'h ago';
+    return Math.round(mins / 1440) + 'd ago';
+  }
+
+  // ---------- feedback ----------
+  async function loadFeedback() {
+    var q = sb.from('feedback').select('id,site_slug,email,message,status,created_at')
+      .order('created_at', { ascending: false }).limit(100);
+    if (!me.isAdmin) q = q.eq('site_slug', site.slug);
+    var r = await q;
+    var rows = r.data || [];
+    var html = '';
+    if (rows.length) {
+      html = '<div class="card"><h3 style="margin-bottom:10px">' + (me.isAdmin ? 'All feedback' : 'Your requests') + '</h3><table class="list">' +
+        '<tr>' + (me.isAdmin ? '<th>Site</th><th>From</th>' : '') + '<th>Message</th><th>Status</th><th></th></tr>' +
+        rows.map(function (f) {
+          return '<tr>' +
+            (me.isAdmin ? '<td>' + cms.esc(f.site_slug) + '</td><td>' + cms.esc(f.email || '') + '</td>' : '') +
+            '<td style="max-width:420px">' + cms.esc(f.message) + '</td>' +
+            '<td><span class="pill' + (f.status === 'done' ? ' live' : '') + '">' + (f.status === 'done' ? 'Done' : 'Open') + '</span></td>' +
+            '<td>' + (me.isAdmin && f.status === 'open' ? '<button class="btn small" data-fb-done="' + f.id + '">Mark done</button>' : '') + '</td>' +
+            '</tr>';
+        }).join('') + '</table></div>';
+    }
+    $('#fb-list').innerHTML = html;
+    cms.$$('[data-fb-done]').forEach(function (b) {
+      b.addEventListener('click', async function () {
+        b.disabled = true;
+        await sb.from('feedback').update({ status: 'done' }).eq('id', Number(b.dataset.fbDone));
+        loadFeedback();
+      });
+    });
+  }
+
+  $('#fb-send').addEventListener('click', async function () {
+    var msg = $('#fb-message').value.trim();
+    if (!msg) return;
+    $('#fb-send').disabled = true;
+    $('#fb-status').textContent = 'Sending…';
+    var r = await sb.from('feedback').insert({
+      site_slug: site.slug,
+      user_id: me.user.id,
+      email: me.user.email,
+      message: msg
+    });
+    $('#fb-send').disabled = false;
+    if (r.error) { $('#fb-status').textContent = 'Failed: ' + r.error.message; return; }
+    $('#fb-message').value = '';
+    $('#fb-status').textContent = '';
+    toast('Sent — Kerehama Labs will be in touch');
+    loadFeedback();
+  });
+
   // ---------- settings ----------
   $('#save-password').addEventListener('click', async function () {
     var pw = $('#new-password').value;
     if (pw.length < 8) { $('#pw-status').textContent = 'Use at least 8 characters.'; return; }
     var r = await sb.auth.updateUser({ password: pw });
-    $('#pw-status').textContent = r.error ? ('Failed: ' + r.error.message) : 'Password updated.';
-    if (!r.error) $('#new-password').value = '';
+    if (r.error) $('#pw-status').textContent = 'Failed: ' + r.error.message;
+    else { $('#pw-status').textContent = ''; $('#new-password').value = ''; toast('Password updated'); }
   });
 
   // ---------- admin ----------
   function loadAdmin() {
-    var sel = $('#inv-site');
-    sel.innerHTML = me.sites.map(function (s) {
+    var opts = me.sites.map(function (s) {
       return '<option value="' + cms.esc(s.slug) + '"' + (site && s.slug === site.slug ? ' selected' : '') + '>' + cms.esc(s.name) + '</option>';
     }).join('');
+    $('#inv-site').innerHTML = opts;
+    $('#up-site').innerHTML = opts;
   }
+
+  var htmlInput = document.createElement('input');
+  htmlInput.type = 'file';
+  htmlInput.accept = '.html,text/html';
+  $('#up-html-go').addEventListener('click', function () { htmlInput.click(); });
+  htmlInput.addEventListener('change', function () {
+    var file = this.files[0];
+    this.value = '';
+    if (!file) return;
+    var fr = new FileReader();
+    fr.onload = async function () {
+      $('#up-html-go').disabled = true;
+      $('#up-html-result').textContent = 'Uploading…';
+      try {
+        var r = await cms.api('cms-site-html', { site: $('#up-site').value, html: String(fr.result) });
+        $('#up-html-result').textContent = (r.replaced ? 'Replaced' : 'Created') + ' — live in about a minute.';
+        toast('Site HTML uploaded');
+      } catch (e) {
+        $('#up-html-result').textContent = 'Failed: ' + e.message;
+      }
+      $('#up-html-go').disabled = false;
+    };
+    fr.readAsText(file);
+  });
 
   $('#inv-go').addEventListener('click', async function () {
     var email = $('#inv-email').value.trim();
@@ -385,7 +624,7 @@
         sendEmail: $('#inv-send').checked
       });
       $('#inv-result').textContent = r.created
-        ? ('Login created. Password: ' + r.password + (r.emailed ? ' (emailed to them)' : ' — share it with them, they can change it later.'))
+        ? ('Login created. Password: ' + r.password + (r.emailed ? ' (emailed to them)' : ' — share it with them; they can change it in Settings.'))
         : 'That user already existed — site access granted.';
     } catch (e) {
       $('#inv-result').textContent = 'Failed: ' + e.message;
@@ -401,8 +640,10 @@
       return;
     }
     var r = await sb.from('sites').insert({ slug: slug, name: name });
-    $('#new-site-result').textContent = r.error ? ('Failed: ' + r.error.message) : 'Added. Put the site files in /sites/' + slug + '/.';
-    if (!r.error) { me = await cms.whoami(); }
+    if (r.error) { $('#new-site-result').textContent = 'Failed: ' + r.error.message; return; }
+    $('#new-site-result').textContent = 'Added. Put the site files in /sites/' + slug + '/.';
+    me = await cms.whoami();
+    renderSidebar();
   });
 
   // ---------- boot ----------
@@ -412,8 +653,8 @@
     me = await cms.whoami();
     $('#user-email').textContent = s.user.email || '';
     show('view-app');
-    if (me.sites.length === 1 && !me.isAdmin) openSite(me.sites[0]);
-    else renderSites();
+    if (me.sites.length > 0) openSite(me.sites[0], 'overview');
+    else { renderSidebar(); selectTab('overview'); }
   }
   boot();
 })();

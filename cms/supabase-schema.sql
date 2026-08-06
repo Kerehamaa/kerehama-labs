@@ -89,6 +89,26 @@ drop policy if exists views_select on public.page_views;
 create policy views_select on public.page_views for select
   using (public.cms_is_admin() or public.cms_is_member(site_slug));
 
+-- client feedback / change requests
+create table if not exists public.feedback (
+  id bigint generated always as identity primary key,
+  site_slug text not null references public.sites (slug) on delete cascade,
+  user_id uuid,
+  email text,
+  message text not null check (char_length(message) between 1 and 4000),
+  status text not null default 'open' check (status in ('open', 'done')),
+  created_at timestamptz not null default now()
+);
+alter table public.feedback enable row level security;
+drop policy if exists feedback_select on public.feedback;
+create policy feedback_select on public.feedback for select
+  using (public.cms_is_admin() or public.cms_is_member(site_slug));
+drop policy if exists feedback_insert on public.feedback;
+create policy feedback_insert on public.feedback for insert
+  with check (user_id = auth.uid() and (public.cms_is_admin() or public.cms_is_member(site_slug)));
+drop policy if exists feedback_admin_update on public.feedback;
+create policy feedback_admin_update on public.feedback for update using (public.cms_is_admin());
+
 -- seed sites
 insert into public.sites (slug, name) values
   ('myspeech', 'MySpeech'),

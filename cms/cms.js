@@ -47,6 +47,35 @@
       return data;
     },
 
+    // Downscale an image file to maxPx and return { ext, base64 } for cms-upload.
+    downscale: function (file, maxPx) {
+      return new Promise(function (resolve, reject) {
+        var img = new Image();
+        var url = URL.createObjectURL(file);
+        img.onload = function () {
+          URL.revokeObjectURL(url);
+          var MAX = maxPx || 1920;
+          var scale = Math.min(1, MAX / Math.max(img.width, img.height));
+          var canvas = document.createElement('canvas');
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          var isPng = file.type === 'image/png';
+          canvas.toBlob(function (blob) {
+            if (!blob) { reject(new Error('could not process image')); return; }
+            var fr = new FileReader();
+            fr.onload = function () {
+              resolve({ ext: isPng ? 'png' : 'jpg', base64: String(fr.result).split(',')[1] });
+            };
+            fr.onerror = function () { reject(new Error('could not read image')); };
+            fr.readAsDataURL(blob);
+          }, isPng ? 'image/png' : 'image/jpeg', 0.85);
+        };
+        img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('not a valid image')); };
+        img.src = url;
+      });
+    },
+
     // profile + memberships for the signed-in user
     whoami: async function () {
       var s = await window.cms.session();
