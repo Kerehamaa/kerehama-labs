@@ -68,6 +68,10 @@
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.01a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.01a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z"/></svg>
         <span>Settings</span>
       </button>
+      <button class="navlink" data-tab="clients" id="nav-clients" hidden>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Clients</span>
+      </button>
       <button class="navlink" data-tab="admin" id="nav-admin" hidden>
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span>Admin</span>
@@ -208,6 +212,16 @@
       </div>
     </div>
 
+    <!-- clients (admin) -->
+    <div id="tab-clients" hidden>
+      <div class="page-head">
+        <h2>Clients</h2>
+        <span class="spacer"></span>
+        <input id="cl-search" placeholder="Search…" style="border:1px solid var(--line-strong);border-radius:9px;padding:8px 12px;font:inherit;width:200px">
+      </div>
+      <div id="cl-list"><div class="skeleton" style="height:120px"></div></div>
+    </div>
+
     <!-- admin -->
     <div id="tab-admin" hidden>
       <div class="page-head"><h2>Admin</h2></div>
@@ -316,6 +330,7 @@
     });
     $('#sites-label').hidden = me.sites.length === 0;
     $('#nav-admin').hidden = !me.isAdmin;
+    $('#nav-clients').hidden = !me.isAdmin;
   }
 
   cms.$$('#side-nav .navlink').forEach(function (b) {
@@ -335,13 +350,14 @@
 
   function selectTab(name) {
     cms.$$('#side-nav .navlink').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === name); });
-    ['overview', 'seo', 'analytics', 'feedback', 'settings', 'admin'].forEach(function (t) {
+    ['overview', 'seo', 'analytics', 'feedback', 'clients', 'settings', 'admin'].forEach(function (t) {
       $('#tab-' + t).hidden = t !== name;
     });
     if (name === 'overview') loadOverview();
     if (name === 'analytics') loadAnalytics();
     if (name === 'seo') loadSeo();
     if (name === 'feedback') loadFeedback();
+    if (name === 'clients') loadClients();
     if (name === 'admin') loadAdmin();
   }
 
@@ -569,6 +585,106 @@
     toast('Sent — Kerehama Labs will be in touch');
     loadFeedback();
   });
+
+  // ---------- clients (admin CRM) ----------
+  var clientRows = [];
+  async function loadClients() {
+    var profs = (await sb.from('profiles').select('user_id,email,is_admin')).data || [];
+    var mems = (await sb.from('site_members').select('user_id,site_slug')).data || [];
+    var notes = (await sb.from('client_notes').select('user_id,name,phone,notes')).data || [];
+    var fb = (await sb.from('feedback').select('user_id,status')).data || [];
+    var noteBy = {};
+    notes.forEach(function (n) { noteBy[n.user_id] = n; });
+    clientRows = profs.filter(function (p) { return !p.is_admin; }).map(function (p) {
+      return {
+        id: p.user_id,
+        email: p.email || '',
+        sites: mems.filter(function (m) { return m.user_id === p.user_id; }).map(function (m) { return m.site_slug; }),
+        note: noteBy[p.user_id] || {},
+        openFb: fb.filter(function (f) { return f.user_id === p.user_id && f.status === 'open'; }).length
+      };
+    });
+    renderClients();
+  }
+
+  function renderClients() {
+    var q = ($('#cl-search').value || '').toLowerCase();
+    var rows = clientRows.filter(function (c) {
+      return !q || c.email.toLowerCase().includes(q) ||
+        (c.note.name || '').toLowerCase().includes(q) ||
+        c.sites.join(' ').includes(q);
+    });
+    if (!rows.length) {
+      $('#cl-list').innerHTML = '<div class="card muted">No clients yet — invite one from the Admin tab.</div>';
+      return;
+    }
+    $('#cl-list').innerHTML = rows.map(function (c) {
+      var noteId = 'cl-' + c.id;
+      return '<div class="card" style="margin-bottom:12px">' +
+        '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
+          '<div style="flex:1;min-width:200px">' +
+            '<div style="font-weight:700">' + cms.esc(c.note.name || c.email) + '</div>' +
+            '<div class="muted" style="font-size:13px">' + cms.esc(c.email) + (c.note.phone ? ' · ' + cms.esc(c.note.phone) : '') + '</div>' +
+          '</div>' +
+          c.sites.map(function (s) { return '<span class="pill live">' + cms.esc(s) + '</span>'; }).join('') +
+          (c.openFb ? '<span class="pill" style="color:var(--danger);background:var(--danger-soft)">' + c.openFb + ' open request' + (c.openFb === 1 ? '' : 's') + '</span>' : '') +
+          '<button class="btn small" data-copy-email="' + cms.esc(c.email) + '">Copy email</button>' +
+          '<button class="btn small ghost" data-toggle="' + noteId + '">Details</button>' +
+        '</div>' +
+        '<div id="' + noteId + '" hidden style="margin-top:16px;border-top:1px solid var(--line);padding-top:16px">' +
+          '<div class="grid" style="grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">' +
+            '<div class="field" style="margin:0"><label>Name</label><input data-f="name" value="' + cms.esc(c.note.name || '') + '"></div>' +
+            '<div class="field" style="margin:0"><label>Phone</label><input data-f="phone" value="' + cms.esc(c.note.phone || '') + '"></div>' +
+          '</div>' +
+          '<div class="field"><label>Notes (only you can see these)</label>' +
+            '<textarea data-f="notes" rows="3" placeholder="Paid setup fee, wants new gallery section in spring…">' + cms.esc(c.note.notes || '') + '</textarea></div>' +
+          '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">' +
+            '<button class="btn primary small" data-save-client="' + c.id + '">Save details</button>' +
+            c.sites.map(function (s) {
+              return '<button class="btn small danger" data-revoke="' + c.id + '|' + cms.esc(s) + '">Remove from ' + cms.esc(s) + '</button>';
+            }).join('') +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    cms.$$('[data-toggle]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var el = document.getElementById(b.dataset.toggle);
+        el.hidden = !el.hidden;
+      });
+    });
+    cms.$$('[data-copy-email]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        navigator.clipboard.writeText(b.dataset.copyEmail).then(function () { toast('Email copied'); });
+      });
+    });
+    cms.$$('[data-save-client]').forEach(function (b) {
+      b.addEventListener('click', async function () {
+        var box = b.closest('[id^=cl-]');
+        var get = function (f) { return box.querySelector('[data-f=' + f + ']').value.trim(); };
+        b.disabled = true;
+        var r = await sb.from('client_notes').upsert({
+          user_id: b.dataset.saveClient,
+          name: get('name'), phone: get('phone'), notes: get('notes'),
+          updated_at: new Date().toISOString()
+        });
+        b.disabled = false;
+        if (r.error) toast('Save failed: ' + r.error.message);
+        else { toast('Saved'); loadClients(); }
+      });
+    });
+    cms.$$('[data-revoke]').forEach(function (b) {
+      b.addEventListener('click', async function () {
+        var parts = b.dataset.revoke.split('|');
+        if (!confirm('Remove this client’s access to ' + parts[1] + '? They will no longer be able to sign in and edit it.')) return;
+        var r = await sb.from('site_members').delete().eq('user_id', parts[0]).eq('site_slug', parts[1]);
+        if (r.error) toast('Failed: ' + r.error.message);
+        else { toast('Access removed'); loadClients(); }
+      });
+    });
+  }
+  $('#cl-search').addEventListener('input', renderClients);
 
   // ---------- settings ----------
   $('#save-password').addEventListener('click', async function () {

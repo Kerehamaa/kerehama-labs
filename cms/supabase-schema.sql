@@ -109,6 +109,24 @@ create policy feedback_insert on public.feedback for insert
 drop policy if exists feedback_admin_update on public.feedback;
 create policy feedback_admin_update on public.feedback for update using (public.cms_is_admin());
 
+-- admin-only client CRM notes (clients must never see these — no member policies)
+create table if not exists public.client_notes (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  name text,
+  phone text,
+  notes text,
+  updated_at timestamptz not null default now()
+);
+alter table public.client_notes enable row level security;
+drop policy if exists client_notes_admin_select on public.client_notes;
+create policy client_notes_admin_select on public.client_notes for select using (public.cms_is_admin());
+drop policy if exists client_notes_admin_insert on public.client_notes;
+create policy client_notes_admin_insert on public.client_notes for insert with check (public.cms_is_admin());
+drop policy if exists client_notes_admin_update on public.client_notes;
+create policy client_notes_admin_update on public.client_notes for update using (public.cms_is_admin());
+drop policy if exists client_notes_admin_delete on public.client_notes;
+create policy client_notes_admin_delete on public.client_notes for delete using (public.cms_is_admin());
+
 -- seed sites
 insert into public.sites (slug, name) values
   ('myspeech', 'MySpeech'),
